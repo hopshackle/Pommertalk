@@ -3,6 +3,7 @@
 
 \.idea/
 \out/
+\data/
 *.iml
 
 res/gamelogs/json/
