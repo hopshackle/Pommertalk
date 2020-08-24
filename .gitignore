@@ -6,6 +6,4 @@
 \data/
 *.iml
 
-res/gamelogs/json/
-
-jar/res/gamelogs/
+/jar/res/gamelogs/
