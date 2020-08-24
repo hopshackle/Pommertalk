@@ -14,8 +14,6 @@ public class Test {
 
     public static void main(String[] args) {
 
-        System.out.println("Hello World!");
-
         // Game parameters
         long seed = System.currentTimeMillis();
         int boardSize = Types.BOARD_SIZE;
