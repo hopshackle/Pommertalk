@@ -201,6 +201,14 @@ public class Types {
         public int y() {return y;}
     }
 
+    public enum AGREEMENT_TYPE {
+        ALLIANCE,
+        SHARE_VISION,
+        NO_BOMB_PLACING,
+        NO_BOMB_KICKING,
+        STAY_APART
+    }
+
     /**
      * Defines all actions in the game.
      */
