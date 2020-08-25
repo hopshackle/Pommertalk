@@ -53,11 +53,14 @@ public class Negotiation {
             if (other == agent.getType())
                 other = a.participants.get(1);
             GameObject otherAgent = allAgents[other.getKey() - Types.TILETYPE.AGENT0.getKey()];
-
+            int manhattanDistance = targetSpace.manhattanDistance(otherAgent.getPosition());
             switch (a.agreement) {
                 case STAY_APART:
-                    int manhattanDistance = targetSpace.manhattanDistance(otherAgent.getPosition());
-                    if (manhattanDistance <= Types.STAY_APART_DISTANCE)
+                    if (action.getDirection() != Types.DIRECTIONS.NONE && manhattanDistance <= Types.STAY_APART_DISTANCE)
+                        return false;
+                    break;
+                case NO_BOMB_PLACING:
+                    if (action == Types.ACTIONS.ACTION_BOMB && manhattanDistance <= Types.NO_BOMB_DISTANCE)
                         return false;
                     break;
                 default:
