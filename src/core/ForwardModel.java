@@ -57,7 +57,7 @@ public class ForwardModel {
     private boolean[] isAgentStuck;
 
     // Negotiation Results
-    private Negotiation lastNegotiation = new Negotiation(this); // default to no negotiated agreements
+    protected Negotiation lastNegotiation = new Negotiation(this); // default to no negotiated agreements
     public void injectNegotiation(Negotiation neg) {lastNegotiation = neg;} // ability to inject a set of agreements if needed (primarily for testing)
 
     /**

@@ -62,4 +62,6 @@ public class NegotiationTest {
 
         assertEquals(10, game.getGameState().getBoard()[2][4].getKey());
     }
+
+
 }

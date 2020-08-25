@@ -21,7 +21,7 @@ public class Negotiation {
     }
 
     /*
-    An alternative constructor primarily intended for testing
+    An alternative constructor primarily intended for testing and copying
      */
     public Negotiation(List<Agreement> agreements) {
         this.finalAgreements = agreements;
@@ -44,7 +44,7 @@ public class Negotiation {
         // easiest thing to do is move them on board, and then check to see if the agreement is met
         // agent.
         List<Agreement> agentAgreements = finalAgreements.stream()
-                .filter( a -> a.participants.contains(agent.getType()))
+                .filter(a -> a.participants.contains(agent.getType()))
                 .collect(Collectors.toList());
 
         Vector2d targetSpace = agent.getDesiredCoordinate();
@@ -70,7 +70,10 @@ public class Negotiation {
     }
 
     public Negotiation reduce(int playerIdx) {
-        // TODO: make a copy of Negotiation that removes agreements that the player is not party to
-        return this;
+        List<Agreement> visibleAgreements = finalAgreements.stream()
+                .filter(a -> a.participants.get(0).getKey() == playerIdx + Types.TILETYPE.AGENT0.getKey() ||
+                        a.participants.get(1).getKey() == playerIdx + Types.TILETYPE.AGENT0.getKey())
+                .collect(Collectors.toList());
+        return new Negotiation(visibleAgreements);
     }
 }
