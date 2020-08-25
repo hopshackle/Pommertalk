@@ -1,5 +1,7 @@
 package core;
 
+import negotiations.Agreement;
+import negotiations.Negotiation;
 import objects.Avatar;
 import objects.Bomb;
 import objects.Flame;
@@ -53,6 +55,9 @@ public class ForwardModel {
     // Event statistics
     private EventsStatistics es;
     private boolean[] isAgentStuck;
+
+    // Negotation Results
+    private List<Agreement> currentAgreements;
 
     /**
      * Creates a forward model object.
@@ -418,6 +423,12 @@ public class ForwardModel {
                 // Kill agents.
                 if (collapsedAgents.size() > 0)
                     Types.getGameConfig().processDeadAgents(agents, aliveAgents, collapsedAgents, game_mode);
+
+                if (Types.NEGOTIATION && trueModel) {
+                    // We do not currently model negotiation within RHEA/MCTS, so only do this for the true model of the game
+                    Negotiation neg = new Negotiation(this);
+                    currentAgreements = neg.getFinalAgreements();
+                }
             }
         }
 
