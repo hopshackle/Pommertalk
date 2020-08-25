@@ -56,6 +56,9 @@ public class ForwardModel {
     private EventsStatistics es;
     private boolean[] isAgentStuck;
 
+    // Negotation Results
+    private List<Agreement> currentAgreements;
+
     /**
      * Creates a forward model object.
      * @param size Size of the board.
@@ -421,11 +424,10 @@ public class ForwardModel {
                 if (collapsedAgents.size() > 0)
                     Types.getGameConfig().processDeadAgents(agents, aliveAgents, collapsedAgents, game_mode);
 
-                // TODO: We do not want to do this if we are in simulation mode...which we can do by switching off NEGOTIATION
-                if (Types.NEGOTIATION) {
+                if (Types.NEGOTIATION && trueModel) {
+                    // We do not currently model negotiation within RHEA/MCTS, so only do this for the true model of the game
                     Negotiation neg = new Negotiation(this);
-                    List<Agreement> newAgreements = neg.getFinalAgreements();
-
+                    currentAgreements = neg.getFinalAgreements();
                 }
             }
         }

@@ -14,14 +14,16 @@ public class Negotiation {
         // tODO: (Which would be safer and arguably better design)
         // TODO: But by passing in a link to the Forward MOdel you may have more flexibility
         // TODO: Just please don't modify it!!!
-
-        // go and do stuff
+    }
+    /*
+    Then this method will be called by the core game engine to conduct the negotiations
+     */
+    public void runNegotiationProcess() {
+        // do stuff
+        // crucially, make sure this populates the finalAgreement List
     }
 
-    /*
-    Once the negotiation has completed, we can call this to get the result of the negotiations.
-     */
     public List<Agreement> getFinalAgreements() {
-        return finalAgreements;
+        return List.copyOf(finalAgreements);
     }
 }
