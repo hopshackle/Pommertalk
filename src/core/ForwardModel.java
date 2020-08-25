@@ -56,8 +56,9 @@ public class ForwardModel {
     private EventsStatistics es;
     private boolean[] isAgentStuck;
 
-    // Negotation Results
-    private List<Agreement> currentAgreements;
+    // Negotiation Results
+    private Negotiation lastNegotiation = new Negotiation(this); // default to no negotiated agreements
+    public void injectNegotiation(Negotiation neg) {lastNegotiation = neg;} // ability to inject a set of agreements if needed (primarily for testing)
 
     /**
      * Creates a forward model object.
@@ -87,7 +88,7 @@ public class ForwardModel {
      * @param intBoard Game board in int representation
      * @param game_mode Mode of game
      */
-    ForwardModel(long seed, int[][] intBoard, Types.GAME_MODE game_mode) {
+    public ForwardModel(long seed, int[][] intBoard, Types.GAME_MODE game_mode) {
         size = intBoard.length;
         this.game_mode = game_mode;
         init(seed, intBoard.length, game_mode, intBoard, null);
@@ -426,8 +427,7 @@ public class ForwardModel {
 
                 if (Types.NEGOTIATION && trueModel) {
                     // We do not currently model negotiation within RHEA/MCTS, so only do this for the true model of the game
-                    Negotiation neg = new Negotiation(this);
-                    currentAgreements = neg.getFinalAgreements();
+                    lastNegotiation = new Negotiation(this);
                 }
             }
         }
@@ -769,6 +769,11 @@ public class ForwardModel {
             }
 
             boolean successful = setDesiredCoordinate(agent, pos.add(action.getDirection().toVec()), board);
+            // check that this is ok with results of negotiation
+            if (successful && !lastNegotiation.isPermitted(action, agent, agents)) {
+                // and if not, then do not move
+                agent.setDesiredCoordinate(pos);
+            }
 
             if (action == Types.ACTIONS.ACTION_BOMB) {
                 if (agent.getAmmo() > 0 && bombBlastStrength[pos.y][pos.x] == 0) {
@@ -795,6 +800,8 @@ public class ForwardModel {
                     }
                 }
             }
+
+
 
             if (successful && action != Types.ACTIONS.ACTION_STOP && trueModel) {
                 if (VERBOSE_FM_DEBUG) {
@@ -1146,6 +1153,9 @@ public class ForwardModel {
             copy.bombBlastStrength[position.y][position.x] = bomb.getBlastStrength();
             copy.bombLife[position.y][position.x] = bomb.getLife();
         }
+
+        // remove any Agreements that the player is not party to
+        copy.lastNegotiation = lastNegotiation.reduce(playerIdx);
     }
 
     @Override

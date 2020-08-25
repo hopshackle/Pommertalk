@@ -1,7 +1,11 @@
 package negotiations;
 
 import core.*;
+import objects.*;
+import utils.*;
+
 import java.util.*;
+import java.util.stream.*;
 
 public class Negotiation {
 
@@ -15,6 +19,14 @@ public class Negotiation {
         // TODO: But by passing in a link to the Forward MOdel you may have more flexibility
         // TODO: Just please don't modify it!!!
     }
+
+    /*
+    An alternative constructor primarily intended for testing
+     */
+    public Negotiation(List<Agreement> agreements) {
+        this.finalAgreements = agreements;
+    }
+
     /*
     Then this method will be called by the core game engine to conduct the negotiations
      */
@@ -25,5 +37,40 @@ public class Negotiation {
 
     public List<Agreement> getFinalAgreements() {
         return List.copyOf(finalAgreements);
+    }
+
+    public boolean isPermitted(Types.ACTIONS action, Avatar agent, GameObject[] allAgents) {
+        // First we check for STAY_APART agreements
+        // easiest thing to do is move them on board, and then check to see if the agreement is met
+        // agent.
+        List<Agreement> agentAgreements = finalAgreements.stream()
+                .filter( a -> a.participants.contains(agent.getType()))
+                .collect(Collectors.toList());
+
+        Vector2d targetSpace = agent.getDesiredCoordinate();
+        for (Agreement a : agentAgreements) {
+            Types.TILETYPE other = a.participants.get(0);
+            if (other == agent.getType())
+                other = a.participants.get(1);
+            GameObject otherAgent = allAgents[other.getKey() - Types.TILETYPE.AGENT0.getKey()];
+
+            switch (a.agreement) {
+                case STAY_APART:
+                    int manhattanDistance = targetSpace.manhattanDistance(otherAgent.getPosition());
+                    if (manhattanDistance <= Types.STAY_APART_DISTANCE)
+                        return false;
+                    break;
+                default:
+                    throw new AssertionError("Agreement type not yet implemented: " + a.agreement);
+            }
+        }
+
+
+        return true;
+    }
+
+    public Negotiation reduce(int playerIdx) {
+        // TODO: make a copy of Negotiation that removes agreements that the player is not party to
+        return this;
     }
 }

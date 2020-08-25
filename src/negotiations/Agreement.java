@@ -13,8 +13,8 @@ public class Agreement {
         STAY_APART
     }
 
-    private List<Types.TILETYPE> participants = new ArrayList<>();
-    private TYPE agreement;
+    protected List<Types.TILETYPE> participants = new ArrayList<>();
+    protected TYPE agreement;
 
     public Agreement(Types.TILETYPE agent1, Types.TILETYPE agent2, TYPE agreementType) {
         this.agreement = agreementType;

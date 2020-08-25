@@ -15,9 +15,9 @@ import java.util.Queue;
 import static org.junit.jupiter.api.Assertions.*;
 import static utils.Types.VERBOSE;
 
-class ForwardModelTest {
+public class ForwardModelTest {
 
-    private static final int seed = 12345;
+    protected static final int seed = 12345;
 
     private static final Types.ACTIONS[] KICK_EXPERIMENT_ACTIONS = new Types.ACTIONS[]{
             Types.ACTIONS.ACTION_BOMB,
@@ -86,17 +86,20 @@ class ForwardModelTest {
             new int[]{0,0,0,0,0,0,0,0,0,0,0},
     };
 
-    private Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions, Types.GAME_MODE gameMode){
+    public static Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions, Types.GAME_MODE gameMode){
         return testNFrames(n, intBoard, actions, gameMode, true);
     }
 
-    private Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions, Types.GAME_MODE gameMode, boolean canKick){
+    public static Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions, Types.GAME_MODE gameMode, boolean canKick){
         return testNFrames(n, intBoard, actions, new Types.ACTIONS[0], gameMode, canKick);
     }
 
-    private Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions1, Types.ACTIONS[] actions2, Types.GAME_MODE gameMode, boolean canKick){
+    public static Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions1, Types.ACTIONS[] actions2, Types.GAME_MODE gameMode, boolean canKick) {
         ForwardModel model = new ForwardModel(seed, intBoard, gameMode);
+        return testNFrames(n, actions1, actions2, gameMode, canKick, model);
+    }
 
+    public static Game testNFrames(int n, Types.ACTIONS[] actions1, Types.ACTIONS[] actions2, Types.GAME_MODE gameMode, boolean canKick, ForwardModel model){
         Queue<Types.ACTIONS> actionsQueue1 = new ArrayDeque<>();
         actionsQueue1.addAll(Arrays.asList(actions1));
 

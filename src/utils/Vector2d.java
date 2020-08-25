@@ -6,8 +6,7 @@ package utils;
  * Created by Diego Perez, University of Essex.
  * Date: 19/12/11
  */
-public class Vector2d
-{
+public class Vector2d {
     /**
      * X-coordinate of the vector.
      */
@@ -27,6 +26,7 @@ public class Vector2d
 
     /**
      * Checks if a vector and this are the same.
+     *
      * @param o the other vector to check
      * @return true if their coordinates are the same.
      */
@@ -42,6 +42,7 @@ public class Vector2d
 
     /**
      * Builds a vector from its coordinates.
+     *
      * @param x x coordinate
      * @param y y coordinate
      */
@@ -53,6 +54,7 @@ public class Vector2d
 
     /**
      * Builds a vector from another vector.
+     *
      * @param v Vector to copy from.
      */
     public Vector2d(Vector2d v) {
@@ -62,14 +64,16 @@ public class Vector2d
 
     /**
      * Creates a copy of this vector
+     *
      * @return a copy of this vector
      */
     public Vector2d copy() {
-        return new Vector2d(x,y);
+        return new Vector2d(x, y);
     }
 
     /**
      * Sets this vector's coordinates to the coordinates of another vector.
+     *
      * @param v that other vector.
      */
     public void set(Vector2d v) {
@@ -79,6 +83,7 @@ public class Vector2d
 
     /**
      * Sets this vector's coordinates to the coordinates given.
+     *
      * @param x x coordinate.
      * @param y y coordinate.
      */
@@ -97,6 +102,7 @@ public class Vector2d
 
     /**
      * Returns a representative String of this vector.
+     *
      * @return a representative String of this vector.
      */
     @Override
@@ -106,6 +112,7 @@ public class Vector2d
 
     /**
      * Adds another vector to this.
+     *
      * @param v vector to add.
      * @return this, after the addition.
      */
@@ -118,6 +125,7 @@ public class Vector2d
 
     /**
      * Adds to this vector two coordinates
+     *
      * @param x x coordinate
      * @param y y coordinate
      * @return returns this, after the addition.
@@ -130,6 +138,7 @@ public class Vector2d
 
     /**
      * Adds to this vector another vector, scaled it by a factor..
+     *
      * @param v Vector to add, to be scaled by w
      * @param w Scale of v.
      * @return this vector, after the addition.
@@ -143,6 +152,7 @@ public class Vector2d
 
     /**
      * Performs a wrap operation over this vector.
+     *
      * @param w width
      * @param h height
      * @return This vector, after the wrap.
@@ -157,6 +167,7 @@ public class Vector2d
 
     /**
      * Subtracts another vector from this.
+     *
      * @param v vector to subtract.
      * @return this, after the subtraction.
      */
@@ -169,6 +180,7 @@ public class Vector2d
 
     /**
      * Subtracts two coordinates to this vector.
+     *
      * @param x x coordinate
      * @param y y coordinate
      * @return returns this, after the subtraction.
@@ -181,6 +193,7 @@ public class Vector2d
 
     /**
      * Multiplies this vector by a factor.
+     *
      * @param fac factor to multiply this vector by.
      * @return This vector, after the operation.
      */
@@ -192,6 +205,7 @@ public class Vector2d
 
     /**
      * Rotates the vector an angle given, in radians.
+     *
      * @param theta angle given, in radians
      */
     public void rotate(int theta) {
@@ -200,8 +214,8 @@ public class Vector2d
         double cosTheta = Math.cos(theta);
         double sinTheta = Math.sin(theta);
 
-        int nx = (int)(x * cosTheta - y * sinTheta);
-        int ny = (int)(x * sinTheta + y * cosTheta);
+        int nx = (int) (x * cosTheta - y * sinTheta);
+        int ny = (int) (x * sinTheta + y * cosTheta);
 
         x = nx;
         y = ny;
@@ -209,6 +223,7 @@ public class Vector2d
 
     /**
      * Calculates the scalar product of this vector and the one passed by parameter
+     *
      * @param v vector to do the scalar product with.
      * @return the value of the scalar product.
      */
@@ -218,6 +233,7 @@ public class Vector2d
 
     /**
      * Gets the square value of the parameter passed.
+     *
      * @param x parameter
      * @return x * x
      */
@@ -227,6 +243,7 @@ public class Vector2d
 
     /**
      * Returns the square distance from this vector to the one in the arguments.
+     *
      * @param v the other vector, to calculate the distance to.
      * @return the square distance, in pixels, between this vector and v.
      */
@@ -236,6 +253,7 @@ public class Vector2d
 
     /**
      * Gets the magnitude of the vector.
+     *
      * @return the magnitude of the vector (Math.sqrt(sqr(x) + sqr(y)))
      */
     public double mag() {
@@ -244,6 +262,7 @@ public class Vector2d
 
     /**
      * Returns the distance from this vector to the one in the arguments.
+     *
      * @param v the other vector, to calculate the distance to.
      * @return the distance, in pixels, between this vector and v.
      */
@@ -253,6 +272,7 @@ public class Vector2d
 
     /**
      * Returns the distance from this vector to a pair of coordinates.
+     *
      * @param xx x coordinate
      * @param yy y coordinate
      * @return the distance, in pixels, between this vector and the pair of coordinates.
@@ -269,9 +289,13 @@ public class Vector2d
         return Math.max(Math.abs(x - other.x), Math.abs(y - other.y));
     }
 
+    public int manhattanDistance(Vector2d other) {
+        return Math.abs(x - other.x) + Math.abs(y - other.y);
+    }
 
     /**
      * Returns the atan2 of this vector.
+     *
      * @return the atan2 of this vector.
      */
     public double theta() {
@@ -283,10 +307,9 @@ public class Vector2d
      */
     public void normalise() {
         double mag = mag();
-        if(mag == 0)
-        {
+        if (mag == 0) {
             x = y = 0;
-        }else{
+        } else {
             x /= mag;
             y /= mag;
         }
@@ -294,6 +317,7 @@ public class Vector2d
 
     /**
      * Calculates the dot product between this vector and the one passed by parameter.
+     *
      * @param v the other vector.
      * @return the dot product between these two vectors.
      */
@@ -301,14 +325,11 @@ public class Vector2d
         return this.x * v.x + this.y * v.y;
     }
 
-    public Vector2d unitVector()
-    {
+    public Vector2d unitVector() {
         double l = this.mag();
-        if(l > 0)
-        {
-            return new Vector2d((int)(this.x/l),(int)(this.y/l));
-        }
-        else return new Vector2d(1,0);
+        if (l > 0) {
+            return new Vector2d((int) (this.x / l), (int) (this.y / l));
+        } else return new Vector2d(1, 0);
     }
 
     @Override
