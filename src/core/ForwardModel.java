@@ -1,5 +1,7 @@
 package core;
 
+import negotiations.Agreement;
+import negotiations.Negotiation;
 import objects.Avatar;
 import objects.Bomb;
 import objects.Flame;
@@ -418,6 +420,13 @@ public class ForwardModel {
                 // Kill agents.
                 if (collapsedAgents.size() > 0)
                     Types.getGameConfig().processDeadAgents(agents, aliveAgents, collapsedAgents, game_mode);
+
+                // TODO: We do not want to do this if we are in simulation mode...which we can do by switching off NEGOTIATION
+                if (Types.NEGOTIATION) {
+                    Negotiation neg = new Negotiation(this);
+                    List<Agreement> newAgreements = neg.getFinalAgreements();
+
+                }
             }
         }
 
