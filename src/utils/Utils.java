@@ -9,77 +9,63 @@ import java.util.*;
 import static utils.Types.FLAME_LIFE;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class Utils
-{
+public class Utils {
     // Takes an object from an array at random
-    public static Object choice(Object[] elements, Random rnd)
-    {
+    public static Object choice(Object[] elements, Random rnd) {
         return elements[rnd.nextInt(elements.length)];
     }
 
     // Takes an integer from an array at random
-    public static int choice(int[] elements, Random rnd)
-    {
+    public static int choice(int[] elements, Random rnd) {
         return elements[rnd.nextInt(elements.length)];
     }
 
     // Clamps 'val' between 'mim' and 'max'
-    public static int clamp(int min, int val, int max)
-    {
-        if(val < min) return min;
-        if(val > max) return max;
+    public static int clamp(int min, int val, int max) {
+        if (val < min) return min;
+        if (val > max) return max;
         return val;
     }
 
     //Choices a direction at random
-    public static Types.DIRECTIONS choiceDir(ArrayList<Types.DIRECTIONS> elements, Random rnd)
-    {
+    public static Types.DIRECTIONS choiceDir(ArrayList<Types.DIRECTIONS> elements, Random rnd) {
         return elements.get(rnd.nextInt(elements.size()));
     }
 
     //Choices a Vector2d from a list at random
-    public static Vector2d choice(ArrayList<Vector2d> elements, Random rnd)
-    {
+    public static Vector2d choice(ArrayList<Vector2d> elements, Random rnd) {
         return elements.get(rnd.nextInt(elements.size()));
     }
 
     // Ugh, a regex!
-    public static String formatString(String str)
-    {
+    public static String formatString(String str) {
         // 1st replaceAll: compresses all non-newline whitespaces to single space
         // 2nd replaceAll: removes spaces from beginning or end of lines
         return str.replaceAll("[\\s&&[^\\n]]+", " ").replaceAll("(?m)^\\s|\\s$", "");
     }
 
     //Normalizes a value between its MIN and MAX.
-    public static double normalise(double a_value, double a_min, double a_max)
-    {
-        if(a_min < a_max)
-            return (a_value - a_min)/(a_max - a_min);
+    public static double normalise(double a_value, double a_min, double a_max) {
+        if (a_min < a_max)
+            return (a_value - a_min) / (a_max - a_min);
         else    // if bounds are invalid, then return same value
             return a_value;
     }
 
     /**
      * Adds a small noise to the input value.
-     * @param input value to be altered
+     *
+     * @param input   value to be altered
      * @param epsilon relative amount the input will be altered
-     * @param random random variable in range [0,1]
+     * @param random  random variable in range [0,1]
      * @return epsilon-random-altered input value
      */
-    public static double noise(double input, double epsilon, double random)
-    {
-        if(input != -epsilon) {
-            return (input + epsilon) * (1.0 + epsilon * (random - 0.5));
-        }else {
-            //System.out.format("utils.tiebreaker(): WARNING: value equal to epsilon: %f\n",input);
-            return (input + epsilon) * (1.0 + epsilon * (random - 0.5));
-        }
+    public static double noise(double input, double epsilon, double random) {
+        return (input + epsilon) * (1.0 + epsilon * (random - 0.5));
     }
 
     // Returns the index of the element in the array with the highest value.
-    public static int argmax (double[] values)
-    {
+    public static int argmax(double[] values) {
         int maxIndex = -1;
         double max = Double.NEGATIVE_INFINITY;
         for (int i = 0; i < values.length; i++) {
@@ -93,8 +79,7 @@ public class Utils
     }
 
     //Concatenates the elements of a String array into a String object, separated by ','
-    public static String toStringArray(String[] array)
-    {
+    public static String toStringArray(String[] array) {
         if (array != null && array.length > 0) {
             StringBuilder nameBuilder = new StringBuilder();
 
@@ -112,7 +97,7 @@ public class Utils
     //Finds the maximum divisor of a value
     public static int findMaxDivisor(int value) {
         int divisor = 1;
-        for (int i=1; i<=Math.sqrt(value)+1; i++) {
+        for (int i = 1; i <= Math.sqrt(value) + 1; i++) {
             if (value % i == 0) {
                 divisor = i;
             }
@@ -121,12 +106,10 @@ public class Utils
     }
 
     //Sums all ints in an array and returns the sum
-    public static int sumArray(int[] ar)
-    {
+    public static int sumArray(int[] ar) {
         int sum = 0;
-        for(int val : ar)
-        {
-            sum+=val;
+        for (int val : ar) {
+            sum += val;
         }
         return sum;
     }
@@ -135,9 +118,10 @@ public class Utils
     /**
      * Checks if a given game object can take a new position on the given board. If it's a legal position,
      * sets the desired coordinate of the given object to the new position, otherwise to its old position.
+     *
      * @param gameObject - game object to check
-     * @param pos - new position
-     * @param board - board state to check legal positions on
+     * @param pos        - new position
+     * @param board      - board state to check legal positions on
      * @return true if new position set successfully, false otherwise
      */
     public static boolean setDesiredCoordinate(GameObject gameObject, Vector2d pos, Types.TILETYPE[][] board) {
@@ -149,9 +133,10 @@ public class Utils
 
     /**
      * Optionally specify collisions.
+     *
      * @param gameObject - game object to check
-     * @param pos - new position
-     * @param board - board state to check legal positions on
+     * @param pos        - new position
+     * @param board      - board state to check legal positions on
      * @param collisions - list of types which would make the position of a sprite illegal
      * @return true if new position set successfully, false otherwise
      */
@@ -172,8 +157,9 @@ public class Utils
     /**
      * Checks if a given position is legal on the current board. This is defined as both x and y are within the limits
      * of the given board, and the position indicated is not a wall type.
+     *
      * @param board - given board to check position on
-     * @param pos - given position
+     * @param pos   - given position
      * @return true if position is legal, false otherwise
      */
     private static boolean _checkLegalPosition(Types.TILETYPE[][] board, Vector2d pos,
@@ -185,7 +171,8 @@ public class Utils
     /**
      * Checks if the object of given type, at given position in given board can be overwritten.
      * Uses default list of types that should not be removed from the board, powerups.
-     * @param pos - position to check in the board
+     *
+     * @param pos   - position to check in the board
      * @param board - board to check position in
      * @return true if object can overwrite, false otherwise
      */
@@ -197,15 +184,16 @@ public class Utils
     /**
      * Iterates through 2 lists of game objects and checks their desired position and current position.
      * If the 2 objects swap positions, revert both desired position to their original position.
-     * @param golist1 - first list of game objects
-     * @param golist2 - second list of game objects
+     *
+     * @param golist1          - first list of game objects
+     * @param golist2          - second list of game objects
      * @param revertOnlySecond - if true, revert only the positions of the elements in the second list.
-     * @param board - board to update positions on
+     * @param board            - board to update positions on
      */
     public static void checkPositionSwap(ArrayList<GameObject> golist1, ArrayList<GameObject> golist2,
                                          Types.TILETYPE[][] board, boolean revertOnlySecond, boolean verbose) {
-        for (GameObject g1: golist1) {
-            for (GameObject g2: golist2) {
+        for (GameObject g1 : golist1) {
+            for (GameObject g2 : golist2) {
                 if (!g1.equals(g2)) {
                     if (g1.getDesiredCoordinate() != null && g1.getPosition() != null &&
                             g2.getDesiredCoordinate() != null && g2.getPosition() != null &&
@@ -233,6 +221,7 @@ public class Utils
 
     /**
      * Checks if more than 1 object wants to move to the same position. Bounce all back.
+     *
      * @param golist - list of game objects to check.
      */
     public static void checkPositionOverlap(ArrayList<GameObject> golist, Types.TILETYPE[][] board, boolean verbose) {
@@ -240,7 +229,7 @@ public class Utils
         HashMap<Vector2d, Integer> countList = checkOccupancy(golist);
 
         // If more than 1 object are at a position, revert all to previous position.
-        for (GameObject g: golist) {
+        for (GameObject g : golist) {
             if (countList.get(g.getDesiredCoordinate()) > 1) {
                 if (verbose) {
                     System.out.println("Reverting " + g.getType() + " overlap");
@@ -252,12 +241,13 @@ public class Utils
 
     /**
      * Checks how many of the objects in the given list occupy the same position.
+     *
      * @param golist - given list of game objects
      * @return mapping position -> number of game objects at that position
      */
     public static HashMap<Vector2d, Integer> checkOccupancy(ArrayList<GameObject> golist) {
         HashMap<Vector2d, Integer> countList = new HashMap<>();
-        for (GameObject g: golist) {
+        for (GameObject g : golist) {
             countList.merge(g.getDesiredCoordinate(), 1, Integer::sum);
         }
         return countList;
@@ -265,6 +255,7 @@ public class Utils
 
     /**
      * Creates a deep copy of an ArrayList of game objects
+     *
      * @param arr - given list
      * @return a new list containing copies of objects in the original list
      */
@@ -279,28 +270,25 @@ public class Utils
     /**
      * Adds copies of game objects to a new list, given original list, where items are within a certain range from the
      * given position.
+     *
      * @param originalList - original list of game objects to check.
-     * @param copyList - list which will contain the new objects.
-     * @param refPosition - position reference for range check.
-     * @param range - range within which the objects should be included. May be -1, which means all objects
-     *              should be included
+     * @param copyList     - list which will contain the new objects.
+     * @param refPosition  - a Set of position references from which items are visible
+     * @param range        - range within which the objects should be included. May be -1, which means all objects
+     *                     should be included
      */
     public static void _reduceHiddenList(ArrayList<GameObject> originalList, ArrayList<GameObject> copyList,
-                                         Vector2d refPosition, int range) {
-        for (GameObject g: originalList) {
+                                         Set<Vector2d> refPosition, int range) {
+        for (GameObject g : originalList) {
 
-            Vector2d posG = null;
-            if (range >= 0) {
-                // Get object's position.
-                posG = g.getPosition();
-            }
+            Vector2d posG = (range >= 0) ? g.getPosition() : null;
 
             // Check if the object is in range. If it is, add a copy of the object to the copy list.
-            if (range == -1 || posG != null && refPosition != null && refPosition.custom_dist(posG) <= range) {
+            if (range == -1 || posG != null && refPosition != null && refPosition.stream().anyMatch(v -> v.custom_dist(posG) <= range)) {
                 GameObject ob = g.copy();
                 if (ob.getType() == Types.TILETYPE.FLAMES) ob.setLife(FLAME_LIFE);
                 else if (ob.getType() == Types.TILETYPE.BOMB) {
-                    Bomb b = (Bomb)ob;
+                    Bomb b = (Bomb) ob;
                     b.setVelocity(new Vector2d());
                     b.setPlayerIdx(-1);
                 }
@@ -311,13 +299,14 @@ public class Utils
 
     /**
      * Finds all agents which are still alive (win status INCOMPLETE), given list of all agents.
+     *
      * @param allAgents - list of all agents, including those that died already.
      * @return - a list of agents left alive in the game.
      */
     public static ArrayList<GameObject> findAliveAgents(GameObject[] allAgents) {
         ArrayList<GameObject> alive = new ArrayList<>();
-        for (GameObject go: allAgents) {
-            if (((Avatar)go).getWinner() == Types.RESULT.INCOMPLETE) {
+        for (GameObject go : allAgents) {
+            if (((Avatar) go).getWinner() == Types.RESULT.INCOMPLETE) {
                 alive.add(go);
             }
         }
@@ -326,24 +315,24 @@ public class Utils
 
     /**
      * Determines the direction of an adjacent position (nextPosition) in reference to a position (position).
-     * @param position - given list of game objects
+     *
+     * @param position     - given list of game objects
      * @param nextPosition - given list of game objects
      * @return determined direction.
      */
     public static Types.DIRECTIONS getDirection(Vector2d position, Vector2d nextPosition) {
 
-        if(position.x == nextPosition.x){
-            if(position.y < nextPosition.y)
+        if (position.x == nextPosition.x) {
+            if (position.y < nextPosition.y)
                 return Types.DIRECTIONS.DOWN;
-            else if(position.y > nextPosition.y)
+            else if (position.y > nextPosition.y)
                 return Types.DIRECTIONS.UP;
             else
                 return Types.DIRECTIONS.NONE;
-        }
-        else if(position.y == nextPosition.y){
-            if(position.x < nextPosition.x)
+        } else if (position.y == nextPosition.y) {
+            if (position.x < nextPosition.x)
                 return Types.DIRECTIONS.RIGHT;
-            else if(position.x > nextPosition.x)
+            else if (position.x > nextPosition.x)
                 return Types.DIRECTIONS.LEFT;
             else
                 return Types.DIRECTIONS.NONE;
@@ -354,30 +343,31 @@ public class Utils
 
     /**
      * Determines the position resulted by a movement action in a particular direction.
+     *
      * @param myPosition - initial position
-     * @param direction - movement direction
+     * @param direction  - movement direction
      * @return final position.
      */
-    public static Vector2d getNextPosition(Vector2d myPosition, Types.DIRECTIONS direction){
+    public static Vector2d getNextPosition(Vector2d myPosition, Types.DIRECTIONS direction) {
         return myPosition.add(direction.toVec());
     }
 
     /**
      * Converts direction into movement action.
+     *
      * @param direction - the direction
      * @return movement action
      */
-    public static Types.ACTIONS directionToAction(Types.DIRECTIONS direction)
-    {
-        if(direction == Types.DIRECTIONS.DOWN)
+    public static Types.ACTIONS directionToAction(Types.DIRECTIONS direction) {
+        if (direction == Types.DIRECTIONS.DOWN)
             return Types.ACTIONS.ACTION_DOWN;
-        else if(direction == Types.DIRECTIONS.LEFT)
+        else if (direction == Types.DIRECTIONS.LEFT)
             return Types.ACTIONS.ACTION_LEFT;
-        else if(direction == Types.DIRECTIONS.RIGHT)
+        else if (direction == Types.DIRECTIONS.RIGHT)
             return Types.ACTIONS.ACTION_RIGHT;
-        else if(direction == Types.DIRECTIONS.UP)
+        else if (direction == Types.DIRECTIONS.UP)
             return Types.ACTIONS.ACTION_UP;
-        else if(direction == Types.DIRECTIONS.NONE)
+        else if (direction == Types.DIRECTIONS.NONE)
             return Types.ACTIONS.ACTION_STOP;
 
         System.out.println("WARNING: " + direction + " is an invalid direction, using (0,0).");
@@ -387,22 +377,23 @@ public class Utils
     /**
      * Checks if the given position is passable.
      * A passable tile must be an agent, a power-up or a passage; and it should not be an enemy.
-     * @param board - game board
+     *
+     * @param board    - game board
      * @param position - the position to be checked
-     * @param enemies - array of enemy agents
+     * @param enemies  - array of enemy agents
      * @return the result as boolean
      */
     public static boolean positionIsPassable(Types.TILETYPE[][] board, Vector2d position, ArrayList<GameObject> enemies) {
         Types.TILETYPE tileType = board[position.y][position.x];
 
         boolean positionIsPassable = false;
-        if(Types.TILETYPE.getAgentTypes().contains(tileType) || Types.TILETYPE.getPowerUpTypes().contains(tileType) ||
-                tileType == Types.TILETYPE.PASSAGE){
+        if (Types.TILETYPE.getAgentTypes().contains(tileType) || Types.TILETYPE.getPowerUpTypes().contains(tileType) ||
+                tileType == Types.TILETYPE.PASSAGE) {
 
             // Also check if position is an enemy
             boolean positionIsEnemy = false;
-            for(GameObject enemy : enemies){
-                if(tileType == enemy.getType()){
+            for (GameObject enemy : enemies) {
+                if (tileType == enemy.getType()) {
                     positionIsEnemy = true;
                     break;
                 }
@@ -414,9 +405,10 @@ public class Utils
 
     /**
      * Checks if the given position matches the given tile type.
-     * @param board - game board
+     *
+     * @param board    - game board
      * @param position - the position to be checked
-     * @param item - tile type to be checked
+     * @param item     - tile type to be checked
      * @return the result as boolean
      */
     public static boolean positionIsItem(Types.TILETYPE[][] board, Vector2d position, Types.TILETYPE item) {
@@ -425,7 +417,8 @@ public class Utils
 
     /**
      * Checks if the given position contains fog.
-     * @param board - game board
+     *
+     * @param board    - game board
      * @param position - the position to be checked
      * @return the result as boolean
      */
@@ -435,7 +428,8 @@ public class Utils
 
     /**
      * Checks if the given position is within the limits of the given board
-     * @param board - game board
+     *
+     * @param board    - game board
      * @param position - the position to be checked
      * @return the result as boolean
      */
@@ -447,38 +441,39 @@ public class Utils
 
     /**
      * Helper method to set a winning status to all avatars in the passed array
-     * @param ags array of game objects (avatars) that we wish to set the new winning status
+     *
+     * @param ags    array of game objects (avatars) that we wish to set the new winning status
      * @param status status to set.
      */
     public static void setWinningStatus(GameObject[] ags, Types.RESULT status) {
         for (GameObject gobj : ags) {
-            ((Avatar)gobj).setWinner(status);
+            ((Avatar) gobj).setWinner(status);
         }
     }
 
     /**
      * Helper method to set a winning status to all avatars in the passed arraylist
-     * @param ags arraylist of game objects (avatars) that we wish to set the new winning status
+     *
+     * @param ags    arraylist of game objects (avatars) that we wish to set the new winning status
      * @param status status to set.
      */
     public static void setWinningStatus(ArrayList<GameObject> ags, Types.RESULT status) {
         for (GameObject gobj : ags) {
-            ((Avatar)gobj).setWinner(status);
+            ((Avatar) gobj).setWinner(status);
         }
     }
 
 
     /**
      * Helper method to set a winning status to all avatars from a given team and in the passed array
-     * @param ags array of game objects (avatars) that we wish to set the new winning status
+     *
+     * @param ags    array of game objects (avatars) that we wish to set the new winning status
      * @param status status to set.
-     * @param team avatars which status will change belong to this team
+     * @param team   avatars which status will change belong to this team
      */
-    public static void setWinningStatus(GameObject[]ags, Types.RESULT status, int team)
-    {
-        for (GameObject gobj : ags)
-        {
-            Avatar av = (Avatar)gobj;
+    public static void setWinningStatus(GameObject[] ags, Types.RESULT status, int team) {
+        for (GameObject gobj : ags) {
+            Avatar av = (Avatar) gobj;
             if (av.getTeam() == team)
                 av.setWinner(status);
         }
@@ -486,7 +481,8 @@ public class Utils
 
     /**
      * Finds all objects in an arraylist of GameObject given position.
-     * @param pos - given position to search
+     *
+     * @param pos     - given position to search
      * @param objList - list to search for objects in.
      * @return - list of objects from list at given position.
      */
@@ -502,12 +498,13 @@ public class Utils
 
     /**
      * Checks if a given avatar is stuck in a single cell.
-     * @param board - given board to check position on
+     *
+     * @param board  - given board to check position on
      * @param avatar - avatar
      * @return true if avatar is stuck, false otherwise
      */
     public static boolean isStuck(Types.TILETYPE[][] board, Avatar avatar) {
-        for (Types.DIRECTIONS d: Types.DIRECTIONS.values()) {
+        for (Types.DIRECTIONS d : Types.DIRECTIONS.values()) {
             if (isPassable(board, avatar.getPosition().add(d.toVec()), avatar)) return false;
         }
         return true;
@@ -516,14 +513,15 @@ public class Utils
     /**
      * Checks if the given position is passable by the avatar (lightweight version).
      * A passable tile must be a power-up, a passage or a bomb (if agent can kick).
-     * @param board - game board
-     * @param pos - the position to be checked
+     *
+     * @param board  - game board
+     * @param pos    - the position to be checked
      * @param avatar - avatar
      * @return the result as boolean
      */
-    public static boolean isPassable(Types.TILETYPE[][] board, Vector2d pos, Avatar avatar){
+    public static boolean isPassable(Types.TILETYPE[][] board, Vector2d pos, Avatar avatar) {
         if (pos != null && pos.x >= 0 && pos.y >= 0 && pos.x < board[0].length && pos.y < board.length &&
-                (board[pos.y][pos.x] != null)){ // Tiletype is valid and the position is on board.
+                (board[pos.y][pos.x] != null)) { // Tiletype is valid and the position is on board.
             Types.TILETYPE tiletype = board[pos.y][pos.x];
             return tiletype == Types.TILETYPE.PASSAGE ||
                     tiletype == Types.TILETYPE.BOMB ||
@@ -534,16 +532,16 @@ public class Utils
 
     /**
      * Checks if a given avatar is stuck in a single cell.
-     * @param board - given board to check position on
+     *
+     * @param board  - given board to check position on
      * @param avatar - avatar
      * @return true if avatar is stuck, false otherwise
      */
     private static ArrayList<Vector2d> passableDirections(Types.TILETYPE[][] board, Avatar avatar) {
         ArrayList<Vector2d> passableDirections = new ArrayList<>();
-        for(Types.DIRECTIONS d : Types.DIRECTIONS.values())
-        {
+        for (Types.DIRECTIONS d : Types.DIRECTIONS.values()) {
             Vector2d newPos = new Vector2d(avatar.getPosition().x + d.x(), avatar.getPosition().y + d.y());
-            if(isPassable(board, newPos, avatar))
+            if (isPassable(board, newPos, avatar))
                 passableDirections.add(newPos);
         }
         return passableDirections;
@@ -551,7 +549,8 @@ public class Utils
 
     /**
      * Checks if a given avatar is stuck in a single cell.
-     * @param board - given board to check position on
+     *
+     * @param board  - given board to check position on
      * @param avatar - avatar
      * @return true if avatar is stuck, false otherwise
      */
@@ -561,7 +560,7 @@ public class Utils
 
         // Determine which tiles may have flames next turn (based on bomb lives but also on early triggers)
         HashSet<Vector2d> upcomingFlames = new HashSet<>();
-        for (GameObject b : bombs){
+        for (GameObject b : bombs) {
             ArrayList<GameObject> flames = new ArrayList<>();
 
             if (b.getLife() == 1) {
@@ -601,17 +600,16 @@ public class Utils
         Vector2d avatarPosition = avatar.getPosition();
 
         // Is avatar in danger?
-        if (upcomingFlames.contains(avatarPosition)){
+        if (upcomingFlames.contains(avatarPosition)) {
             // Check passable movement directions
             ArrayList<Vector2d> passableDirections = passableDirections(board, avatar);
-            for (Vector2d pd : passableDirections){
-                if(!upcomingFlames.contains(pd)){
+            for (Vector2d pd : passableDirections) {
+                if (!upcomingFlames.contains(pd)) {
                     isStuck = false;
                     break;
                 }
             }
-        }
-        else{
+        } else {
             isStuck = false;
         }
 
@@ -620,9 +618,10 @@ public class Utils
 
     /**
      * Accumulates in an array of flames the position (x,y) unless there's a rigid block in there.
-     * @param x x coordinate of the position
-     * @param y y coordinate of the position
-     * @param board current board state.
+     *
+     * @param x              x coordinate of the position
+     * @param y              y coordinate of the position
+     * @param board          current board state.
      * @param upcomingFlames Array of flame positions to maybe add this new position to.
      * @return false if the flame stops at (x,y)
      */

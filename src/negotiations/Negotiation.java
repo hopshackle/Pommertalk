@@ -16,7 +16,7 @@ public class Negotiation {
         this.forwardModel = fm;
         // TODO: We could change this to taking in just a list of the currently alive agents?
         // tODO: (Which would be safer and arguably better design)
-        // TODO: But by passing in a link to the Forward MOdel you may have more flexibility
+        // TODO: But by passing in a link to the Forward Model you may have more flexibility
         // TODO: Just please don't modify it!!!
     }
 
@@ -33,10 +33,25 @@ public class Negotiation {
     public void runNegotiationProcess() {
         // do stuff
         // crucially, make sure this populates the finalAgreement List
+        finalAgreements = new ArrayList<>();
+        finalAgreements.add(new Agreement(Types.TILETYPE.AGENT0, Types.TILETYPE.AGENT1, Agreement.TYPE.SHARE_VISION));
     }
 
     public List<Agreement> getFinalAgreements() {
         return List.copyOf(finalAgreements);
+    }
+
+    private int indexFromTileType(Types.TILETYPE tileType) {
+        return tileType.getKey() - Types.TILETYPE.AGENT0.getKey();
+    }
+
+    public Set<Integer> getAgreements(int playerIndex, Agreement.TYPE type) {
+        return finalAgreements.stream()
+                .filter(a -> a.agreement == type
+                        && (indexFromTileType(a.participants.get(0)) == playerIndex
+                        || indexFromTileType(a.participants.get(1)) == playerIndex))
+                .map(a -> (indexFromTileType(a.participants.get(0)) == playerIndex) ? indexFromTileType(a.participants.get(1)) : indexFromTileType(a.participants.get(0)))
+                .collect(Collectors.toSet());
     }
 
     public boolean isPermitted(Types.ACTIONS action, Avatar agent, GameObject[] allAgents) {
@@ -63,6 +78,8 @@ public class Negotiation {
                     if (action == Types.ACTIONS.ACTION_BOMB && manhattanDistance <= Types.NO_BOMB_DISTANCE)
                         return false;
                     break;
+                case SHARE_VISION:
+                    return true;
                 default:
                     throw new AssertionError("Agreement type not yet implemented: " + a.agreement);
             }

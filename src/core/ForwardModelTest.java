@@ -3,6 +3,7 @@ package core;
 import negotiations.Agreement;
 import negotiations.Negotiation;
 import objects.Avatar;
+import objects.Bomb;
 import org.junit.jupiter.api.Test;
 import players.DoNothingPlayer;
 import players.Player;
@@ -1188,5 +1189,111 @@ public class ForwardModelTest {
         assertEquals(0, perspective3.lastNegotiation.getFinalAgreements().size());
     }
 
+
+    @Test
+    void forwardModelCopyRemovesItemsOutOfRange() {
+        assertEquals(3, Types.DEFAULT_VISION_RANGE, "Need to set Types.DEFAULT_VISION_RANGE to override default");
+
+        int[][] DEFAULT_BOARD = new int[][]{
+                new int[]{13, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 3, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 0, 4, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        };
+
+        ForwardModel model = new ForwardModel(seed, DEFAULT_BOARD, Types.GAME_MODE.FFA);
+        assertEquals(2, model.bombs.size());
+        assertEquals(3, model.flames.size());
+
+        ForwardModel perspective0 = model.copy(0);
+        assertEquals(5, perspective0.getBoard()[1][1].getKey());  // 11 in full map
+        assertEquals(5, perspective0.getBoard()[1][9].getKey());  // 12 in full map
+        assertEquals(5, perspective0.getBoard()[0][0].getKey());  // 13 in full map
+        assertEquals(10, perspective0.getBoard()[5][4].getKey());
+        assertEquals(4, perspective0.getBoard()[5][6].getKey());
+        assertEquals(5, perspective0.getBoard()[0][2].getKey());  // 4 in full map
+        assertEquals(3, perspective0.getBoard()[3][6].getKey());
+        assertEquals(5, perspective0.getBoard()[1][4].getKey());  // 3 in full map
+        assertEquals(2, perspective0.getBoard()[4][7].getKey());
+        assertEquals(5, perspective0.getBoard()[4][8].getKey());  // 2 in full map
+        assertEquals(1, perspective0.bombs.size());
+        assertEquals(1, perspective0.flames.size());
+
+        ForwardModel perspective1 = model.copy(1);
+        assertEquals(11, perspective1.getBoard()[1][1].getKey());  // 11 in full map
+        assertEquals(5, perspective1.getBoard()[1][9].getKey());  // 12 in full map
+        assertEquals(13, perspective1.getBoard()[0][0].getKey());  // 13 in full map
+        assertEquals(5, perspective1.getBoard()[5][4].getKey()); // 10 in full map
+        assertEquals(5, perspective1.getBoard()[5][6].getKey()); // 4 in full map
+        assertEquals(4, perspective1.getBoard()[0][2].getKey());  // 4 in full map
+        assertEquals(5, perspective1.getBoard()[3][6].getKey()); // 3 in full map
+        assertEquals(3, perspective1.getBoard()[1][4].getKey());  // 3 in full map
+        assertEquals(5, perspective1.getBoard()[4][7].getKey()); // 2 in full map
+        assertEquals(5, perspective1.getBoard()[4][8].getKey());  // 2 in full map
+        assertEquals(1, perspective1.bombs.size());
+        assertEquals(1, perspective1.flames.size());
+    }
+
+    @Test
+    void forwardModelCopyRemovesItemsOutOfRangeOfFoci() {
+
+        int[][] DEFAULT_BOARD = new int[][]{
+                new int[]{13, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 3, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 0, 4, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        };
+
+        assertEquals(3, Types.DEFAULT_VISION_RANGE, "Need to set Types.DEFAULT_VISION_RANGE to override default");
+        ForwardModel model = new ForwardModel(seed, DEFAULT_BOARD, Types.GAME_MODE.FFA);
+        Agreement first = new Agreement(Types.TILETYPE.AGENT0, Types.TILETYPE.AGENT1, Agreement.TYPE.SHARE_VISION);
+        Agreement second = new Agreement(Types.TILETYPE.AGENT1, Types.TILETYPE.AGENT2, Agreement.TYPE.STAY_APART);
+        Negotiation negotiation = new Negotiation(Arrays.asList(first, second));
+        model.injectNegotiation(negotiation);
+        assertEquals(2, model.bombs.size());
+        assertEquals(3, model.flames.size());
+
+        ForwardModel perspective0 = model.copy(0);
+        assertEquals(11, perspective0.getBoard()[1][1].getKey());  // 11 in full map
+        assertEquals(5, perspective0.getBoard()[1][9].getKey());  // 12 in full map
+        assertEquals(13, perspective0.getBoard()[0][0].getKey());  // 13 in full map
+        assertEquals(10, perspective0.getBoard()[5][4].getKey());
+        assertEquals(4, perspective0.getBoard()[5][6].getKey());
+        assertEquals(4, perspective0.getBoard()[0][2].getKey());  // 4 in full map
+        assertEquals(3, perspective0.getBoard()[3][6].getKey());
+        assertEquals(3, perspective0.getBoard()[1][4].getKey());  // 3 in full map
+        assertEquals(2, perspective0.getBoard()[4][7].getKey());
+        assertEquals(5, perspective0.getBoard()[4][8].getKey());  // 2 in full map
+        assertEquals(2, perspective0.bombs.size());
+        assertEquals(2, perspective0.flames.size());
+
+        ForwardModel perspective1 = model.copy(1);
+        assertEquals(11, perspective1.getBoard()[1][1].getKey());  // 11 in full map
+        assertEquals(5, perspective1.getBoard()[1][9].getKey());  // 12 in full map
+        assertEquals(13, perspective1.getBoard()[0][0].getKey());  // 13 in full map
+        assertEquals(10, perspective1.getBoard()[5][4].getKey()); // 10 in full map
+        assertEquals(4, perspective1.getBoard()[5][6].getKey()); // 4 in full map
+        assertEquals(4, perspective1.getBoard()[0][2].getKey());  // 4 in full map
+        assertEquals(3, perspective1.getBoard()[3][6].getKey()); // 3 in full map
+        assertEquals(3, perspective1.getBoard()[1][4].getKey());  // 3 in full map
+        assertEquals(2, perspective1.getBoard()[4][7].getKey()); // 2 in full map
+        assertEquals(5, perspective1.getBoard()[4][8].getKey());  // 2 in full map
+        assertEquals(2, perspective1.bombs.size());
+        assertEquals(2, perspective1.flames.size());
+    }
 
 }
