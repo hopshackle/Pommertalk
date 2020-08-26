@@ -16,7 +16,7 @@ public class Types {
     public static int DEFAULT_BOMB_BLAST = 2;       //Default bombs create flames with this range.
     public static int DEFAULT_BOMB_AMMO = 1;        //Default number of simultaneous bombs an agent can put.
     public static boolean DEFAULT_BOMB_KICK = false;//Can agents kick bomb by default?
-    public static int DEFAULT_VISION_RANGE = -1;    //-1 for full observability, >1 for PO.
+    public static int DEFAULT_VISION_RANGE = 1;    //-1 for full observability, >1 for PO.
 
     public static boolean COLLAPSE_BOARD = true;
     public static int COLLAPSE_START = 500;
@@ -37,7 +37,7 @@ public class Types {
 
     // Visualization variables (used to display game for humans to see).
     public static int FRAME_DELAY = 100;
-    public static int MAIN_SCREEN_SIZE = 550;
+    public static int MAIN_SCREEN_SIZE = 400;
     public static int PO_SCREEN_SIZE = 165;
     public static int AVATAR_ICON_SIZE = 30;
     public static int CELL_SIZE_MAIN = MAIN_SCREEN_SIZE / BOARD_SIZE; //50
