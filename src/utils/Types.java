@@ -22,6 +22,9 @@ public class Types {
     public static int COLLAPSE_START = 500;
     public static int COLLAPSE_STAGES = 4;
     public static int COLLAPSE_STEP = ((Types.MAX_GAME_TICKS - COLLAPSE_START) / COLLAPSE_STAGES);
+    public static boolean NEGOTIATION = true;
+    public static int STAY_APART_DISTANCE = 3;
+    public static int NO_BOMB_DISTANCE = 3;
 
     //Game configuration to use in the game, which determines victory conditions.
     private static IGameConfig gameConfig = new OriginalGameConfig();
@@ -200,7 +203,6 @@ public class Types {
         public int x() {return x;}
         public int y() {return y;}
     }
-
     /**
      * Defines all actions in the game.
      */

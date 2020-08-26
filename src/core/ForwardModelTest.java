@@ -1,5 +1,7 @@
 package core;
 
+import negotiations.Agreement;
+import negotiations.Negotiation;
 import objects.Avatar;
 import org.junit.jupiter.api.Test;
 import players.DoNothingPlayer;
@@ -15,9 +17,9 @@ import java.util.Queue;
 import static org.junit.jupiter.api.Assertions.*;
 import static utils.Types.VERBOSE;
 
-class ForwardModelTest {
+public class ForwardModelTest {
 
-    private static final int seed = 12345;
+    protected static final int seed = 12345;
 
     private static final Types.ACTIONS[] KICK_EXPERIMENT_ACTIONS = new Types.ACTIONS[]{
             Types.ACTIONS.ACTION_BOMB,
@@ -73,30 +75,33 @@ class ForwardModelTest {
     };
 
     private static final int[][] DEFAULT_BOARD = new int[][]{
-            new int[]{0,0,0,0,0,0,0,0,0,0,0},
-            new int[]{0,11,0,0,0,0,0,0,0,12,0},
-            new int[]{0,0,0,0,0,0,0,0,0,0,0},
-            new int[]{0,0,0,0,0,0,0,0,0,0,0},
-            new int[]{0,0,0,0,0,0,0,0,0,0,0},
-            new int[]{0,0,0,0,10,0,0,0,0,0,0},
-            new int[]{0,0,0,0,0,0,0,0,0,0,0},
-            new int[]{0,0,0,0,0,0,0,0,0,0,0},
-            new int[]{0,0,0,0,0,0,0,0,0,0,0},
-            new int[]{0,13,0,0,0,0,0,0,0,0,0},
-            new int[]{0,0,0,0,0,0,0,0,0,0,0},
+            new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+            new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            new int[]{0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0},
+            new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
 
-    private Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions, Types.GAME_MODE gameMode){
+    public static Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions, Types.GAME_MODE gameMode) {
         return testNFrames(n, intBoard, actions, gameMode, true);
     }
 
-    private Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions, Types.GAME_MODE gameMode, boolean canKick){
+    public static Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions, Types.GAME_MODE gameMode, boolean canKick) {
         return testNFrames(n, intBoard, actions, new Types.ACTIONS[0], gameMode, canKick);
     }
 
-    private Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions1, Types.ACTIONS[] actions2, Types.GAME_MODE gameMode, boolean canKick){
+    public static Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions1, Types.ACTIONS[] actions2, Types.GAME_MODE gameMode, boolean canKick) {
         ForwardModel model = new ForwardModel(seed, intBoard, gameMode);
+        return testNFrames(n, actions1, actions2, gameMode, canKick, model);
+    }
 
+    public static Game testNFrames(int n, Types.ACTIONS[] actions1, Types.ACTIONS[] actions2, Types.GAME_MODE gameMode, boolean canKick, ForwardModel model) {
         Queue<Types.ACTIONS> actionsQueue1 = new ArrayDeque<>();
         actionsQueue1.addAll(Arrays.asList(actions1));
 
@@ -116,11 +121,11 @@ class ForwardModelTest {
 
         game.setPlayers(players);
 
-        if (canKick){
-            Avatar avatar1 = (Avatar)game.getAliveAvatars(-1).get(0);
+        if (canKick) {
+            Avatar avatar1 = (Avatar) game.getAliveAvatars(-1).get(0);
             avatar1.setCanKick();
 
-            Avatar avatar2 = (Avatar)game.getAliveAvatars(-1).get(1);
+            Avatar avatar2 = (Avatar) game.getAliveAvatars(-1).get(1);
             avatar2.setCanKick();
         }
 
@@ -239,17 +244,17 @@ class ForwardModelTest {
     @Test
     void playerWall1CollisionWork() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,1,0,10,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 1, 0, 10, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(5, intBoard, LEFT_ACTIONS, Types.GAME_MODE.FFA);
@@ -264,17 +269,17 @@ class ForwardModelTest {
     @Test
     void playerWall2CollisionWork() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,2,0,10,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 2, 0, 10, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(5, intBoard, LEFT_ACTIONS, Types.GAME_MODE.FFA);
@@ -289,17 +294,17 @@ class ForwardModelTest {
     @Test
     void playerPlayerCollisionWorks() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,11,0,10,0,0,0,0,0,0}, // a wall to the right of the player
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 11, 0, 10, 0, 0, 0, 0, 0, 0}, // a wall to the right of the player
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(5, intBoard, LEFT_ACTIONS, Types.GAME_MODE.FFA);
@@ -314,17 +319,17 @@ class ForwardModelTest {
     @Test
     void playerPlayerMovingCollisionWorks() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,11,0,10,0,0,0,0,0,0}, // a wall to the right of the player
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 11, 0, 10, 0, 0, 0, 0, 0, 0}, // a wall to the right of the player
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(5, intBoard, LEFT_ACTIONS, RIGHT_ACTIONS, Types.GAME_MODE.FFA, false);
@@ -340,17 +345,17 @@ class ForwardModelTest {
     @Test
     void playerFollowWorks() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,11,10,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 11, 10, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(6, intBoard, RIGHT_ACTIONS, RIGHT_ACTIONS, Types.GAME_MODE.FFA, false);
@@ -366,17 +371,17 @@ class ForwardModelTest {
     @Test
     void playerFollowWorks2() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,11,10,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 11, 10, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(6, intBoard, LEFT_ACTIONS, LEFT_ACTIONS, Types.GAME_MODE.FFA, false);
@@ -393,17 +398,17 @@ class ForwardModelTest {
     @Test
     void playerFollowWorks3() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,11,10,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 11, 10, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Types.ACTIONS[] ACTIONS_1 = new Types.ACTIONS[]{
@@ -445,17 +450,17 @@ class ForwardModelTest {
     @Test
     void kickedBombsDoNotMove() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,6,0,0,0,0,0,0},
-                new int[]{0,0,0,0,10,0,0,0,0,0,0}, // a wall to the right of the player
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0}, // a wall to the right of the player
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Types.ACTIONS[] KICK_EXPERIMENT_ACTIONS = new Types.ACTIONS[]{
@@ -480,17 +485,17 @@ class ForwardModelTest {
     @Test
     void kickedBombIntoWallDoesNotMove() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,10,0,0,0,0,0,0}, // a wall to the right of the player
-                new int[]{0,0,0,0,2,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0}, // a wall to the right of the player
+                new int[]{0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(6, intBoard, KICK_EXPERIMENT_ACTIONS, Types.GAME_MODE.FFA);
@@ -503,17 +508,17 @@ class ForwardModelTest {
     @Test
     void kickedBombIntoWallDoesNotMove2() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,2,6,10,0,0,0,0,0,0}, // a wall to the right of the player
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 2, 6, 10, 0, 0, 0, 0, 0, 0}, // a wall to the right of the player
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Types.ACTIONS[] KICK_EXPERIMENT_ACTIONS = new Types.ACTIONS[]{
@@ -540,17 +545,17 @@ class ForwardModelTest {
     @Test
     void kickedBombStopsAtWall() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,10,0,0,0,0,0,0}, // a wall to the right of the player
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,2,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0}, // a wall to the right of the player
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 2, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(6, intBoard, KICK_EXPERIMENT_ACTIONS, Types.GAME_MODE.FFA);
@@ -564,17 +569,17 @@ class ForwardModelTest {
     @Test
     void explosionDestroysWall1() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,10,2,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 2, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(10, intBoard, EXPLOSION_EXPERIMENT_ACTIONS, Types.GAME_MODE.FFA);
@@ -589,17 +594,17 @@ class ForwardModelTest {
     @Test
     void explosionDestroysWall2() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,10,2,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 2, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(15, intBoard, EXPLOSION_EXPERIMENT_ACTIONS, Types.GAME_MODE.FFA);
@@ -612,17 +617,17 @@ class ForwardModelTest {
     @Test
     void explosionDestroysPowerUp() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,8,0,0,0,0,0,0},
-                new int[]{0,0,0,0,10,7,0,0,0,0,0},
-                new int[]{0,0,0,0,6,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 7, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(15, intBoard, EXPLOSION_EXPERIMENT_ACTIONS, Types.GAME_MODE.FFA);
@@ -640,17 +645,17 @@ class ForwardModelTest {
     @Test
     void killingEnemiesWinsGame() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,11,10,12,0,0,0,0,0},
-                new int[]{0,0,0,0,13,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 11, 10, 12, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(15, intBoard, EXPLOSION_EXPERIMENT_ACTIONS, Types.GAME_MODE.FFA);
@@ -658,7 +663,7 @@ class ForwardModelTest {
 
         assertTrue(game.isEnded());
         assertTrue(game.getGameState().isTerminal());
-        assertEquals(Types.RESULT.WIN, ((Avatar)game.getGameState().getAliveAgents().get(0)).getWinner());
+        assertEquals(Types.RESULT.WIN, ((Avatar) game.getGameState().getAliveAgents().get(0)).getWinner());
     }
 
     /**
@@ -667,17 +672,17 @@ class ForwardModelTest {
     @Test
     void explosionStoppedByStaticWall() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,1,0,0,0,0,0,0},
-                new int[]{0,0,0,0,10,1,0,0,0,0,0},
-                new int[]{0,0,0,0,1,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 1, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(15, intBoard, EXPLOSION_EXPERIMENT_ACTIONS, Types.GAME_MODE.FFA);
@@ -696,17 +701,17 @@ class ForwardModelTest {
     @Test
     void explosionStoppedByDoubleWall() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,10,0,0,0,0,0,0},
-                new int[]{0,0,0,0,7,2,2,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 7, 2, 2, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(12, intBoard, PICKUP_EXPERIMENT_ACTIONS, Types.GAME_MODE.FFA);
@@ -721,17 +726,17 @@ class ForwardModelTest {
     @Test
     void kickedBombStopsAtPlayer() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,10,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,12,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 12, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(8, intBoard, KICK_EXPERIMENT_ACTIONS, Types.GAME_MODE.FFA);
@@ -747,17 +752,17 @@ class ForwardModelTest {
     void kickedBombStopsAtBomb() {
 
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,10,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,3,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 3, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(6, intBoard, KICK_EXPERIMENT_ACTIONS, Types.GAME_MODE.FFA);
@@ -802,17 +807,17 @@ class ForwardModelTest {
     @Test
     void volleyBall() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,10,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,11,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
         Types.ACTIONS[] VOLLEY_1 = new Types.ACTIONS[]{
                 Types.ACTIONS.ACTION_BOMB,
@@ -844,17 +849,17 @@ class ForwardModelTest {
     @Test
     void dodgeBall() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,10,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,11,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
         Types.ACTIONS[] VOLLEY_1 = new Types.ACTIONS[]{
                 Types.ACTIONS.ACTION_BOMB,
@@ -889,17 +894,17 @@ class ForwardModelTest {
     @Test
     void sidewaysVolley() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,10,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,11,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
         Types.ACTIONS[] VOLLEY_1 = new Types.ACTIONS[]{
                 Types.ACTIONS.ACTION_BOMB,
@@ -929,23 +934,23 @@ class ForwardModelTest {
      * The bombs movement should then as a result completely change direction.
      * If the bomb moves diagonally instead of perpendicularly to the original velocity,
      * something is wrong.
-     *
+     * <p>
      * This test rotates the other sidewaysVolley test 90 degrees, to check that it works on both axes.
      */
     @Test
     void sidewaysVolley2() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,10,0,0,11,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 10, 0, 0, 11, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
         Types.ACTIONS[] VOLLEY_1 = new Types.ACTIONS[]{
                 Types.ACTIONS.ACTION_BOMB,
@@ -975,23 +980,23 @@ class ForwardModelTest {
      * The bombs movement should then as a result completely change direction.
      * If the bomb moves diagonally instead of perpendicularly to the original velocity,
      * something is wrong.
-     *
+     * <p>
      * This test mirrors sidwaysVolley2
      */
     @Test
     void sidewaysVolley3() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,10,0,0,11,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 10, 0, 0, 11, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
         Types.ACTIONS[] VOLLEY_1 = new Types.ACTIONS[]{
                 Types.ACTIONS.ACTION_BOMB,
@@ -1025,17 +1030,17 @@ class ForwardModelTest {
     @Test
     void sidewaysVolley4() {
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,10,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,11,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
         Types.ACTIONS[] VOLLEY_1 = new Types.ACTIONS[]{
                 Types.ACTIONS.ACTION_BOMB,
@@ -1079,17 +1084,17 @@ class ForwardModelTest {
     void extraAmmoPowerupWorks() {
 
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,10,0,0,0,0,0,0},
-                new int[]{0,0,0,0,6,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(5, intBoard, DOUBLE_BOMB_ACTIONS, Types.GAME_MODE.FFA);
@@ -1106,17 +1111,17 @@ class ForwardModelTest {
     void chainReactionsWork() {
 
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,10,0,0,0,0,0,0},
-                new int[]{0,0,0,0,6,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(11, intBoard, DOUBLE_BOMB_ACTIONS, Types.GAME_MODE.FFA);
@@ -1136,17 +1141,17 @@ class ForwardModelTest {
     void blastRangePowerupWorks() {
 
         int[][] intBoard = new int[][]{
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,11,0,0,0,0,0,0,0,12,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,10,0,0,0,0,0,0},
-                new int[]{0,0,2,0,7,0,2,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
-                new int[]{0,13,0,0,0,0,0,0,0,0,0},
-                new int[]{0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 2, 0, 7, 0, 2, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
         Game game = testNFrames(12, intBoard, PICKUP_EXPERIMENT_ACTIONS, Types.GAME_MODE.FFA);
@@ -1156,6 +1161,31 @@ class ForwardModelTest {
         assertEquals(4, game.getGameState().getBoard()[8][4].getKey());
         assertEquals(4, game.getGameState().getBoard()[6][2].getKey());
         assertEquals(4, game.getGameState().getBoard()[6][6].getKey());
+    }
+
+    @Test
+    void copyingForwardModelKeepsOnlyRelevantAgreements() {
+        ForwardModel model = new ForwardModel(seed, DEFAULT_BOARD, Types.GAME_MODE.FFA);
+        Agreement first = new Agreement(Types.TILETYPE.AGENT0, Types.TILETYPE.AGENT1, Agreement.TYPE.STAY_APART);
+        Agreement second = new Agreement(Types.TILETYPE.AGENT1, Types.TILETYPE.AGENT2, Agreement.TYPE.STAY_APART);
+        Negotiation negotiation = new Negotiation(Arrays.asList(first, second));
+        model.injectNegotiation(negotiation);
+
+        ForwardModel perspective0 = model.copy(0);
+        assertEquals(1, perspective0.lastNegotiation.getFinalAgreements().size());
+        assertEquals(first, perspective0.lastNegotiation.getFinalAgreements().get(0));
+
+        ForwardModel perspective1 = model.copy(1);
+        assertEquals(2, perspective1.lastNegotiation.getFinalAgreements().size());
+        assertTrue(perspective1.lastNegotiation.getFinalAgreements().contains(first));
+        assertTrue(perspective1.lastNegotiation.getFinalAgreements().contains(second));
+
+        ForwardModel perspective2 = model.copy(2);
+        assertEquals(1, perspective2.lastNegotiation.getFinalAgreements().size());
+        assertEquals(second, perspective2.lastNegotiation.getFinalAgreements().get(0));
+
+        ForwardModel perspective3 = model.copy(3);
+        assertEquals(0, perspective3.lastNegotiation.getFinalAgreements().size());
     }
 
 
