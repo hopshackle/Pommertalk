@@ -60,6 +60,7 @@ public class ForwardModel {
     // Negotiation Results
     protected Negotiation lastNegotiation = new Negotiation(this); // default to no negotiated agreements
 
+    public Negotiation getNegotiation() {return lastNegotiation;}
     public void injectNegotiation(Negotiation neg) {
         lastNegotiation = neg;
     } // ability to inject a set of agreements if needed (primarily for testing)

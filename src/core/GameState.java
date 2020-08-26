@@ -1,6 +1,7 @@
 package core;
 
 import com.google.gson.*;
+import negotiations.Negotiation;
 import objects.Avatar;
 import objects.GameObject;
 import utils.Types;
@@ -219,6 +220,8 @@ public class GameState {
     }
 
     public int getTeam(){ return avatar.getTeam(); }
+
+    public Negotiation getNegotiationState() {return model.getNegotiation();}
 
     public Types.TILETYPE[] getTeammates(){ return avatar.getTeammates(); }
 
