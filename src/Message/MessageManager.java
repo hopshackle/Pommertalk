@@ -1,8 +1,7 @@
 package Message;
 
 import players.optimisers.ParameterizedPlayer;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class MessageManager {
 
@@ -18,6 +17,7 @@ public class MessageManager {
         record = recordMessages;
 
     }
+
 
     private HashMap<String, Integer> CreateNewMessage(int sender, int receiver) {
 
@@ -80,4 +80,57 @@ public class MessageManager {
 
     public void SendMessage(HashMap<String, Integer> mess) { currTurnM.add(mess); }
 
+
+    public ArrayList<HashMap<String, Integer>> FirstPhaseEnd() {
+
+        ArrayList<HashMap<String, Integer>> proposals =  new ArrayList<HashMap<String, Integer>>();
+
+        for (HashMap<String, Integer> m : currTurnM) {
+            if (m.get("Response") == 1) { proposals.add(m); }
+        }
+
+        return proposals;
+    }
+
+
+    public ArrayList<HashMap<String, Integer>> SecondPhaseEnd() {
+
+        ArrayList<HashMap<String, Integer>> responses =  new ArrayList<HashMap<String, Integer>>();
+
+        for (HashMap<String, Integer> m : currTurnM) {
+            if (m.get("Response") == 2 || m.get("Responses") == 3)
+            { responses.add(m); }
+        }
+
+        round++;
+        currTurnM = new ArrayList<HashMap<String, Integer>>();
+
+        return responses;
+    }
+
+
+    public ArrayList<HashMap<String, Integer>> FindMessages(int sender, int receiver, int roundS, int response, int proposal) {
+
+        ArrayList<HashMap<String, Integer>> foundMessages = new ArrayList<HashMap<String, Integer>>();
+
+        HashMap<String, Integer> rules = new HashMap<String, Integer>();
+        rules.put("Sender", sender);
+        rules.put("Receiver", receiver);
+        rules.put("Round", roundS);
+        rules.put("Response", response);
+        rules.put("Proposal", proposal);
+
+        for (HashMap<String, Integer> m : messages) {
+            boolean match = true;
+
+            for (String i : rules.keySet()) {
+                if (rules.get(i) == 0) { continue; }
+                if (rules.get(i) != m.get(i)) { match = false; break; }
+            }
+
+            if (match) { foundMessages.add(m); }
+        }
+
+        return foundMessages;
+    }
 }
