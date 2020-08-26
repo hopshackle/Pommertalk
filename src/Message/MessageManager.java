@@ -12,13 +12,12 @@ public class MessageManager {
     private int round = 1;
 
 
-    public MessageManager(ArrayList<ParameterizedPlayer> players, boolean recordMessages) {
-
-        record = recordMessages;
-
-    }
+    public MessageManager(boolean recordMessages) { record = recordMessages; }
 
 
+    //Create a basic message
+    //All messages have a sender, a receiver and an ID
+    //Round is also saved to help with future search
     private HashMap<String, Integer> CreateNewMessage(int sender, int receiver) {
 
         HashMap<String, Integer> newMessage = new HashMap<String, Integer>();
@@ -35,6 +34,8 @@ public class MessageManager {
     }
 
 
+    //Find a proposal message using specific id
+    //Will be used primarily when finding the player to give a response to
     private HashMap<String, Integer> GetProposalFromID(int id) {
 
         HashMap<String, Integer> mess = new HashMap<String, Integer>();
@@ -50,6 +51,7 @@ public class MessageManager {
     }
 
 
+    //Using the sender, receiver and proposal content, create a proposal message
     public void SendProposal(int origin, int player, int proposition) {
 
         HashMap<String, Integer> newProposal = CreateNewMessage(origin, player);
@@ -63,6 +65,7 @@ public class MessageManager {
     }
 
 
+    //Using the id of a proposal, create a response message
     public void SendResponse(int messageID, int response) {
 
         HashMap<String, Integer> proposal = GetProposalFromID(messageID);
@@ -78,9 +81,14 @@ public class MessageManager {
     }
 
 
+    //Using an existing message, send it
+    //Will only send proposals after the first phase of negotiations
+    //Will only send responses after the second phase of negotiations
     public void SendMessage(HashMap<String, Integer> mess) { currTurnM.add(mess); }
 
 
+    //Called when the first phase of negotiations is over
+    //Return all proposal stored in this round up to this point
     public ArrayList<HashMap<String, Integer>> FirstPhaseEnd() {
 
         ArrayList<HashMap<String, Integer>> proposals =  new ArrayList<HashMap<String, Integer>>();
@@ -93,6 +101,10 @@ public class MessageManager {
     }
 
 
+    //Called when the second phase of negotiations is over
+    //Will return all responses stored this round
+    //Increments the round number by 1
+    //Resets the list of round messages
     public ArrayList<HashMap<String, Integer>> SecondPhaseEnd() {
 
         ArrayList<HashMap<String, Integer>> responses =  new ArrayList<HashMap<String, Integer>>();
@@ -109,6 +121,9 @@ public class MessageManager {
     }
 
 
+    //Debugging tool used to find messages with specific parameters
+    //Will not look for a specific ID
+    //Only available if record is set to true
     public ArrayList<HashMap<String, Integer>> FindMessages(int sender, int receiver, int roundS, int response, int proposal) {
 
         ArrayList<HashMap<String, Integer>> foundMessages = new ArrayList<HashMap<String, Integer>>();
