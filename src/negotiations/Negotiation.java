@@ -33,6 +33,12 @@ public class Negotiation {
     public void runNegotiationProcess() {
         // do stuff
         // crucially, make sure this populates the finalAgreement List
+
+        //Call method in each agent to start negotiating
+        //Wait X time, call FirstPhaseEnd
+        //Call method in each agent to strat responses
+        //Wait X time, call SencondPhaseEnd
+        //Populate final agreements, with outcome
     }
 
     public List<Agreement> getFinalAgreements() {
