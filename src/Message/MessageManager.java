@@ -124,14 +124,14 @@ public class MessageManager {
     //Debugging tool used to find messages with specific parameters
     //Will not look for a specific ID
     //Only available if record is set to true
-    public ArrayList<HashMap<String, Integer>> FindMessages(int sender, int receiver, int roundS, int response, int proposal) {
+    public ArrayList<HashMap<String, Integer>> FindMessages(int sender, int receiver, int rounds, int response, int proposal) {
 
         ArrayList<HashMap<String, Integer>> foundMessages = new ArrayList<HashMap<String, Integer>>();
 
         HashMap<String, Integer> rules = new HashMap<String, Integer>();
         rules.put("Sender", sender);
         rules.put("Receiver", receiver);
-        rules.put("Round", roundS);
+        rules.put("Round", rounds);
         rules.put("Response", response);
         rules.put("Proposal", proposal);
 
@@ -139,7 +139,7 @@ public class MessageManager {
             boolean match = true;
 
             for (String i : rules.keySet()) {
-                if (rules.get(i) == 0) { continue; }
+                if (rules.get(i) == -1) { continue; }
                 if (rules.get(i) != m.get(i)) { match = false; break; }
             }
 
@@ -148,4 +148,8 @@ public class MessageManager {
 
         return foundMessages;
     }
+
+    //TODO: GUI interface method
+    //TODO: Agreements interface method
+    //TODO: Let players interrogate for proposals and responses
 }
