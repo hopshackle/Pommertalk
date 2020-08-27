@@ -160,10 +160,10 @@ public class MessageManager {
     //TODO: Add comments to GUI interface
     public boolean[][][] messageToBool(ArrayList<HashMap<String, Integer>> mess) {
 
-        boolean[][][] messBools = {{{false, false, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
-                {{false, false, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
-                {{false, false, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
-                {{false, false, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, false}}};
+        boolean[][][] messBools = {{{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
+                {{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
+                {{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
+                {{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}}};
 
         for (HashMap<String, Integer> m : mess) {
             messBools[m.get("Sender")][m.get("Receiver")][m.get("Proposal")] = true;
