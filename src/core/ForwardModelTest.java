@@ -3,7 +3,6 @@ package core;
 import negotiations.Agreement;
 import negotiations.Negotiation;
 import objects.Avatar;
-import objects.Bomb;
 import org.junit.jupiter.api.Test;
 import players.DoNothingPlayer;
 import players.Player;
@@ -98,17 +97,17 @@ public class ForwardModelTest {
     }
 
     public static Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions1, Types.ACTIONS[] actions2, Types.GAME_MODE gameMode, boolean canKick) {
-        ForwardModel model = new ForwardModel(seed, intBoard, gameMode);
-        return testNFrames(n, actions1, actions2, gameMode, canKick, model);
+        return testNFrames(n, intBoard, actions1, actions2, gameMode, canKick, null);
     }
 
-    public static Game testNFrames(int n, Types.ACTIONS[] actions1, Types.ACTIONS[] actions2, Types.GAME_MODE gameMode, boolean canKick, ForwardModel model) {
+    public static Game testNFrames(int n, int[][] intBoard, Types.ACTIONS[] actions1, Types.ACTIONS[] actions2, Types.GAME_MODE gameMode, boolean canKick, Negotiation neg) {
         Queue<Types.ACTIONS> actionsQueue1 = new ArrayDeque<>();
         actionsQueue1.addAll(Arrays.asList(actions1));
 
         Queue<Types.ACTIONS> actionsQueue2 = new ArrayDeque<>();
         actionsQueue2.addAll(Arrays.asList(actions2));
 
+        ForwardModel model = new ForwardModel(seed, intBoard, gameMode);
         Game game = new Game(seed, model, gameMode);
 
         ArrayList<Player> players = new ArrayList<>();
@@ -121,6 +120,7 @@ public class ForwardModelTest {
         players.add(new DoNothingPlayer(playerID));
 
         game.setPlayers(players);
+        if (neg != null) model.injectNegotiation(neg); // override the one created otherwise
 
         if (canKick) {
             Avatar avatar1 = (Avatar) game.getAliveAvatars(-1).get(0);
@@ -1169,24 +1169,24 @@ public class ForwardModelTest {
         ForwardModel model = new ForwardModel(seed, DEFAULT_BOARD, Types.GAME_MODE.FFA);
         Agreement first = new Agreement(Types.TILETYPE.AGENT0, Types.TILETYPE.AGENT1, Agreement.TYPE.STAY_APART);
         Agreement second = new Agreement(Types.TILETYPE.AGENT1, Types.TILETYPE.AGENT2, Agreement.TYPE.STAY_APART);
-        Negotiation negotiation = new Negotiation(Arrays.asList(first, second));
+        Negotiation negotiation = Negotiation.createFromAgreements(Arrays.asList(first, second));
         model.injectNegotiation(negotiation);
 
         ForwardModel perspective0 = model.copy(0);
-        assertEquals(1, perspective0.lastNegotiation.getFinalAgreements().size());
-        assertEquals(first, perspective0.lastNegotiation.getFinalAgreements().get(0));
+        assertEquals(1, perspective0.negotiation.getFinalAgreements().size());
+        assertEquals(first, perspective0.negotiation.getFinalAgreements().get(0));
 
         ForwardModel perspective1 = model.copy(1);
-        assertEquals(2, perspective1.lastNegotiation.getFinalAgreements().size());
-        assertTrue(perspective1.lastNegotiation.getFinalAgreements().contains(first));
-        assertTrue(perspective1.lastNegotiation.getFinalAgreements().contains(second));
+        assertEquals(2, perspective1.negotiation.getFinalAgreements().size());
+        assertTrue(perspective1.negotiation.getFinalAgreements().contains(first));
+        assertTrue(perspective1.negotiation.getFinalAgreements().contains(second));
 
         ForwardModel perspective2 = model.copy(2);
-        assertEquals(1, perspective2.lastNegotiation.getFinalAgreements().size());
-        assertEquals(second, perspective2.lastNegotiation.getFinalAgreements().get(0));
+        assertEquals(1, perspective2.negotiation.getFinalAgreements().size());
+        assertEquals(second, perspective2.negotiation.getFinalAgreements().get(0));
 
         ForwardModel perspective3 = model.copy(3);
-        assertEquals(0, perspective3.lastNegotiation.getFinalAgreements().size());
+        assertEquals(0, perspective3.negotiation.getFinalAgreements().size());
     }
 
 
@@ -1262,7 +1262,7 @@ public class ForwardModelTest {
         ForwardModel model = new ForwardModel(seed, DEFAULT_BOARD, Types.GAME_MODE.FFA);
         Agreement first = new Agreement(Types.TILETYPE.AGENT0, Types.TILETYPE.AGENT1, Agreement.TYPE.SHARE_VISION);
         Agreement second = new Agreement(Types.TILETYPE.AGENT1, Types.TILETYPE.AGENT2, Agreement.TYPE.STAY_APART);
-        Negotiation negotiation = new Negotiation(Arrays.asList(first, second));
+        Negotiation negotiation = Negotiation.createFromAgreements(Arrays.asList(first, second));
         model.injectNegotiation(negotiation);
         assertEquals(2, model.bombs.size());
         assertEquals(3, model.flames.size());

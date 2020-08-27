@@ -1,5 +1,7 @@
 package core;
 
+import negotiations.Negotiation;
+import negotiations.Negotiator;
 import objects.Avatar;
 import objects.GameObject;
 import players.Player;
@@ -28,6 +30,11 @@ public class Game {
 
     // Mode of the game being played. This could be FFA, TEAM or TEAM_RADIO.
     private Types.GAME_MODE gameMode;
+    private Types.GAME_PHASE phase = GAME_PHASE.NORMAL;
+
+    public Types.GAME_PHASE getPhase() {return phase;}
+    private int negotiationStartTick;
+    private Negotiation negotiation;
 
     // Seed for the game state.
     private long seed;
@@ -151,6 +158,10 @@ public class Game {
         }
         if (gameLog != null)
             copy.gameLog = gameLog.copy();
+        //TODO: Add stuff for negotiations
+        copy.negotiationStartTick = negotiationStartTick;
+        copy.phase = phase;
+        copy.negotiation = negotiation.copy(copyPlayers);
         return copy;
     }
 
@@ -160,6 +171,10 @@ public class Game {
      */
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
+        if (Types.NEGOTIATION) {
+            negotiation = Negotiation.createForPlayers(players);
+            gs.model.injectNegotiation(negotiation);
+        }
     }
 
     /**
@@ -274,7 +289,34 @@ public class Game {
         // Retrieve agent actions
         Types.ACTIONS[] actions = null;
 
-        if (gs.getPhase() == GAME_PHASE.NORMAL) {
+        if (Types.NEGOTIATION) {
+            int tick = gs.getTick();
+            switch (phase) {
+                case NORMAL:
+                    if (tick >= COLLAPSE_START && (tick - COLLAPSE_START) % COLLAPSE_STEP == 1) {
+                        phase = GAME_PHASE.NEGOTIATION_ONE;
+                        negotiation.startPhaseOne(gs);
+                        negotiationStartTick = tick;
+                    }
+                    break;
+                case NEGOTIATION_ONE:
+                    if (tick >= negotiationStartTick + Types.NEGOTIATION_PHASE_ONE_LENGTH) {
+                        negotiation.startPhaseTwo(gs);
+                        phase = GAME_PHASE.NEGOTIATION_TWO;
+                        negotiationStartTick = tick;
+                    }
+                    break;
+                case NEGOTIATION_TWO:
+                    if (tick >= negotiationStartTick + NEGOTIATION_PHASE_TWO_LENGTH) {
+                        negotiation.endPhaseTwo(gs);
+                        phase = GAME_PHASE.NORMAL;
+                        negotiationStartTick = 0;
+                    }
+                    break;
+            }
+        }
+
+        if (phase == GAME_PHASE.NORMAL) {
             // skip this if in negotiation phase
             if (separateThreads) {
                 try {

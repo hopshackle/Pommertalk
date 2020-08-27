@@ -25,6 +25,7 @@ public class Types {
     public static boolean NEGOTIATION = true;
     public static int NEGOTIATION_PHASE_ONE_LENGTH = 50;
     public static int NEGOTIATION_PHASE_TWO_LENGTH = 50;
+    public static int NEGOTIATION_PROPOSAL_LIMIT = 3;
     public static int STAY_APART_DISTANCE = 3;
     public static int NO_BOMB_DISTANCE = 3;
 
