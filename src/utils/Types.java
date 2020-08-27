@@ -10,16 +10,16 @@ import java.util.HashSet;
 public class Types {
 
     // Game Configuration constants.
-    public static int MAX_GAME_TICKS = 800;         //Maximum duration of the game.
+    public static int MAX_GAME_TICKS = 1000;         //Maximum duration of the game.
     public static int BOMB_LIFE = 10;               //Ticks until a bomb explodes.
-    public static int FLAME_LIFE = 5;               //Ticks until a flame dissappears.
+    public static int FLAME_LIFE = 5;               //Ticks until a flame disappears.
     public static int DEFAULT_BOMB_BLAST = 2;       //Default bombs create flames with this range.
     public static int DEFAULT_BOMB_AMMO = 1;        //Default number of simultaneous bombs an agent can put.
     public static boolean DEFAULT_BOMB_KICK = false;//Can agents kick bomb by default?
     public static int DEFAULT_VISION_RANGE = 3;    //-1 for full observability, >1 for PO.
 
     public static boolean COLLAPSE_BOARD = true;
-    public static int COLLAPSE_START = 500;
+    public static int COLLAPSE_START = 100;
     public static int COLLAPSE_STAGES = 4;
     public static int COLLAPSE_STEP = ((Types.MAX_GAME_TICKS - COLLAPSE_START) / COLLAPSE_STAGES);
     public static boolean NEGOTIATION = true;
