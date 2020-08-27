@@ -1,5 +1,6 @@
 package Message;
 
+import negotiations.Agreement;
 import players.optimisers.ParameterizedPlayer;
 import java.util.*;
 
@@ -20,6 +21,23 @@ public class MessageManager {
 
 
     public MessageManager(boolean recordMessages) { record = recordMessages; }
+
+
+    private Agreement.TYPE propTranslator(int proposal) {
+        switch(proposal) {
+            case 0:
+                return Agreement.TYPE.ALLIANCE;
+            case 1:
+                return Agreement.TYPE.SHARE_VISION;
+            case 2:
+                return Agreement.TYPE.NO_BOMB_PLACING;
+            case 3:
+                return Agreement.TYPE.NO_BOMB_KICKING;
+            case 4:
+                return Agreement.TYPE.STAY_APART;
+        }
+        return Agreement.TYPE.ALLIANCE;
+    }
 
 
     //Create a basic message
@@ -157,46 +175,7 @@ public class MessageManager {
     }
 
 
-    //TODO: Add comments to GUI interface
-    public boolean[][][] messageToBool(ArrayList<HashMap<String, Integer>> mess) {
-
-        boolean[][][] messBools = {{{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
-                {{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
-                {{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
-                {{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}}};
-
-        for (HashMap<String, Integer> m : mess) {
-            messBools[m.get("Sender")][m.get("Receiver")][m.get("Proposal")] = true;
-        }
-
-        return messBools;
-    }
-
-
-    public boolean[][][] proposalAsBool() {
-
-        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, 1, -1);
-
-        return messageToBool(proposals);
-    }
-
-
-    public boolean[][][] posResponsesToBool() {
-
-        ArrayList<HashMap<String, Integer>> posResponses = FindMessages(-1, -1, round, 2, -1);
-
-        return messageToBool(posResponses);
-    }
-
-
-    public boolean[][][] negResponsesToBool() {
-
-        ArrayList<HashMap<String, Integer>> negResponses = FindMessages(-1, -1, round, 3, -1);
-
-        return messageToBool(negResponses);
-    }
-
-
+    //Return true if a positive response matches a given proposal
     private boolean propRespMatch(HashMap<String, Integer> prop, HashMap<String, Integer> resp) {
 
         if (prop.get("Response") != 1) { return false; }
@@ -210,6 +189,57 @@ public class MessageManager {
     }
 
 
+    //Converts a list of messages into a boolean array
+    //The array indicates an agreement between 2 players was encountered
+    //Boolean indicates: [player 1][agreement][player 2]
+    public boolean[][][] messageToBool(ArrayList<HashMap<String, Integer>> mess) {
+
+        boolean[][][] messBools = {{{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
+                {{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
+                {{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
+                {{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}}};
+
+        for (HashMap<String, Integer> m : mess) {
+            messBools[m.get("Sender")][m.get("Proposal")][m.get("Receiver")] = true;
+        }
+
+        return messBools;
+    }
+
+
+    //Retrieve all proposals and convert them into boolean array
+    //Boolean set to true if a proposal was sent
+    public boolean[][][] proposalAsBool() {
+
+        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, 1, -1);
+
+        return messageToBool(proposals);
+    }
+
+
+    //Retrieve all positive responses and convert them into a boolean array
+    //Boolean set to true if a response was positive
+    public boolean[][][] posResponsesToBool() {
+
+        ArrayList<HashMap<String, Integer>> posResponses = FindMessages(-1, -1, round, 2, -1);
+
+        return messageToBool(posResponses);
+    }
+
+
+    //Retrieve all negative responses and convert them into a boolean array
+    //Boolean set to true if a response was negative
+    //(included for completion and debug purposes)
+    public boolean[][][] negResponsesToBool() {
+
+        ArrayList<HashMap<String, Integer>> negResponses = FindMessages(-1, -1, round, 3, -1);
+
+        return messageToBool(negResponses);
+    }
+
+
+    //Retrieve all proposals with a positive response and convert them into a boolean array
+    //Boolean set to true if proposal was made and a positive response was sent back
     public boolean[][][] agreedPropToBool() {
 
         ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, 1, -1);
@@ -219,7 +249,7 @@ public class MessageManager {
 
         for (HashMap<String, Integer> p : proposals) {
             for (HashMap<String, Integer> r : posResponses) {
-                if (propRespMatch(p, r)) { agreed.add(r); break; }
+                if (propRespMatch(p, r)) { agreed.add(p); agreed.add(r); break; }
             }
         }
 
@@ -227,6 +257,39 @@ public class MessageManager {
     }
 
 
-    //TODO: Agreements interface method
-    //TODO: Let players interrogate for proposals and responses
+    //Convert all proposals which were accepted into Agreement class
+    //Used to put the rules into effect
+    //Only creates one way agreements
+    // (if an agreement between 1 and 2 is created, an agreement of the same kind between 2 and 1 will not be created)
+    public ArrayList<Agreement> getAgreements() {
+        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, 1, -1);
+        ArrayList<HashMap<String, Integer>> posResponses = FindMessages(-1, -1, round, 2, -1);
+
+        ArrayList<Agreement> agreed = new ArrayList<Agreement>();
+
+        for (HashMap<String, Integer> p : proposals) {
+            for (HashMap<String, Integer> r : posResponses) {
+                if (propRespMatch(p, r)) {
+                    Agreement currAgreement = new Agreement(p.get("Sender"), p.get("Receiver"), propTranslator(p.get("Proposal")));
+                }
+            }
+        }
+
+        return agreed;
+    }
+
+
+    //Retrieve all all agreements which include a specific player
+    public ArrayList<Agreement> getPlayerAgreements(int player) {
+
+        ArrayList<Agreement> agreed = getAgreements();
+        ArrayList<Agreement> playerAgreed = new ArrayList<Agreement>();
+
+        for (Agreement a : agreed) {
+            if (a.getParticipant1Id() == player || a.getParticipant2Id() == player)
+            { playerAgreed.add(a); }
+        }
+
+        return playerAgreed;
+    }
 }
