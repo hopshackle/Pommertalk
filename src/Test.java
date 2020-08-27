@@ -14,6 +14,8 @@ public class Test {
 
     public static void main(String[] args) {
 
+        //This is a test from me, G!
+
         // Game parameters
         long seed = System.currentTimeMillis();
         int boardSize = Types.BOARD_SIZE;

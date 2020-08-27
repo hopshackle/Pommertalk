@@ -1,6 +1,7 @@
 package players.heuristics;
 
 import core.GameState;
+import negotiations.Agreement;
 import utils.Types;
 
 public class CustomHeuristic extends StateHeuristic {
@@ -17,19 +18,19 @@ public class CustomHeuristic extends StateHeuristic {
 
         // Compute a score relative to the root's state.
         BoardStats lastBoardState = new BoardStats(gs);
+
         double rawScore = rootBoardStats.score(lastBoardState);
 
-        if(gameOver && win == Types.RESULT.LOSS)
+        if (gameOver && win == Types.RESULT.LOSS)
             rawScore = -1;
 
-        if(gameOver && win == Types.RESULT.WIN)
+        if (gameOver && win == Types.RESULT.WIN)
             rawScore = 1;
 
         return rawScore;
     }
 
-    public static class BoardStats
-    {
+    public static class BoardStats {
         int tick, nTeammates, nEnemies, blastStrength;
         boolean canKick;
         int nWoods;
@@ -39,7 +40,7 @@ public class CustomHeuristic extends StateHeuristic {
         double FACTOR_ENEMY;
         double FACTOR_TEAM;
         double FACTOR_WOODS = 0.1;
-        double FACTOR_CANKCIK = 0.15;
+        double FACTOR_CANKICK = 0.15;
         double FACTOR_BLAST = 0.15;
 
         BoardStats(GameState gs) {
@@ -47,8 +48,17 @@ public class CustomHeuristic extends StateHeuristic {
 
             // Init weights based on game mode
             if (gs.getGameMode() == Types.GAME_MODE.FFA) {
-                FACTOR_TEAM = 0;
+                FACTOR_TEAM = 0.1;
                 FACTOR_ENEMY = 0.5;
+                // TODO: Apply Alliances
+/*               this only looks at the current board state and a count of allies. Which is fine...we just add an amount for the number of allies present, so we don;t try to kill them
+                 For the 'Advanced Heuristic, can just do the same...even more computationally exhaustive to analyse the map from their perspective too
+                 We can play with the weighting.
+                 We could also add weightings for closeness to allies?
+                 Also might be worth confirming that the Advanced Heuristic is strictly worse (due to time)
+ gs.getNegotiationState()
+                        .getAgreements(gs.getPlayerId(), Agreement.TYPE.ALLIANCE).stream()
+                        .filter(a -> a.)*/
             } else {
                 FACTOR_TEAM = 0.1;
                 FACTOR_ENEMY = 0.4;
@@ -78,19 +88,19 @@ public class CustomHeuristic extends StateHeuristic {
          * Computes score for a game, in relation to the initial state at the root.
          * Minimizes number of opponents in the game and number of wood walls. Maximizes blast strength and
          * number of teammates, wants to kick.
+         *
          * @param futureState the stats of the board at the end of the rollout.
          * @return a score [0, 1]
          */
-        double score(BoardStats futureState)
-        {
+        double score(BoardStats futureState) {
             int diffTeammates = futureState.nTeammates - this.nTeammates;
-            int diffEnemies = - (futureState.nEnemies - this.nEnemies);
-            int diffWoods = - (futureState.nWoods - this.nWoods);
+            int diffEnemies = -(futureState.nEnemies - this.nEnemies);
+            int diffWoods = -(futureState.nWoods - this.nWoods);
             int diffCanKick = futureState.canKick ? 1 : 0;
             int diffBlastStrength = futureState.blastStrength - this.blastStrength;
 
             return (diffEnemies / 3.0) * FACTOR_ENEMY + diffTeammates * FACTOR_TEAM + (diffWoods / maxWoods) * FACTOR_WOODS
-                    + diffCanKick * FACTOR_CANKCIK + (diffBlastStrength / maxBlastStrength) * FACTOR_BLAST;
+                    + diffCanKick * FACTOR_CANKICK + (diffBlastStrength / maxBlastStrength) * FACTOR_BLAST;
         }
     }
 }

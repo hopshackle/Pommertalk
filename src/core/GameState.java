@@ -1,6 +1,7 @@
 package core;
 
 import com.google.gson.*;
+import negotiations.Negotiation;
 import objects.Avatar;
 import objects.GameObject;
 import utils.Types;
@@ -42,6 +43,8 @@ public class GameState {
 
     // Game mode being played
     Types.GAME_MODE gameMode;
+    private GAME_PHASE phase = GAME_PHASE.NORMAL;
+    public GAME_PHASE getPhase() {return phase;}
 
     /**
      * Constructor, first thing to call. Creates a GameState object with some information.
@@ -165,6 +168,7 @@ public class GameState {
         } else {
             copy.avatar = null;
         }
+        copy.phase = phase;
         return copy;
     }
 
@@ -188,6 +192,7 @@ public class GameState {
         {
             model.next(actions, tick);
             tick++;
+            phase = model.getPhase();
             if (tick == Types.MAX_GAME_TICKS)
                 Types.getGameConfig().processTimeout(gameMode, getAgents(), getAliveAgents());
 
@@ -219,6 +224,8 @@ public class GameState {
     }
 
     public int getTeam(){ return avatar.getTeam(); }
+
+    public Negotiation getNegotiationState() {return model.getNegotiation();}
 
     public Types.TILETYPE[] getTeammates(){ return avatar.getTeammates(); }
 

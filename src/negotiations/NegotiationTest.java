@@ -4,7 +4,6 @@ package negotiations;
 import core.*;
 import objects.Avatar;
 import org.junit.jupiter.api.Test;
-import players.*;
 import utils.*;
 
 import java.util.*;
@@ -16,12 +15,12 @@ public class NegotiationTest {
     protected static final int seed = 12345;
 
     private static final int[][] DEFAULT_BOARD = new int[][]{
+            new int[]{0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0},
+            new int[]{0, 11, 0, 0, 3, 0, 0, 0, 0, 12, 0},
             new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0},
-            new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            new int[]{0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0},
+            new int[]{0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0},
+            new int[]{0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0},
+            new int[]{0, 0, 0, 0, 10, 0, 4, 0, 0, 0, 0},
             new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -43,6 +42,11 @@ public class NegotiationTest {
             Types.ACTIONS.ACTION_LEFT,
             Types.ACTIONS.ACTION_BOMB,
             Types.ACTIONS.ACTION_DOWN
+    };
+
+    private static final Types.ACTIONS[] DO_NOTHING = new Types.ACTIONS[]{
+            Types.ACTIONS.ACTION_STOP,
+            Types.ACTIONS.ACTION_STOP
     };
 
     /**
@@ -101,5 +105,6 @@ public class NegotiationTest {
         Avatar agent0 = (Avatar) game.getAvatars(0)[0];
         assertEquals(1, agent0.getAmmo());
     }
+
 
 }
