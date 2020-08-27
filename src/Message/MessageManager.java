@@ -12,6 +12,13 @@ public class MessageManager {
     private int round = 1;
 
 
+    public enum Response {
+        PROPOSAL,
+        ACCEPT,
+        DENY
+    }
+
+
     public MessageManager(boolean recordMessages) { record = recordMessages; }
 
 
@@ -149,7 +156,77 @@ public class MessageManager {
         return foundMessages;
     }
 
-    //TODO: GUI interface method
+
+    //TODO: Add comments to GUI interface
+    public boolean[][][] messageToBool(ArrayList<HashMap<String, Integer>> mess) {
+
+        boolean[][][] messBools = {{{false, false, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
+                {{false, false, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
+                {{false, false, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, false}},
+                {{false, false, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, false}}};
+
+        for (HashMap<String, Integer> m : mess) {
+            messBools[m.get("Sender")][m.get("Receiver")][m.get("Proposal")] = true;
+        }
+
+        return messBools;
+    }
+
+
+    public boolean[][][] proposalAsBool() {
+
+        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, 1, -1);
+
+        return messageToBool(proposals);
+    }
+
+
+    public boolean[][][] posResponsesToBool() {
+
+        ArrayList<HashMap<String, Integer>> posResponses = FindMessages(-1, -1, round, 2, -1);
+
+        return messageToBool(posResponses);
+    }
+
+
+    public boolean[][][] negResponsesToBool() {
+
+        ArrayList<HashMap<String, Integer>> negResponses = FindMessages(-1, -1, round, 3, -1);
+
+        return messageToBool(negResponses);
+    }
+
+
+    private boolean propRespMatch(HashMap<String, Integer> prop, HashMap<String, Integer> resp) {
+
+        if (prop.get("Response") != 1) { return false; }
+        if (resp.get("Response") != 2) { return false; }
+        if (prop.get("Sender") != resp.get("Receiver")) { return false; }
+        if (prop.get("Receiver") != resp.get("Sender")) { return false; }
+        if (prop.get("Round") != resp.get("Round")) { return false; }
+        if (prop.get("Proposal") != prop.get("Proposal")) { return false; }
+
+        return true;
+    }
+
+
+    public boolean[][][] agreedPropToBool() {
+
+        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, 1, -1);
+        ArrayList<HashMap<String, Integer>> posResponses = FindMessages(-1, -1, round, 2, -1);
+
+        ArrayList<HashMap<String, Integer>> agreed = new ArrayList<HashMap<String, Integer>>();
+
+        for (HashMap<String, Integer> p : proposals) {
+            for (HashMap<String, Integer> r : posResponses) {
+                if (propRespMatch(p, r)) { agreed.add(r); break; }
+            }
+        }
+
+        return messageToBool(agreed);
+    }
+
+
     //TODO: Agreements interface method
     //TODO: Let players interrogate for proposals and responses
 }
