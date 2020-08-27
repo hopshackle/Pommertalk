@@ -19,6 +19,7 @@ import static utils.Utils.*;
 
 public class ForwardModel {
 
+    static Negotiation emptyNegotiation = new Negotiation(Collections.emptyList());
     // Board of the game, with all objects distributed in a 2D array of size 'this.size x this.size'
     private Types.TILETYPE[][] board;
 
@@ -46,6 +47,9 @@ public class ForwardModel {
 
     // Game mode being played
     private Types.GAME_MODE game_mode;
+    private Types.GAME_PHASE phase = GAME_PHASE.NORMAL;
+    public Types.GAME_PHASE getPhase() {return phase;}
+    private int negotiationStartTick;
 
     // Indicates if this model is the true model of the game. False if it is in a simulation of the agents.
     private boolean trueModel = false;
@@ -58,7 +62,7 @@ public class ForwardModel {
     private boolean[] isAgentStuck;
 
     // Negotiation Results
-    protected Negotiation lastNegotiation = new Negotiation(this); // default to no negotiated agreements
+    protected Negotiation lastNegotiation = emptyNegotiation; // default to no negotiated agreements
 
     public Negotiation getNegotiation() {return lastNegotiation;}
     public void injectNegotiation(Negotiation neg) {
@@ -288,6 +292,24 @@ public class ForwardModel {
             System.out.println();
         }
 
+        switch (phase) {
+            case NEGOTIATION_ONE:
+                if (gsTick >= negotiationStartTick + Types.NEGOTIATION_PHASE_ONE_LENGTH) {
+                    lastNegotiation.startPhaseTwo();
+                    phase = GAME_PHASE.NEGOTIATION_TWO;
+                    negotiationStartTick = gsTick;
+                }
+                return;
+            case NEGOTIATION_TWO:
+                if (gsTick >= negotiationStartTick + NEGOTIATION_PHASE_TWO_LENGTH) {
+                    lastNegotiation.endPhaseTwo();
+                    phase = GAME_PHASE.NORMAL;
+                }
+                return;
+            case NORMAL:
+                // continue as normal
+        }
+
         // 1. Put actions into effect
         translatePlayerActions(playerActions);
 
@@ -441,8 +463,10 @@ public class ForwardModel {
 
                 if (Types.NEGOTIATION && trueModel) {
                     // We do not currently model negotiation within RHEA/MCTS, so only do this for the true model of the game
-                    lastNegotiation = new Negotiation(this);
-                    lastNegotiation.runNegotiationProcess();
+                    if (collapse_stage == 0) lastNegotiation = new Negotiation(this);
+                    lastNegotiation.startPhaseOne();
+                    phase = GAME_PHASE.NEGOTIATION_ONE;
+                    negotiationStartTick = gsTick;
                 }
             }
         }

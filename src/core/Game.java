@@ -273,21 +273,24 @@ public class Game {
 
         // Retrieve agent actions
         Types.ACTIONS[] actions = null;
-        if (separateThreads) {
-            try {
-                actions = getAvatarActionsInSeparateThreads();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+        if (gs.getPhase() == GAME_PHASE.NORMAL) {
+            // skip this if in negotiation phase
+            if (separateThreads) {
+                try {
+                    actions = getAvatarActionsInSeparateThreads();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                actions = getAvatarActions();
             }
-        } else {
-            actions = getAvatarActions();
-        }
 
-        // Log actions
-        if (LOG_GAME) {
-            gameLog.addActions(actions);
+            // Log actions
+            if (LOG_GAME) {
+                gameLog.addActions(actions);
+            }
         }
-
         // Advance the game state
         gs.next(actions);
         updateMessages();
