@@ -12,6 +12,7 @@ import utils.Types;
 import utils.Vector2d;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static utils.Types.*;
 import static utils.Utils.*;
@@ -35,10 +36,10 @@ public class ForwardModel {
     private ArrayList<GameObject> aliveAgents;
 
     // Current flames in the board. They kill!
-    private ArrayList<GameObject> flames;
+    protected ArrayList<GameObject> flames;
 
     // Current bombs in the game. They explode!
-    private ArrayList<GameObject> bombs;
+    protected ArrayList<GameObject> bombs;
 
     // Size of the board.
     private int size;
@@ -59,6 +60,7 @@ public class ForwardModel {
     // Negotiation Results
     protected Negotiation lastNegotiation = new Negotiation(this); // default to no negotiated agreements
 
+    public Negotiation getNegotiation() {return lastNegotiation;}
     public void injectNegotiation(Negotiation neg) {
         lastNegotiation = neg;
     } // ability to inject a set of agreements if needed (primarily for testing)
@@ -440,6 +442,7 @@ public class ForwardModel {
                 if (Types.NEGOTIATION && trueModel) {
                     // We do not currently model negotiation within RHEA/MCTS, so only do this for the true model of the game
                     lastNegotiation = new Negotiation(this);
+                    lastNegotiation.runNegotiationProcess();
                 }
             }
         }
@@ -1102,14 +1105,6 @@ public class ForwardModel {
      *                  May be -1, which means all object should be included in the copy (no reducing)
      */
     private void reduce(ForwardModel copy, int playerIdx) {
-        Vector2d avatarPosition = null;
-        int range = -1;
-
-        if (playerIdx >= 0) {
-            Avatar avatar = (Avatar) agents[playerIdx];
-            avatarPosition = avatar.getPosition();
-            range = avatar.getVisionRange();
-        }
 
         // Init new power-up and board arrays
         copy.powerups = new Types.TILETYPE[size][size];
@@ -1119,12 +1114,36 @@ public class ForwardModel {
         copy.flames = new ArrayList<>();
         copy.bombs = new ArrayList<>();
 
-        // Agents position is removed and their properties reset if we don't know where they are when reducing state.
         copy.agents = deepCopy(agents);
+
+        Vector2d avatarPosition = null;
+        int range = -1;
+
+        if (playerIdx >= 0) {
+            Avatar avatar = (Avatar) agents[playerIdx];
+            avatarPosition = avatar.getPosition();
+            range = avatar.getVisionRange();
+            if (avatar.getWinner() == RESULT.LOSS) {
+                for(int x = 0; x < size; x++)
+                    for(int y = 0; y < size; y++)
+                        copy.board[y][x] = TILETYPE.FOG;
+                return;
+            }
+        }
+
+        // Agents position is removed and their properties reset if we don't know where they are when reducing state.
+
+        Set<Vector2d> agentFoci = lastNegotiation.getAgreements(playerIdx, Agreement.TYPE.SHARE_VISION).stream()
+                .filter(j -> ((Avatar) agents[j]).getWinner() == RESULT.INCOMPLETE) // check alive
+                .map(j -> agents[j].getPosition())
+                .collect(Collectors.toSet());
+        agentFoci.add(avatarPosition);
+
+        int finalRange = range;
         if (range != -1) {
             for (int i = 0; i < copy.agents.length; i++) {
                 GameObject a = copy.agents[i];
-                if (a.getPosition() != null && a.getPosition().custom_dist(avatarPosition) > range) {
+                if (a.getPosition() != null && agentFoci.stream().noneMatch(f -> a.getPosition().custom_dist(f) <= finalRange)) {
                     // This agent's position is not observed
                     a.setPositionNull();
                     a.setDesiredCoordinateNull();
@@ -1138,8 +1157,10 @@ public class ForwardModel {
 
         // Reduce power-ups and board arrays
         for (int y = 0; y < size; y++) {
+            int finalY = y;
             for (int x = 0; x < size; x++) {
-                if (range == -1 || avatarPosition != null && avatarPosition.custom_dist(x, y) <= range) {
+                int finalX = x;
+                if (range == -1 || avatarPosition != null && agentFoci.stream().anyMatch(f -> f.custom_dist(finalX, finalY) <= finalRange)) {
                     copy.board[y][x] = board[y][x];
                     if (range == -1)
                         copy.powerups[y][x] = powerups[y][x];
@@ -1151,8 +1172,8 @@ public class ForwardModel {
 
         // Reduce arraylists of flames and bombs
         // Reset flames life if playerIdx > -1, players don't know this information
-        _reduceHiddenList(flames, copy.flames, avatarPosition, range);
-        _reduceHiddenList(bombs, copy.bombs, avatarPosition, range);
+        _reduceHiddenList(flames, copy.flames, agentFoci, range);
+        _reduceHiddenList(bombs, copy.bombs, agentFoci, range);
         copy.aliveAgents = findAliveAgents(copy.agents);
 
         // Finally construct the main components of observations

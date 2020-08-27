@@ -45,22 +45,31 @@ public class Negotiation {
         return List.copyOf(finalAgreements);
     }
 
+    public Set<Integer> getAgreements(int playerIndex, Agreement.TYPE type) {
+        return finalAgreements.stream()
+                .filter(a -> a.getType() == type
+                        && (a.getParticipant1Id() == playerIndex
+                        || a.getParticipant2Id() == playerIndex))
+                .map(a -> (a.getParticipant1Id() == playerIndex) ? a.getParticipant2Id() : a.getParticipant1Id())
+                .collect(Collectors.toSet());
+    }
+
     public boolean isPermitted(Types.ACTIONS action, Avatar agent, GameObject[] allAgents) {
         // First we check for STAY_APART agreements
         // easiest thing to do is move them on board, and then check to see if the agreement is met
         // agent.
         List<Agreement> agentAgreements = finalAgreements.stream()
-                .filter(a -> a.participants.contains(agent.getType()))
+                .filter(a -> a.getParticipant1() == agent.getType() || a.getParticipant2() == agent.getType())
                 .collect(Collectors.toList());
 
         Vector2d targetSpace = agent.getDesiredCoordinate();
         for (Agreement a : agentAgreements) {
-            Types.TILETYPE other = a.participants.get(0);
+            Types.TILETYPE other = a.getParticipant1();
             if (other == agent.getType())
-                other = a.participants.get(1);
+                other = a.getParticipant2();
             GameObject otherAgent = allAgents[other.getKey() - Types.TILETYPE.AGENT0.getKey()];
             int manhattanDistance = targetSpace.manhattanDistance(otherAgent.getPosition());
-            switch (a.agreement) {
+            switch (a.getType()) {
                 case STAY_APART:
                     if (action.getDirection() != Types.DIRECTIONS.NONE && manhattanDistance <= Types.STAY_APART_DISTANCE)
                         return false;
@@ -69,8 +78,11 @@ public class Negotiation {
                     if (action == Types.ACTIONS.ACTION_BOMB && manhattanDistance <= Types.NO_BOMB_DISTANCE)
                         return false;
                     break;
+                case SHARE_VISION:
+                case ALLIANCE:
+                    return true;
                 default:
-                    throw new AssertionError("Agreement type not yet implemented: " + a.agreement);
+                    throw new AssertionError("Agreement type not yet implemented: " + a.getType());
             }
         }
 
@@ -80,8 +92,7 @@ public class Negotiation {
 
     public Negotiation reduce(int playerIdx) {
         List<Agreement> visibleAgreements = finalAgreements.stream()
-                .filter(a -> a.participants.get(0).getKey() == playerIdx + Types.TILETYPE.AGENT0.getKey() ||
-                        a.participants.get(1).getKey() == playerIdx + Types.TILETYPE.AGENT0.getKey())
+                .filter(a -> a.getParticipant1Id() == playerIdx || a.getParticipant2Id() == playerIdx)
                 .collect(Collectors.toList());
         return new Negotiation(visibleAgreements);
     }
