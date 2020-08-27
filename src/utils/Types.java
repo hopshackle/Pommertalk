@@ -40,7 +40,7 @@ public class Types {
 
     // Visualization variables (used to display game for humans to see).
     public static int FRAME_DELAY = 100;
-    public static int MAIN_SCREEN_SIZE = 400;
+    public static int MAIN_SCREEN_SIZE = 350;
     public static int PO_SCREEN_SIZE = 165;
     public static int AVATAR_ICON_SIZE = 30;
     public static int CELL_SIZE_MAIN = MAIN_SCREEN_SIZE / BOARD_SIZE; //50

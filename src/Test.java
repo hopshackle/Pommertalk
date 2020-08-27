@@ -37,9 +37,9 @@ public class Test {
         RHEAParams rheaParams = new RHEAParams();
         rheaParams.heurisic_type = Constants.CUSTOM_HEURISTIC;
 
+        players.add(new MCTSPlayer(seed, playerID++, mctsParams));
         //players.add(new MCTSPlayer(seed, playerID++, mctsParams));
-        //players.add(new MCTSPlayer(seed, playerID++, mctsParams));
-        players.add(new HumanPlayer(ki1, playerID++));
+        //players.add(new HumanPlayer(ki1, playerID++));
 //        players.add(new SimplePlayer(seed, playerID++));
         players.add(new RHEAPlayer(seed, playerID++, rheaParams));
 //        players.add(new SimplePlayer(seed, playerID++));
