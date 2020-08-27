@@ -51,7 +51,12 @@ public class CustomHeuristic extends StateHeuristic {
                 FACTOR_TEAM = 0.1;
                 FACTOR_ENEMY = 0.5;
                 // TODO: Apply Alliances
-/*                gs.getNegotiationState()
+/*               this only looks at the current board state and a count of allies. Which is fine...we just add an amount for the number of allies present, so we don;t try to kill them
+                 For the 'Advanced Heuristic, can just do the same...even more computationally exhaustive to analyse the map from their perspective too
+                 We can play with the weighting.
+                 We could also add weightings for closeness to allies?
+                 Also might be worth confirming that the Advanced Heuristic is strictly worse (due to time)
+ gs.getNegotiationState()
                         .getAgreements(gs.getPlayerId(), Agreement.TYPE.ALLIANCE).stream()
                         .filter(a -> a.)*/
             } else {
