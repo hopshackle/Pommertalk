@@ -1,6 +1,7 @@
 package utils;
 
 import core.Game;
+import core.GameState;
 import players.HumanPlayer;
 import players.KeyController;
 
@@ -18,6 +19,7 @@ public class GUI extends JFrame {
     private JLabel appTick;
     private GameView[] views;
     private Game game;
+    private GameState gs;
     private AvatarView avatarDisplayPanel;
     private KeyController ki;
     private int humanIdx;  // human player index in array of players
@@ -43,6 +45,10 @@ public class GUI extends JFrame {
     public boolean[][][] receivedAlliances = new boolean[4][5][3];
     public boolean[][][] chosenAlliances = new boolean[4][5][3];
 
+    // Time left of each negotiation phase
+    private int phaseTime1 = Types.NEGOTIATION_PHASE_ONE_LENGTH;
+    private int phaseTime2 = Types.NEGOTIATION_PHASE_TWO_LENGTH;
+
     // Debug
     private boolean[][] testAlliance = {{false, true, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, true}};
 
@@ -55,77 +61,6 @@ public class GUI extends JFrame {
     private Icon agent2;
     private Icon agent3lo;
     private Icon agent3;
-
-     //Code to rework and insert to handle alliance selection phases when game suitably paused
-    /**public void ChooseAlliancesToRequest()
-    {
-        if(gamePaused == true)
-        {
-            Component[] components = alliancePanel.getComponents();
-            for(Component component : components)
-                component.setEnabled(true);
-
-            alliancePanel.requestFocus();
-            allianceArray[0][0].requestFocusInWindow();
-            rule[0].setSelected(true);
-
-            for(int i = 0; i < allianceArray.length; i++)
-            {
-                for(int j = 0; j < allianceArray[0].length; j++)
-                {
-                    if(allianceArray[i][j].isSelected())
-                    {
-                        setAlliances[playerNo][i][j] = true;
-                    }
-                }
-            }
-        }
-    }
-    public void PickFromReceivedAlliances()
-    {
-        if(gamePaused == true)
-        {
-            for(int i = 0; i < allianceArray.length; i++)
-            {
-                for(int j = 0; j < allianceArray[0].length; j++)
-                {
-                    if(receivedAlliances[playerNo][i][j] == true)
-                    {
-                        allianceArray[i][j].setSelected(true);
-                        allianceArray[i][j].setEnabled(true);
-                    }
-                    else
-                    {
-                        allianceArray[i][j].setSelected(false);
-                        allianceArray[i][j].setEnabled(false);
-                    }
-                }
-            }
-
-            for(int i = 0; i < allianceArray.length; i++)
-            {
-                for(int j = 0; j < allianceArray[0].length; j++)
-                {
-                    if(allianceArray[i][j].isSelected())
-                    {
-                        chosenAlliances[playerNo][i][j] = true;
-                    }
-                }
-            }
-        }
-    }
-
-     // Whilst PLAYING
-     // Must disable buttons for human player controls to work
-     if(gamePaused == false)
-     {
-     Component[] components = alliancePanel.getComponents();
-     for(Component component : components)
-     component.setEnabled(false);
-     }**/
-
-
-
 
     /**
      * Constructor
@@ -278,15 +213,6 @@ public class GUI extends JFrame {
             alliancePanel = getAlliancePanel(0, chosenAlliances[0]);
         else
             alliancePanel = getAlliancePanel(playerNo, chosenAlliances[playerNo]);
-
-        // Whilst PLAYING
-        // Must disable buttons for human player controls to work
-        /**if(gamePaused == false)
-        {
-            Component[] components = alliancePanel.getComponents();
-            for(Component component : components)
-                component.setEnabled(false);
-        }**/
 
         mainPanel.add(alliancePanel, c);
 
@@ -613,41 +539,52 @@ public class GUI extends JFrame {
                 for (int j = 0; j < allianceArray[i].length; j++) {
                     final int curRow = i;
                     final int curCol = j;
-                    allianceArray[i][j].addKeyListener(enter);
                     allianceArray[i][j].addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyPressed(KeyEvent e) {
-                        switch (e.getKeyCode()) {
-                            case KeyEvent.VK_UP:
-                                if (curRow > 0)
-                                {
-                                    if(allianceArray[curRow - 1][curCol].isEnabled()) {
-                                        allianceArray[curRow - 1][curCol].requestFocus();
-                                        rules[curRow - 1].setSelected(true);
-                                        rules[curRow].setSelected(false);
+                        if(game.getGameState().getPhase() == GAME_PHASE.NEGOTIATION_ONE) {
+                            switch (e.getKeyCode()) {
+                                case KeyEvent.VK_UP:
+                                    if (curRow > 0) {
+                                        if (allianceArray[curRow - 1][curCol].isEnabled()) {
+                                            allianceArray[curRow - 1][curCol].requestFocus();
+                                            rules[curRow - 1].setSelected(true);
+                                            rules[curRow].setSelected(false);
+                                        }
                                     }
-                                }
-                                break;
-                            case KeyEvent.VK_DOWN:
-                                if (curRow < allianceArray.length - 1)
-                                {
-                                    if(allianceArray[curRow + 1][curCol].isEnabled()) {
-                                        allianceArray[curRow + 1][curCol].requestFocus();
-                                        rules[curRow + 1].setSelected(true);
-                                        rules[curRow].setSelected(false);
+                                    break;
+                                case KeyEvent.VK_DOWN:
+                                    if (curRow < allianceArray.length - 1) {
+                                        if (allianceArray[curRow + 1][curCol].isEnabled()) {
+                                            allianceArray[curRow + 1][curCol].requestFocus();
+                                            rules[curRow + 1].setSelected(true);
+                                            rules[curRow].setSelected(false);
+                                        }
                                     }
-                                }
-                                break;
-                            case KeyEvent.VK_LEFT:
-                                if (curCol > 0)
-                                    allianceArray[curRow][curCol - 1].requestFocus();
-                                break;
-                            case KeyEvent.VK_RIGHT:
-                                if (curCol < allianceArray[curRow].length - 1)
-                                    allianceArray[curRow][curCol + 1].requestFocus();
-                                break;
-                            default:
-                                break;
+                                    break;
+                                case KeyEvent.VK_LEFT:
+                                    if (curCol > 0)
+                                        allianceArray[curRow][curCol - 1].requestFocus();
+                                    break;
+                                case KeyEvent.VK_RIGHT:
+                                    if (curCol < allianceArray[curRow].length - 1)
+                                        allianceArray[curRow][curCol + 1].requestFocus();
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        else if(game.getGameState().getPhase() == GAME_PHASE.NEGOTIATION_TWO)
+                        {
+                            switch (e.getKeyCode()) {
+                                case KeyEvent.VK_UP:
+                                case KeyEvent.VK_LEFT:
+                                    allianceArray[curRow][curCol].transferFocusBackward();
+                                    break;
+                                case KeyEvent.VK_DOWN: case KeyEvent.VK_RIGHT:
+                                    allianceArray[curRow][curCol].transferFocus();
+                                    break;
+                            }
                         }
                     }
                 });
@@ -659,21 +596,11 @@ public class GUI extends JFrame {
 
     }
 
-    private KeyListener enter = new KeyAdapter() {
-        @Override
-        public void keyTyped(KeyEvent e) {
-            if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-                ((JButton) e.getComponent()).doClick();
-            }
-        }
-    };
-
-
-
     /**
      * Paints the GUI, to be called at every game tick.
      */
     public void paint() {
+
         // Update focused player.
         int focusedPlayer;
         if (humanIdx == -1) {
@@ -684,137 +611,264 @@ public class GUI extends JFrame {
             focusedPlayer = humanIdx;
         }
 
-        // playerNo added for alliances to have global variable of focussed player and see if focussed player changed
-        // Only update alliance panel is this variable has changed
-        // If ai only game display each player's chosen alliances
-        if(playerNo != focusedPlayer) {
-            playerNo = focusedPlayer;
-            if (focusedPlayer == -1)
-                alliancePanel.setVisible(false);
-            else {
-                alliancePanel.setVisible(true);
-                System.out.println(focusedPlayer);
-                allianceLabel.setText("current alliances: player " + (focusedPlayer + 1));
-                switch (focusedPlayer) {
-                     case 0:
-                         for(int i = 0; i < allianceArray.length; i++)
-                         {
-                             allianceArray[i][0].setIcon(agent1lo);
-                             allianceArray[i][0].setSelectedIcon(agent1);
-                             allianceArray[i][0].setDisabledSelectedIcon(agent1);
-                             allianceArray[i][0].setDisabledIcon(agent1lo);
-                             allianceArray[i][0].setSelected(chosenAlliances[0][i][0]);
+        // Update Game state
+        gs = game.getGameState();
 
-                             allianceArray[i][1].setIcon(agent2lo);
-                             allianceArray[i][1].setSelectedIcon(agent2);
-                             allianceArray[i][1].setDisabledSelectedIcon(agent2);
-                             allianceArray[i][1].setDisabledIcon(agent2lo);
-                             allianceArray[i][1].setSelected(chosenAlliances[0][i][1]);
+        if(gs.getPhase() == GAME_PHASE.NORMAL)
+        {
+            // Return focus to game instead of buttons so can move player
+            this.requestFocus();
 
-                             allianceArray[i][2].setIcon(agent3lo);
-                             allianceArray[i][2].setSelectedIcon(agent3);
-                             allianceArray[i][2].setDisabledSelectedIcon(agent3);
-                             allianceArray[i][2].setDisabledIcon(agent3lo);
-                             allianceArray[i][2].setSelected(chosenAlliances[0][i][2]);
-                         }
-                         break;
-                    case 1:
-                        for(int i = 0; i < allianceArray.length; i++)
-                        {
-                            allianceArray[i][0].setIcon(agent0lo);
-                            allianceArray[i][0].setSelectedIcon(agent0);
-                            allianceArray[i][0].setDisabledSelectedIcon(agent0);
-                            allianceArray[i][0].setDisabledIcon(agent0lo);
-                            allianceArray[i][0].setSelected(chosenAlliances[1][i][0]);
+            // Reset negotiation times
+            phaseTime1 = Types.NEGOTIATION_PHASE_ONE_LENGTH;
+            phaseTime2 = Types.NEGOTIATION_PHASE_ONE_LENGTH;
 
-                            allianceArray[i][1].setIcon(agent2lo);
-                            allianceArray[i][1].setSelectedIcon(agent2);
-                            allianceArray[i][1].setDisabledSelectedIcon(agent2);
-                            allianceArray[i][1].setDisabledIcon(agent2lo);
-                            allianceArray[i][1].setSelected(chosenAlliances[1][i][1]);
+            allianceLabel.setText("current alliances: player " + (focusedPlayer + 1));
 
-                            allianceArray[i][2].setIcon(agent3lo);
-                            allianceArray[i][2].setSelectedIcon(agent3);
-                            allianceArray[i][2].setDisabledSelectedIcon(agent3);
-                            allianceArray[i][2].setDisabledIcon(agent3lo);
-                            allianceArray[i][2].setSelected(chosenAlliances[1][i][2]);
-                        }
-                        break;
-                    case 2:
-                        for(int i = 0; i < allianceArray.length; i++)
-                        {
-                            allianceArray[i][0].setIcon(agent0lo);
-                            allianceArray[i][0].setSelectedIcon(agent0);
-                            allianceArray[i][0].setDisabledSelectedIcon(agent0);
-                            allianceArray[i][0].setDisabledIcon(agent0lo);
-                            allianceArray[i][0].setSelected(chosenAlliances[2][i][0]);
-
-                            allianceArray[i][1].setIcon(agent1lo);
-                            allianceArray[i][1].setSelectedIcon(agent1);
-                            allianceArray[i][1].setDisabledSelectedIcon(agent1);
-                            allianceArray[i][1].setDisabledIcon(agent1lo);
-                            allianceArray[i][1].setSelected(chosenAlliances[2][i][1]);
-
-                            allianceArray[i][2].setIcon(agent3lo);
-                            allianceArray[i][2].setSelectedIcon(agent3);
-                            allianceArray[i][2].setDisabledSelectedIcon(agent3);
-                            allianceArray[i][2].setDisabledIcon(agent3lo);
-                            allianceArray[i][2].setSelected(chosenAlliances[2][i][2]);
-                        }
-                        break;
-                    case 3:
-                        for(int i = 0; i < allianceArray.length; i++)
-                        {
-                            allianceArray[i][0].setIcon(agent0lo);
-                            allianceArray[i][0].setSelectedIcon(agent0);
-                            allianceArray[i][0].setDisabledSelectedIcon(agent0);
-                            allianceArray[i][0].setDisabledIcon(agent0lo);
-                            allianceArray[i][0].setSelected(chosenAlliances[3][i][0]);
-
-                            allianceArray[i][1].setIcon(agent1lo);
-                            allianceArray[i][1].setSelectedIcon(agent1);
-                            allianceArray[i][1].setDisabledSelectedIcon(agent1);
-                            allianceArray[i][1].setDisabledIcon(agent1lo);
-                            allianceArray[i][1].setSelected(chosenAlliances[3][i][1]);
-
-                            allianceArray[i][2].setIcon(agent2lo);
-                            allianceArray[i][2].setSelectedIcon(agent2);
-                            allianceArray[i][2].setDisabledSelectedIcon(agent2);
-                            allianceArray[i][2].setDisabledIcon(agent2lo);
-                            allianceArray[i][2].setSelected(chosenAlliances[3][i][2]);
-                        }
-                        break;
-
+            for(int i = 0; i < allianceArray.length; i++)
+            {
+                for(int j = 0; j < allianceArray[0].length; j++)
+                {
+                    allianceArray[i][j].setEnabled(false);
                 }
             }
+
+            // playerNo added for alliances to have global variable of focussed player and see if focussed player changed
+            // Only update alliance panel is this variable has changed
+            // If ai only game display each player's chosen alliances
+            if(playerNo != focusedPlayer || humanIdx > -1) {
+                playerNo = focusedPlayer;
+                if (focusedPlayer == -1)
+                    alliancePanel.setVisible(false);
+                else {
+                    alliancePanel.setVisible(true);
+
+                    allianceLabel.setText("current alliances: player " + (focusedPlayer + 1));
+                    switch (focusedPlayer) {
+                        case 0:
+                            for(int i = 0; i < allianceArray.length; i++)
+                            {
+                                allianceArray[i][0].setIcon(agent1lo);
+                                allianceArray[i][0].setSelectedIcon(agent1);
+                                allianceArray[i][0].setDisabledSelectedIcon(agent1);
+                                allianceArray[i][0].setDisabledIcon(agent1lo);
+                                allianceArray[i][0].setSelected(chosenAlliances[0][i][0]);
+
+                                allianceArray[i][1].setIcon(agent2lo);
+                                allianceArray[i][1].setSelectedIcon(agent2);
+                                allianceArray[i][1].setDisabledSelectedIcon(agent2);
+                                allianceArray[i][1].setDisabledIcon(agent2lo);
+                                allianceArray[i][1].setSelected(chosenAlliances[0][i][1]);
+
+                                allianceArray[i][2].setIcon(agent3lo);
+                                allianceArray[i][2].setSelectedIcon(agent3);
+                                allianceArray[i][2].setDisabledSelectedIcon(agent3);
+                                allianceArray[i][2].setDisabledIcon(agent3lo);
+                                allianceArray[i][2].setSelected(chosenAlliances[0][i][2]);
+                            }
+                            break;
+                        case 1:
+                            for(int i = 0; i < allianceArray.length; i++)
+                            {
+                                allianceArray[i][0].setIcon(agent0lo);
+                                allianceArray[i][0].setSelectedIcon(agent0);
+                                allianceArray[i][0].setDisabledSelectedIcon(agent0);
+                                allianceArray[i][0].setDisabledIcon(agent0lo);
+                                allianceArray[i][0].setSelected(chosenAlliances[1][i][0]);
+
+                                allianceArray[i][1].setIcon(agent2lo);
+                                allianceArray[i][1].setSelectedIcon(agent2);
+                                allianceArray[i][1].setDisabledSelectedIcon(agent2);
+                                allianceArray[i][1].setDisabledIcon(agent2lo);
+                                allianceArray[i][1].setSelected(chosenAlliances[1][i][1]);
+
+                                allianceArray[i][2].setIcon(agent3lo);
+                                allianceArray[i][2].setSelectedIcon(agent3);
+                                allianceArray[i][2].setDisabledSelectedIcon(agent3);
+                                allianceArray[i][2].setDisabledIcon(agent3lo);
+                                allianceArray[i][2].setSelected(chosenAlliances[1][i][2]);
+                            }
+                            break;
+                        case 2:
+                            for(int i = 0; i < allianceArray.length; i++)
+                            {
+                                allianceArray[i][0].setIcon(agent0lo);
+                                allianceArray[i][0].setSelectedIcon(agent0);
+                                allianceArray[i][0].setDisabledSelectedIcon(agent0);
+                                allianceArray[i][0].setDisabledIcon(agent0lo);
+                                allianceArray[i][0].setSelected(chosenAlliances[2][i][0]);
+
+                                allianceArray[i][1].setIcon(agent1lo);
+                                allianceArray[i][1].setSelectedIcon(agent1);
+                                allianceArray[i][1].setDisabledSelectedIcon(agent1);
+                                allianceArray[i][1].setDisabledIcon(agent1lo);
+                                allianceArray[i][1].setSelected(chosenAlliances[2][i][1]);
+
+                                allianceArray[i][2].setIcon(agent3lo);
+                                allianceArray[i][2].setSelectedIcon(agent3);
+                                allianceArray[i][2].setDisabledSelectedIcon(agent3);
+                                allianceArray[i][2].setDisabledIcon(agent3lo);
+                                allianceArray[i][2].setSelected(chosenAlliances[2][i][2]);
+                            }
+                            break;
+                        case 3:
+                            for(int i = 0; i < allianceArray.length; i++)
+                            {
+                                allianceArray[i][0].setIcon(agent0lo);
+                                allianceArray[i][0].setSelectedIcon(agent0);
+                                allianceArray[i][0].setDisabledSelectedIcon(agent0);
+                                allianceArray[i][0].setDisabledIcon(agent0lo);
+                                allianceArray[i][0].setSelected(chosenAlliances[3][i][0]);
+
+                                allianceArray[i][1].setIcon(agent1lo);
+                                allianceArray[i][1].setSelectedIcon(agent1);
+                                allianceArray[i][1].setDisabledSelectedIcon(agent1);
+                                allianceArray[i][1].setDisabledIcon(agent1lo);
+                                allianceArray[i][1].setSelected(chosenAlliances[3][i][1]);
+
+                                allianceArray[i][2].setIcon(agent2lo);
+                                allianceArray[i][2].setSelectedIcon(agent2);
+                                allianceArray[i][2].setDisabledSelectedIcon(agent2);
+                                allianceArray[i][2].setDisabledIcon(agent2lo);
+                                allianceArray[i][2].setSelected(chosenAlliances[3][i][2]);
+                            }
+                            break;
+
+                    }
+                }
+            }
+
+            // Update all views
+            for (int i = 0; i < views.length; i++) {
+                if (views[i] != null) {  // Side views (i > 0) may be null if human is playing and side view not displayed.
+                    int pIdx = i - 1;
+                    if (i == 0) {
+                        pIdx = focusedPlayer;
+                    }
+
+                    views[i].paint(game.getBoard(pIdx), game.getGameState().getBombLife());
+                }
+            }
+
+            // Update avatar display panel.
+            avatarDisplayPanel.paint(game.getAvatars(focusedPlayer));
+
+            // If human player died, show full observability for the rest of the match. Allows main view switching.
+            if (humanIdx > -1 && !avatarDisplayPanel.getAlive()[humanIdx]) {
+                humanIdx = -1;
+            }
+
+            // Update game tick.
+            appTick.setText("tick: " + game.getTick());
+
+            if (VERBOSE) {
+                System.out.println("[GUI] Focused player: " + focusedPlayer);
+            }
+
+
         }
+        else if(gs.getPhase() == GAME_PHASE.NEGOTIATION_ONE)
+        {
+            // Move focus to buttons for human player
+            if (humanIdx > -1)
+            {
+                // Perform on first entering phase
+                if(phaseTime1 == NEGOTIATION_PHASE_ONE_LENGTH)
+                {
+                    // Enable buttons for player to press
+                    for(int i = 0; i < allianceArray.length; i++)
+                    {
+                        for(int j = 0; j < allianceArray[j].length; j++)
+                        {
+                            rules[i].setEnabled(true);
+                            allianceArray[i][j].setEnabled(true);
+                            allianceArray[i][j].setFocusable(true);
+                        }
+                    }
 
-
-        // Update all views
-        for (int i = 0; i < views.length; i++) {
-            if (views[i] != null) {  // Side views (i > 0) may be null if human is playing and side view not displayed.
-                int pIdx = i - 1;
-                if (i == 0) {
-                    pIdx = focusedPlayer;
+                    alliancePanel.requestFocus();
+                    allianceArray[0][0].requestFocusInWindow();
+                    rules[0].setSelected(true);
                 }
 
-                views[i].paint(game.getBoard(pIdx), game.getGameState().getBombLife());
+
+
+                allianceLabel.setText("request alliances " + phaseTime1/10 + ": player " + (focusedPlayer + 1));
+
+                for(int i = 0; i < allianceArray.length; i++)
+                {
+                    for(int j = 0; j < allianceArray[0].length; j++)
+                    {
+                        if(allianceArray[i][j].isSelected())
+                        {
+                            setAlliances[playerNo][i][j] = true;
+                        }
+                    }
+                }
             }
+
+            // For ai game just display game phase
+            else if (humanIdx == -1)
+            {
+                allianceLabel.setText("requesting alliances " + phaseTime1/10 + ": player " + (focusedPlayer + 1));
+            }
+
+            //Reduce time
+            phaseTime1--;
         }
+        else if(gs.getPhase() == GAME_PHASE.NEGOTIATION_TWO)
+        {
+            if(humanIdx > -1)
+            {
+                allianceLabel.setText("pick alliances " + phaseTime2/10 + ": player " + (focusedPlayer + 1));
 
-        // Update avatar display panel.
-        avatarDisplayPanel.paint(game.getAvatars(focusedPlayer));
+                for(int k = 0; k < NUM_PLAYERS; k++)
+                {
+                    for(int i = 0; i < allianceArray.length; i++)
+                    {
+                        for(int j = 0; j < allianceArray[0].length; j++)
+                        {
+                            if(receivedAlliances[k][i][j] == true)
+                            {
+                                allianceArray[i][j].setSelected(true);
+                                allianceArray[i][j].setEnabled(true);
+                            }
+                            else
+                            {
+                                allianceArray[i][j].setSelected(false);
+                                allianceArray[i][j].setEnabled(false);
+                            }
+                        }
+                    }
+                }
+            }
+            else if(humanIdx == -1)
+            {
+                allianceLabel.setText("picking alliances " + phaseTime2/10 + ": player " + (focusedPlayer + 1));
+            }
 
-        // If human player died, show full observability for the rest of the match. Allows main view switching.
-        if (humanIdx > -1 && !avatarDisplayPanel.getAlive()[humanIdx]) {
-            humanIdx = -1;
-        }
+            for(int i = 0; i < allianceArray.length; i++)
+            {
+                for(int j = 0; j < allianceArray[0].length; j++)
+                {
+                    if(allianceArray[i][j].isSelected())
+                    {
+                        chosenAlliances[playerNo][i][j] = true;
+                        rules[i].setSelected(true);
+                    }
+                }
+            }
+            for(int i = 0; i < rules.length; i++)
+            {
+                if(!allianceArray[i][0].isSelected() && !allianceArray[i][1].isSelected() && !allianceArray[i][2].isSelected())
+                {
+                    rules[i].setSelected(false);
+                }
+            }
 
-        // Update game tick.
-        appTick.setText("tick: " + game.getTick());
+            // Reduce time
+            phaseTime2--;
 
-        if (VERBOSE) {
-            System.out.println("[GUI] Focused player: " + focusedPlayer);
         }
     }
 }
