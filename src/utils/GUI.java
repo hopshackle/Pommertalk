@@ -23,22 +23,30 @@ public class GUI extends JFrame {
     private int humanIdx;  // human player index in array of players
     private boolean displayPOHuman;  // if side views should be displayed when human is playing
 
-    private boolean gamePaused;
+    // Boolean for entering human negotation phase
+    public boolean gamePaused;
+
+    // Player to show GUI for
     private int playerNo = -1;
-    //private JPanel alliancePanel;
+
+    // Which player following. Can also change description during each negotiation phase
     private JLabel allianceLabel;
+    // Alliances Panel added below main game board
     private JPanel alliancePanel;
+    // Array of 5x3 buttons showing current alliances
     private JToggleButton[][] allianceArray = new JToggleButton[5][3];
+    // Buttons showing the 5 rules to make alliances on
     private JToggleButton[] rules = new JToggleButton[5];
 
     // Alliances at each negotiation stage as 3D array X: For each player, Y: For each rule, Z: With which other player
-    private boolean[][][] setAlliances = new boolean[4][5][3];
-    private boolean[][][] receivedAlliances = new boolean[4][5][3];
-    private boolean[][][] chosenAlliances = new boolean[4][5][3];
+    public boolean[][][] setAlliances = new boolean[4][5][3];
+    public boolean[][][] receivedAlliances = new boolean[4][5][3];
+    public boolean[][][] chosenAlliances = new boolean[4][5][3];
 
     // Debug
     private boolean[][] testAlliance = {{false, true, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, true}};
 
+    // Agent icons for buttons
     private Icon agent0lo;
     private Icon agent0;
     private Icon agent1lo;
@@ -48,8 +56,7 @@ public class GUI extends JFrame {
     private Icon agent3lo;
     private Icon agent3;
 
-
-     //Code to insert to handle alliance selection phases when game paused
+     //Code to rework and insert to handle alliance selection phases when game suitably paused
     /**public void ChooseAlliancesToRequest()
     {
         if(gamePaused == true)
@@ -106,7 +113,16 @@ public class GUI extends JFrame {
                 }
             }
         }
-    }**/
+    }
+
+     // Whilst PLAYING
+     // Must disable buttons for human player controls to work
+     if(gamePaused == false)
+     {
+     Component[] components = alliancePanel.getComponents();
+     for(Component component : components)
+     component.setEnabled(false);
+     }**/
 
 
 
@@ -257,8 +273,6 @@ public class GUI extends JFrame {
         mainPanel.add(views[0], c);
 
         c.gridy++;
-        // test alliances for debug
-        //boolean[][] testAlliance = {{false, false, true, false}, {false, true, false, false}, {false, false, false, false}, {false, false, false, false}, {false, false, false, true}};
 
         if(playerNo == -1)
             alliancePanel = getAlliancePanel(0, chosenAlliances[0]);
@@ -267,12 +281,12 @@ public class GUI extends JFrame {
 
         // Whilst PLAYING
         // Must disable buttons for human player controls to work
-        if(gamePaused == false)
+        /**if(gamePaused == false)
         {
             Component[] components = alliancePanel.getComponents();
             for(Component component : components)
                 component.setEnabled(false);
-        }
+        }**/
 
         mainPanel.add(alliancePanel, c);
 
@@ -301,7 +315,7 @@ public class GUI extends JFrame {
 
 
     /**
-     * Creates Alliance Panel
+     * Creates Alliances Panel which is added onto main panel
      */
     private JPanel getAlliancePanel(int player, boolean[][] alliances) {
 
@@ -319,7 +333,6 @@ public class GUI extends JFrame {
         alliancePanel.add(allianceLabel, c);
 
         JToggleButton rule1 = new JToggleButton("Alliance");
-        //rule1.setEnabled(false);
         rule1.setFocusable(false);
         c.gridy = 1;
         c.gridwidth = 1;
@@ -328,27 +341,23 @@ public class GUI extends JFrame {
         alliancePanel.add(rule1, c);
 
         JToggleButton rule2 = new JToggleButton("Shared vision");
-        //rule2.setEnabled(false);
         rule2.setFocusable(false);
         c.ipadx = 25;
         c.gridy = 2;
         alliancePanel.add(rule2, c);
 
         JToggleButton rule3 = new JToggleButton("No bomb placing");
-        //rule3.setEnabled(false);
         rule3.setFocusable(false);
         c.ipadx = 0;
         c.gridy = 3;
         alliancePanel.add(rule3, c);
 
         JToggleButton rule4 = new JToggleButton("No bomb kicking");
-        //rule4.setEnabled(false);
         rule4.setFocusable(false);
         c.gridy = 4;
         alliancePanel.add(rule4, c);
 
         JToggleButton rule5 = new JToggleButton("Stay apart");
-        //rule5.setEnabled(false);
         rule5.setFocusable(false);
         c.ipadx =50;
         c.gridy = 5;
@@ -617,20 +626,6 @@ public class GUI extends JFrame {
                                         rules[curRow - 1].setSelected(true);
                                         rules[curRow].setSelected(false);
                                     }
-                                    else
-                                    {
-                                        for(int k = (curRow -1); k > 0; k--)
-                                        {
-                                            for(int l = 0; l < allianceArray[k].length; l++)
-                                            {
-                                                if(allianceArray[k][l].isEnabled()) {
-                                                    allianceArray[k][l].requestFocus();
-                                                    rules[k].setSelected(true);
-                                                    rules[curRow].setSelected(false);
-                                                }
-                                            }
-                                        }
-                                    }
                                 }
                                 break;
                             case KeyEvent.VK_DOWN:
@@ -641,22 +636,7 @@ public class GUI extends JFrame {
                                         rules[curRow + 1].setSelected(true);
                                         rules[curRow].setSelected(false);
                                     }
-                                    else
-                                    {
-                                        for(int k = (curRow + 1); k < allianceArray.length; k++)
-                                        {
-                                            for(int l = 0; l < allianceArray[k].length; l++)
-                                            {
-                                                if(allianceArray[k][l].isEnabled()) {
-                                                    allianceArray[k][l].requestFocus();
-                                                    rules[k].setSelected(true);
-                                                    rules[curRow].setSelected(false);
-                                                }
-                                            }
-                                        }
-                                    }
                                 }
-
                                 break;
                             case KeyEvent.VK_LEFT:
                                 if (curCol > 0)
@@ -704,8 +684,9 @@ public class GUI extends JFrame {
             focusedPlayer = humanIdx;
         }
 
-        // Added for alliances to have global variable of focussed player and see if focussed player changed
-        // Only update when changed
+        // playerNo added for alliances to have global variable of focussed player and see if focussed player changed
+        // Only update alliance panel is this variable has changed
+        // If ai only game display each player's chosen alliances
         if(playerNo != focusedPlayer) {
             playerNo = focusedPlayer;
             if (focusedPlayer == -1)
