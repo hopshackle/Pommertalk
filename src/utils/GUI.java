@@ -1,5 +1,6 @@
 package utils;
 
+import Message.MessageManager;
 import core.Game;
 import core.GameState;
 import players.HumanPlayer;
@@ -630,6 +631,7 @@ public class GUI extends JFrame {
 
             allianceLabel.setText("current alliances: player " + (focusedPlayer + 1));
 
+            // Highlight allowances for current round
             if(focusedPlayer > -1)
             {
                 for(int i = 0; i < allianceArray.length; i++)
@@ -640,6 +642,15 @@ public class GUI extends JFrame {
                         allianceArray[i][j].setEnabled(false);
                     }
                 }
+            }
+            for(int i = 0; i < rules.length; i++)
+            {
+                if(!allianceArray[i][0].isSelected() && !allianceArray[i][1].isSelected() && !allianceArray[i][2].isSelected())
+                {
+                    rules[i].setSelected(false);
+                }
+                else
+                    rules[i].setSelected(true);
             }
 
 
@@ -839,6 +850,10 @@ public class GUI extends JFrame {
                             setAlliances[playerNo][i][j] = false;
                     }
                 }
+                // Send proposed alliances to message system
+                MessageManager ms = new MessageManager(true);
+                ms.boolPropToMessage(setAlliances);
+                receivedAlliances = ms.receivedPropToBool();
             }
 
         }
@@ -899,6 +914,11 @@ public class GUI extends JFrame {
             {
                 this.requestFocus();
 
+                // Agree next round alliances and send to message system
+                MessageManager ms = new MessageManager(true);
+                ms.boolRespToMessage(chosenAlliances);
+                chosenAlliances = ms.agreedPropToBool();
+
                 if(humanIdx > -1)
                 {
                     // Finalise chosen alliances
@@ -914,6 +934,7 @@ public class GUI extends JFrame {
                         }
                     }
                 }
+
             }
 
         }
