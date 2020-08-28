@@ -40,6 +40,8 @@ public class GUI extends JFrame {
     // Buttons showing the 5 rules to make alliances on
     private JToggleButton[] rules = new JToggleButton[5];
 
+    private JPanel mainPanel;
+
     // Alliances at each negotiation stage as 3D array X: For each player, Y: For each rule, Z: With which other player
     public boolean[][][] setAlliances = new boolean[4][5][3];
     public boolean[][][] receivedAlliances = new boolean[4][5][3];
@@ -86,7 +88,7 @@ public class GUI extends JFrame {
         setLayout(gbl);
 
         // Main panel definition
-        JPanel mainPanel = getMainPanel();
+        mainPanel = getMainPanel();
 
         // Add everything to side panel if we need it to be displayed
         JPanel poPanel = getPoPanel();
@@ -616,6 +618,9 @@ public class GUI extends JFrame {
 
         if(game.getPhase() == GAME_PHASE.NORMAL)
         {
+            mainPanel.setBackground(new Color(238,238,238));
+            alliancePanel.setBackground(new Color(238,238,238));
+
             // Return focus to game instead of buttons so can move player
             this.requestFocus();
 
@@ -769,6 +774,9 @@ public class GUI extends JFrame {
         }
         else if(game.getPhase() == GAME_PHASE.NEGOTIATION_ONE)
         {
+            mainPanel.setBackground(new Color(255,250,155));
+            alliancePanel.setBackground(new Color(255,250,155));
+
             // Move focus to buttons for human player
             if (humanIdx > -1)
             {
@@ -793,8 +801,27 @@ public class GUI extends JFrame {
 
 
 
-                allianceLabel.setText("request alliances " + phaseTime1/10 + ": player " + (focusedPlayer + 1));
+                allianceLabel.setText("request alliances player " + (focusedPlayer + 1));
+                appTick.setText("MAKE REQUESTS: " + phaseTime1/10);
 
+            }
+
+            // For ai game just display game phase
+            else if (humanIdx == -1)
+            {
+                allianceLabel.setText("requesting alliances: player " + (focusedPlayer + 1));
+                appTick.setText("MAKING REQUESTS: " + phaseTime1/10);
+            }
+
+            //Reduce time
+            phaseTime1--;
+
+            // return focus to game and send alliances just before timer ends
+            if(phaseTime1 == 2 && playerNo > -1)
+            {
+                this.requestFocus();
+
+                // Finalise requested alliances
                 for(int i = 0; i < allianceArray.length; i++)
                 {
                     for(int j = 0; j < allianceArray[0].length; j++)
@@ -803,40 +830,43 @@ public class GUI extends JFrame {
                         {
                             setAlliances[playerNo][i][j] = true;
                         }
+                        else
+                            setAlliances[playerNo][i][j] = false;
                     }
                 }
             }
 
-            // For ai game just display game phase
-            else if (humanIdx == -1)
-            {
-                allianceLabel.setText("requesting alliances " + phaseTime1/10 + ": player " + (focusedPlayer + 1));
-            }
-
-            //Reduce time
-            phaseTime1--;
         }
         else if(game.getPhase() == GAME_PHASE.NEGOTIATION_TWO)
         {
+            mainPanel.setBackground(new Color(145,210,160));
+            alliancePanel.setBackground(new Color(145,210,160));
+
             if(humanIdx > -1)
             {
-                allianceLabel.setText("pick alliances " + phaseTime2/10 + ": player " + (focusedPlayer + 1));
+                allianceLabel.setText("pick alliances: player " + (focusedPlayer + 1));
+                appTick.setText("SELECT ALLIANCES: " + phaseTime2/10);
 
-                for(int k = 0; k < NUM_PLAYERS; k++)
-                {
-                    for(int i = 0; i < allianceArray.length; i++)
+                // Perform on first entering phase
+                if(phaseTime2 == NEGOTIATION_PHASE_TWO_LENGTH) {
+
+                    for(int k = 0; k < NUM_PLAYERS; k++)
                     {
-                        for(int j = 0; j < allianceArray[0].length; j++)
+                        for(int i = allianceArray.length -1; i >= 0 ; i--)
                         {
-                            if(receivedAlliances[k][i][j] == true)
+                            for(int j = allianceArray[0].length -1; j >= 0; j--)
                             {
-                                allianceArray[i][j].setSelected(true);
-                                allianceArray[i][j].setEnabled(true);
-                            }
-                            else
-                            {
-                                allianceArray[i][j].setSelected(false);
-                                allianceArray[i][j].setEnabled(false);
+                                if(receivedAlliances[k][i][j] == true)
+                                {
+                                    allianceArray[i][j].setSelected(true);
+                                    allianceArray[i][j].setEnabled(true);
+                                    allianceArray[i][j].requestFocusInWindow();
+                                }
+                                else
+                                {
+                                    allianceArray[i][j].setSelected(false);
+                                    allianceArray[i][j].setEnabled(false);
+                                }
                             }
                         }
                     }
@@ -844,20 +874,10 @@ public class GUI extends JFrame {
             }
             else if(humanIdx == -1)
             {
-                allianceLabel.setText("picking alliances " + phaseTime2/10 + ": player " + (focusedPlayer + 1));
+                allianceLabel.setText("picking alliances: player " + (focusedPlayer + 1));
+                appTick.setText("SELECTING ALLIANCES: " + phaseTime2/10);
             }
 
-            for(int i = 0; i < allianceArray.length; i++)
-            {
-                for(int j = 0; j < allianceArray[0].length; j++)
-                {
-                    if(allianceArray[i][j].isSelected())
-                    {
-                        chosenAlliances[playerNo][i][j] = true;
-                        rules[i].setSelected(true);
-                    }
-                }
-            }
             for(int i = 0; i < rules.length; i++)
             {
                 if(!allianceArray[i][0].isSelected() && !allianceArray[i][1].isSelected() && !allianceArray[i][2].isSelected())
@@ -868,6 +888,25 @@ public class GUI extends JFrame {
 
             // Reduce time
             phaseTime2--;
+
+            // return focus to game and send alliances just before timer ends
+            if(phaseTime2 == 2)
+            {
+                this.requestFocus();
+
+                // Finalise chosen alliances
+                for(int i = 0; i < allianceArray.length; i++)
+                {
+                    for(int j = 0; j < allianceArray[0].length; j++)
+                    {
+                        if(allianceArray[i][j].isSelected())
+                        {
+                            chosenAlliances[playerNo][i][j] = true;
+                            rules[i].setSelected(true);
+                        }
+                    }
+                }
+            }
 
         }
     }
