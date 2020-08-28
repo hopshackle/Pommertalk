@@ -117,6 +117,20 @@ public class MessageManager {
     }
 
 
+    //Using the origin, receiver, proposal and response value, create a response message
+    public void SendResponse(int origin, int player, int proposal, int response) {
+
+        HashMap<String, Integer> mess = CreateNewMessage(origin, player);
+        mess.put("Response", response);
+        mess.put("Proposal", proposal);
+
+        currTurnM.add(mess);
+
+        if (record) { messages.add(mess); }
+
+    }
+
+
     //Using an existing message, send it
     //Will only send proposals after the first phase of negotiations
     //Will only send responses after the second phase of negotiations
@@ -190,7 +204,13 @@ public class MessageManager {
                 {{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}}};
 
         for (HashMap<String, Integer> m : mess) {
-            messBools[m.get("Sender")][m.get("Proposal")][m.get("Receiver")] = true;
+            if (m.get("Reciever") >= m.get("Sender")) {
+                messBools[m.get("Sender")][m.get("Proposal")][m.get("Receiver") -1] = true;
+            }
+            else {
+                messBools[m.get("Sender")][m.get("Proposal")][m.get("Receiver")] = true;
+            }
+
         }
 
         return messBools;
@@ -263,6 +283,56 @@ public class MessageManager {
         }
 
         return messageToBool(agreed);
+    }
+
+
+    //Translates a boolean array into proposal messages
+    public void boolPropToMessage(boolean[][][] props) {
+
+        for (int player = 0; player < props.length; player++) {
+            for (int proposal = 0; proposal < props[player].length; proposal++) {
+                for (int receiver = 0; receiver < props[player][proposal].length; receiver++) {
+                    if (props[player][proposal][receiver]){
+                        if (receiver >= player) { SendProposal(player, receiver -1, proposal); }
+                        else { SendProposal(player, receiver, proposal); }
+                    }
+                }
+            }
+        }
+    }
+
+
+    //Translates a boolean array into response messages
+    //Values set to true are translated into positive responses
+    public void boolRespToMessage(boolean[][][] resps) {
+
+        for (int player = 0; player < resps.length; player++) {
+            for (int proposal = 0; proposal < resps[player].length; proposal++) {
+                for (int receiver = 0; receiver < resps[player][proposal].length; receiver++) {
+                    if (resps[player][proposal][receiver]){
+                        if (receiver >= player) { SendResponse(player, receiver -1, proposal, 2); }
+                        else { SendResponse(player, receiver, proposal, 2); }
+                    }
+                }
+            }
+        }
+    }
+
+
+    //Translates a boolean array into response messages
+    //Values set to true are translated into negative responses
+    public void boolNegRespToMessage(boolean[][][] resps) {
+
+        for (int player = 0; player < resps.length; player++) {
+            for (int proposal = 0; proposal < resps[player].length; proposal++) {
+                for (int receiver = 0; receiver < resps[player][proposal].length; receiver++) {
+                    if (resps[player][proposal][receiver]){
+                        if (receiver >= player) { SendResponse(player, receiver -1, proposal, 3); }
+                        else { SendResponse(player, receiver, proposal, 3); }
+                    }
+                }
+            }
+        }
     }
 
 
