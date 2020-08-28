@@ -2,6 +2,8 @@ package Message;
 
 import negotiations.Agreement;
 import players.optimisers.ParameterizedPlayer;
+
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class MessageManager {
@@ -16,7 +18,16 @@ public class MessageManager {
     public enum Response {
         PROPOSAL,
         ACCEPT,
-        DENY
+        DENY;
+
+        /*
+        Is this correct to translate to int?
+        public int asInt(Response r) {
+            if (r == Response.DENY) { return 2; }
+            else if (r == Response.ACCEPT) { return 1; }
+            else { return 0; }
+        }
+        */
     }
 
 
@@ -112,37 +123,16 @@ public class MessageManager {
     public void SendMessage(HashMap<String, Integer> mess) { currTurnM.add(mess); }
 
 
-    //Called when the first phase of negotiations is over
-    //Return all proposal stored in this round up to this point
-    public ArrayList<HashMap<String, Integer>> FirstPhaseEnd() {
+    //Translates messages into agreement objects
+    public ArrayList<Agreement> messToAgreement(ArrayList<HashMap<String, Integer>> mess) {
 
-        ArrayList<HashMap<String, Integer>> proposals =  new ArrayList<HashMap<String, Integer>>();
+        ArrayList<Agreement> agrees = new ArrayList<Agreement>();
 
-        for (HashMap<String, Integer> m : currTurnM) {
-            if (m.get("Response") == 1) { proposals.add(m); }
+        for (HashMap<String, Integer> m : mess) {
+            agrees.add(new Agreement( m.get("Sender"), m.get("Receiver"), propTranslator(m.get("Proposal")) ));
         }
 
-        return proposals;
-    }
-
-
-    //Called when the second phase of negotiations is over
-    //Will return all responses stored this round
-    //Increments the round number by 1
-    //Resets the list of round messages
-    public ArrayList<HashMap<String, Integer>> SecondPhaseEnd() {
-
-        ArrayList<HashMap<String, Integer>> responses =  new ArrayList<HashMap<String, Integer>>();
-
-        for (HashMap<String, Integer> m : currTurnM) {
-            if (m.get("Response") == 2 || m.get("Responses") == 3)
-            { responses.add(m); }
-        }
-
-        round++;
-        currTurnM = new ArrayList<HashMap<String, Integer>>();
-
-        return responses;
+        return agrees;
     }
 
 
@@ -238,6 +228,25 @@ public class MessageManager {
     }
 
 
+    //Method which translates proposals to boolean array,
+    // to be displayed to users during the second phase of negotiations
+    public boolean[][][] receivedPropToBool() {
+
+        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, 1, -1);
+        ArrayList<HashMap<String, Integer>> received = new ArrayList<HashMap<String, Integer>>();
+
+        for (HashMap<String, Integer> m : proposals) {
+            HashMap<String, Integer> newMess = new HashMap<String, Integer>();
+            newMess.put("Receiver", m.get("Sender"));
+            newMess.put("Sender", m.get("Receiver"));
+            newMess.put("Proposal", m.get("Proposal"));
+            received.add(newMess);
+        }
+
+        return messageToBool(received);
+    }
+
+
     //Retrieve all proposals with a positive response and convert them into a boolean array
     //Boolean set to true if proposal was made and a positive response was sent back
     public boolean[][][] agreedPropToBool() {
@@ -291,5 +300,42 @@ public class MessageManager {
         }
 
         return playerAgreed;
+    }
+
+
+    //Retrieves all proposals made to a player this round
+    //Returns as agreement objects
+    public ArrayList<Agreement> getPlayerProposalAgreements(int player) {
+        ArrayList<HashMap<String, Integer>> proposed = FindMessages(-1, player, round, 1, -1);
+        return messToAgreement(proposed);
+    }
+
+
+    //Called when the first phase of negotiations is over
+    //Return all proposal stored in this round up to this point
+    public ArrayList<Agreement> FirstPhaseEnd() {
+
+        ArrayList<HashMap<String, Integer>> proposals =  new ArrayList<HashMap<String, Integer>>();
+
+        for (HashMap<String, Integer> m : currTurnM) {
+            if (m.get("Response") == 1) { proposals.add(m); }
+        }
+
+        return messToAgreement(proposals);
+    }
+
+
+    //Called when the second phase of negotiations is over
+    //Will return all agreed proposals this round
+    //Increments the round number by 1
+    //Resets the list of round messages
+    public ArrayList<Agreement> SecondPhaseEnd() {
+
+        ArrayList<Agreement> agrees =  getAgreements();
+
+        round++;
+        currTurnM = new ArrayList<HashMap<String, Integer>>();
+
+        return agrees;
     }
 }
