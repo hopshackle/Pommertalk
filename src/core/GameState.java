@@ -1,16 +1,10 @@
 package core;
 
 import com.google.gson.*;
-import negotiations.Negotiation;
-import objects.Avatar;
-import objects.GameObject;
-import utils.Types;
-import utils.Vector2d;
+import objects.*;
+import utils.*;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static utils.Types.*;
 
@@ -43,15 +37,14 @@ public class GameState {
 
     // Game mode being played
     Types.GAME_MODE gameMode;
-    private GAME_PHASE phase = GAME_PHASE.NORMAL;
-    public GAME_PHASE getPhase() {return phase;}
 
     /**
      * Constructor, first thing to call. Creates a GameState object with some information.
-     * @param seed - random seed to be used in generating the board.
-     * @param size - size of the board.
+     *
+     * @param seed     - random seed to be used in generating the board.
+     * @param size     - size of the board.
      * @param gameMode - game mode being played.
-     * @param newFM - indicates if a new ForwardModel should be created at this point or not
+     * @param newFM    - indicates if a new ForwardModel should be created at this point or not
      */
     protected GameState(long seed, int size, Types.GAME_MODE gameMode, boolean newFM) {
         this.seed = seed;
@@ -61,23 +54,24 @@ public class GameState {
         if (newFM) {
             model = new ForwardModel(size, gameMode);
         }
-        if (gameMode.equals(Types.GAME_MODE.TEAM_RADIO)){
+        if (gameMode.equals(Types.GAME_MODE.TEAM_RADIO)) {
             this.message = new int[NUM_PLAYERS][MESSAGE_LENGTH];
         }
     }
 
     /**
      * Optional game state constructor.
-     * @param seed - random seed for board generation
-     * @param size - ize of the board
+     *
+     * @param seed     - random seed for board generation
+     * @param size     - ize of the board
      * @param gameMode - game mode being played
      */
     public GameState(long seed, int size, Types.GAME_MODE gameMode) {
         this.seed = seed;
         this.size = size;
         this.gameMode = gameMode;
-        model = new ForwardModel(seed,size,gameMode);
-        if (gameMode.equals(Types.GAME_MODE.TEAM_RADIO)){
+        model = new ForwardModel(seed, size, gameMode);
+        if (gameMode.equals(Types.GAME_MODE.TEAM_RADIO)) {
             this.message = new int[NUM_PLAYERS][MESSAGE_LENGTH];
         }
     }
@@ -85,14 +79,15 @@ public class GameState {
     /**
      * Constructor which creates a new GameState object.
      * Provides a forward model directly.
-     * @param seed - random seed to be used in generating the board.
-     * @param model - a ForwardModel for this GameState
+     *
+     * @param seed     - random seed to be used in generating the board.
+     * @param model    - a ForwardModel for this GameState
      * @param gameMode - game mode being played.
      */
     protected GameState(long seed, ForwardModel model, Types.GAME_MODE gameMode) {
         this(seed, model.getBoard().length, gameMode, false);
         this.model = model;
-        if (gameMode.equals(Types.GAME_MODE.TEAM_RADIO)){
+        if (gameMode.equals(Types.GAME_MODE.TEAM_RADIO)) {
             this.message = new int[NUM_PLAYERS][MESSAGE_LENGTH];
         }
     }
@@ -110,6 +105,7 @@ public class GameState {
 
     /**
      * Gets the agents of the game
+     *
      * @return the agents of the game
      */
     GameObject[] getAgents() {
@@ -118,6 +114,7 @@ public class GameState {
 
     /**
      * Gets the alive agents of the game
+     *
      * @return the alive agents of the game
      */
     ArrayList<GameObject> getAliveAgents() {
@@ -127,8 +124,7 @@ public class GameState {
     /**
      * For debug purposes only: shows the current state of winners for all players.
      */
-    private void computeResults()
-    {
+    private void computeResults() {
         Types.RESULT[] results = new Types.RESULT[Types.NUM_PLAYERS];
         GameObject[] agents = getAgents();
 
@@ -145,6 +141,7 @@ public class GameState {
      * only information available to the given player. If -1, state contains all information.
      * When making a copy of a copy of an already assigned state (which receives a -1 playerIdx), the first copy's
      * player Idx is retained, while the model is not further reduced.
+     *
      * @return a copy of this state
      */
     GameState copy(int playerIdx) {
@@ -168,7 +165,6 @@ public class GameState {
         } else {
             copy.avatar = null;
         }
-        copy.phase = phase;
         return copy;
     }
 
@@ -183,16 +179,18 @@ public class GameState {
 
     /**
      * Advances the game state applying all actions received and increments the tick counter.
+     *
      * @param actions actions to be executed in the current game state.
      * @return true if the game could be advanced. False if it couldn't because ticks reached the game ticks limit.
      */
     public boolean next(Types.ACTIONS[] actions) {
 
-        if (tick < Types.MAX_GAME_TICKS)
-        {
-            model.next(actions, tick);
+        if (tick < Types.MAX_GAME_TICKS) {
+
+            if (actions != null)
+                model.next(actions, tick);
             tick++;
-            phase = model.getPhase();
+
             if (tick == Types.MAX_GAME_TICKS)
                 Types.getGameConfig().processTimeout(gameMode, getAgents(), getAliveAgents());
 
@@ -201,6 +199,7 @@ public class GameState {
 
         return false;
     }
+
     /**
      * @return a copy of the current game state.
      */
@@ -208,7 +207,9 @@ public class GameState {
         return copy(-1);  // No reduction happening if no index specified
     }
 
-    /** GETTERS AND SETTERES **/
+    /**
+     * GETTERS AND SETTERES
+     **/
 
 
     public Types.TILETYPE[][] getBoard() {
@@ -223,24 +224,28 @@ public class GameState {
         return model.getBombLife();
     }
 
-    public int getTeam(){ return avatar.getTeam(); }
+    public int getTeam() {
+        return avatar.getTeam();
+    }
 
-    public Negotiation getNegotiationState() {return model.getNegotiation();}
+    public Types.TILETYPE[] getTeammates() {
+        return avatar.getTeammates();
+    }
 
-    public Types.TILETYPE[] getTeammates(){ return avatar.getTeammates(); }
-
-    public Types.TILETYPE[] getEnemies(){ return avatar.getEnemies(); }
+    public Types.TILETYPE[] getEnemies() {
+        return avatar.getEnemies();
+    }
 
     public int nActions() {
         return nActions;
     }
 
     public Types.RESULT winner() {
-        return avatar != null? avatar.getWinner() : Types.RESULT.INCOMPLETE;
+        return avatar != null ? avatar.getWinner() : Types.RESULT.INCOMPLETE;
     }
 
     public int getBlastStrength() {
-        return avatar != null? avatar.getBlastStrength() : -1;
+        return avatar != null ? avatar.getBlastStrength() : -1;
     }
 
     public int getPlayerId() {
@@ -248,11 +253,11 @@ public class GameState {
     }
 
     public int getAmmo() {
-        return avatar != null? avatar.getAmmo() : -1;
+        return avatar != null ? avatar.getAmmo() : -1;
     }
 
     public boolean canKick() {
-        return avatar != null? avatar.canKick() : false;
+        return avatar != null ? avatar.canKick() : false;
     }
 
     public Vector2d getPosition() {
@@ -278,7 +283,7 @@ public class GameState {
     /**
      * @return arraylist with the IDs of teammates which are alive
      */
-    public ArrayList<Types.TILETYPE> getAliveTeammateIDs(){
+    public ArrayList<Types.TILETYPE> getAliveTeammateIDs() {
         List<Types.TILETYPE> aliveAgents = Arrays.asList(getAliveAgentIDs()); // Doesn't include AGENTDUMMY
         Types.TILETYPE[] teammateIDs = avatar.getTeammates(); // May include AGENTDUMMY (if FFA)
         return trimAliveList(aliveAgents, teammateIDs);
@@ -287,7 +292,7 @@ public class GameState {
     /**
      * @return arraylist with the IDs of enemies which are alive
      */
-    public ArrayList<Types.TILETYPE> getAliveEnemyIDs(){
+    public ArrayList<Types.TILETYPE> getAliveEnemyIDs() {
         List<Types.TILETYPE> aliveAgents = Arrays.asList(getAliveAgentIDs()); // Doesn't include AGENTDUMMY
         Types.TILETYPE[] enemyIDs = avatar.getEnemies(); // May include AGENTDUMMY (if Team Mode)
         return trimAliveList(aliveAgents, enemyIDs);
@@ -296,8 +301,9 @@ public class GameState {
     /**
      * Trims the list of alive agents based on an array of agent ID types which should be the only ones included, if
      * alive.
+     *
      * @param aliveAgents - list of alive agents
-     * @param trimIDs - list of IDs that should be included in the return, if alive
+     * @param trimIDs     - list of IDs that should be included in the return, if alive
      * @return list of trim ID agents which are alive
      */
     private ArrayList<Types.TILETYPE> trimAliveList(List<Types.TILETYPE> aliveAgents, Types.TILETYPE[] trimIDs) {
@@ -311,10 +317,10 @@ public class GameState {
 
     /**
      * Checks if this game state is terminal, based on the status of the agent focused in this game state.
+     *
      * @return true if terminal, false otherwise.
      */
-    public boolean isTerminal()
-    {
+    public boolean isTerminal() {
         if (tick >= Types.MAX_GAME_TICKS)
             return true;
         if (avatar != null)
@@ -330,7 +336,9 @@ public class GameState {
     /**
      * @return the current game tick
      */
-    public int getTick() { return tick; }
+    public int getTick() {
+        return tick;
+    }
 
 
     /* ----- Methods to insert or remove observations into the game model ----- */
@@ -375,15 +383,15 @@ public class GameState {
         model.setFlame(x, y, life);
     }
 
-    public int[] getMessage(){
+    public int[] getMessage() {
         return getMessage(playerIdx);
     }
 
-    public int[] getMessage(int playerIdx){
+    public int[] getMessage(int playerIdx) {
         return message[playerIdx];
     }
 
-    void setMessage(int playerIdx, int[] msg){
+    void setMessage(int playerIdx, int[] msg) {
         message[playerIdx] = msg.clone();
     }
 
@@ -395,10 +403,10 @@ public class GameState {
     }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (o.getClass() != getClass())
             return false;
-        GameState gs = (GameState)o;
+        GameState gs = (GameState) o;
 
         // Compare the state of everything. If anything is different, return false
         if (tick != gs.tick)
@@ -416,8 +424,7 @@ public class GameState {
         if ((avatar == null) || (gs.avatar == null)) {
             if ((avatar == null) != (gs.avatar == null))
                 return false;
-        }
-        else if (!avatar.equals(gs.avatar))
+        } else if (!avatar.equals(gs.avatar))
             return false;
         return true;
     }
@@ -425,9 +432,10 @@ public class GameState {
 
     /**
      * Optional game state constructor, used to parse JSON observations
+     *
      * @param state JSON game state
      */
-    public GameState(String state){
+    public GameState(String state) {
         // TODO might be too much construction, maybe creating only forward models would be more efficient?
 //        System.out.println("state = " + state);
 
@@ -468,12 +476,10 @@ public class GameState {
         if (game_type == 1) {
             gameMode = Types.GAME_MODE.FFA;
             DEFAULT_VISION_RANGE = 4; // TODO THIS IS HARDCODED BY US
-        }
-        else if (game_type == 2){
+        } else if (game_type == 2) {
             gameMode = Types.GAME_MODE.TEAM;
             DEFAULT_VISION_RANGE = 4; // TODO THIS IS HARDCODED BY US
-        }
-        else if (game_type == 3){
+        } else if (game_type == 3) {
             gameMode = Types.GAME_MODE.TEAM_RADIO;
         }
 
@@ -481,7 +487,7 @@ public class GameState {
 
         this.tick = step_count;
         this.seed = -1; // todo setting seed to -1 when communicating with python
-        this.playerIdx = board[position[0]][position[1]]-10; // Coordinates are swapped
+        this.playerIdx = board[position[0]][position[1]] - 10; // Coordinates are swapped
         this.nActions = action_space;
         this.size = board.length;
 
@@ -492,14 +498,14 @@ public class GameState {
             this.avatar.setBlastStrength(blast_strength);
             this.avatar.setVisionRange(DEFAULT_VISION_RANGE);
             if (can_kick) this.avatar.canKick();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     // Prints a game board in int representation
     private void printBoard(int[][] board) {
-        for (int[] a: board){
+        for (int[] a : board) {
             System.out.println(Arrays.toString(a));
         }
         System.out.println();
@@ -508,7 +514,7 @@ public class GameState {
     /**
      * @return a Json string representing the current game state
      */
-    public String toJson(){
+    public String toJson() {
         SerializableGameState serialisableGameState = new SerializableGameState(
                 getAliveAgentIDs(),
                 model.getBoard(),
@@ -565,8 +571,7 @@ public class GameState {
                 Types.TILETYPE[] teammate,
                 int ammo,
                 Types.TILETYPE[] enemies,
-                int ticks)
-        {
+                int ticks) {
             this.alive = new int[alive.length];
             for (int i = 0; i < alive.length; i++) {
                 this.alive[i] = alive[i].getKey();

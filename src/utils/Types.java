@@ -23,8 +23,9 @@ public class Types {
     public static int COLLAPSE_STAGES = 4;
     public static int COLLAPSE_STEP = ((Types.MAX_GAME_TICKS - COLLAPSE_START) / COLLAPSE_STAGES);
     public static boolean NEGOTIATION = true;
-    public static int NEGOTIATION_PHASE_ONE_LENGTH = 49;
-    public static int NEGOTIATION_PHASE_TWO_LENGTH = 49;
+    public static int NEGOTIATION_PHASE_ONE_LENGTH = 50;
+    public static int NEGOTIATION_PHASE_TWO_LENGTH = 50;
+    public static int NEGOTIATION_PROPOSAL_LIMIT = 3;
     public static int STAY_APART_DISTANCE = 3;
     public static int NO_BOMB_DISTANCE = 3;
 
@@ -42,7 +43,7 @@ public class Types {
 
     // Visualization variables (used to display game for humans to see).
     public static int FRAME_DELAY = 100;
-    public static int MAIN_SCREEN_SIZE = 350;
+    public static int MAIN_SCREEN_SIZE = 550;
     public static int PO_SCREEN_SIZE = 165;
     public static int AVATAR_ICON_SIZE = 30;
     public static int CELL_SIZE_MAIN = MAIN_SCREEN_SIZE / BOARD_SIZE; //50
