@@ -1,6 +1,7 @@
 package players.rhea;
 
 import core.GameState;
+import negotiations.Negotiator;
 import players.optimisers.ParameterizedPlayer;
 import players.Player;
 import players.rhea.utils.RHEAParams;
@@ -20,7 +21,10 @@ public class RHEAPlayer extends ParameterizedPlayer {
     }
 
     public RHEAPlayer(long seed, int playerID, RHEAParams params) {
-        super(seed, playerID, params);
+        this(seed, playerID, params, null);
+    }
+    public RHEAPlayer(long seed, int playerID, RHEAParams params, Negotiator negotiator) {
+        super(seed, playerID, params, negotiator);
         reset(seed, playerID);
     }
 

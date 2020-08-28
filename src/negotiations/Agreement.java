@@ -48,5 +48,8 @@ public class Agreement {
     public int getParticipant1Id() {return participant1;}
     public int getParticipant2Id() {return participant2;}
 
-
+    @Override
+    public String toString() {
+        return String.format("Player %d -> Player %d: %s", participant1, participant2, agreement);
+    }
 }

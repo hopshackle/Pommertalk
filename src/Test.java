@@ -1,4 +1,5 @@
 import core.Game;
+import negotiations.RandomNegotiator;
 import players.*;
 import utils.Types;
 import players.rhea.utils.Constants;
@@ -9,6 +10,7 @@ import players.rhea.utils.RHEAParams;
 
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Test {
 
@@ -39,14 +41,14 @@ public class Test {
         RHEAParams rheaParams = new RHEAParams();
         rheaParams.heurisic_type = Constants.CUSTOM_HEURISTIC;
 
-        players.add(new MCTSPlayer(seed, playerID++, mctsParams));
+        players.add(new MCTSPlayer(seed, playerID++, mctsParams, new RandomNegotiator(1)));
         //players.add(new MCTSPlayer(seed, playerID++, mctsParams));
-        players.add(new HumanPlayer(ki1, playerID++));
+//        players.add(new HumanPlayer(ki1, playerID++));
 //        players.add(new SimplePlayer(seed, playerID++));
-        //players.add(new RHEAPlayer(seed, playerID++, rheaParams));
+        players.add(new RHEAPlayer(seed, playerID++, rheaParams, new RandomNegotiator(2)));
 //        players.add(new SimplePlayer(seed, playerID++));
-        players.add(new MCTSPlayer(seed, playerID++, new MCTSParams()));
-        players.add(new RHEAPlayer(seed, playerID++, rheaParams));
+        players.add(new MCTSPlayer(seed, playerID++, new MCTSParams(), new RandomNegotiator(3)));
+        players.add(new RHEAPlayer(seed, playerID++, rheaParams, new RandomNegotiator(4)));
 
         // Make sure we have exactly NUM_PLAYERS players
         assert players.size() == Types.NUM_PLAYERS : "There should be " + Types.NUM_PLAYERS +

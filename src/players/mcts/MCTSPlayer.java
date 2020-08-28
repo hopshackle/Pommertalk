@@ -1,6 +1,7 @@
 package players.mcts;
 
 import core.GameState;
+import negotiations.Negotiator;
 import players.optimisers.ParameterizedPlayer;
 import players.Player;
 import utils.ElapsedCpuTimer;
@@ -27,11 +28,15 @@ public class MCTSPlayer extends ParameterizedPlayer {
     public MCTSParams params;
 
     public MCTSPlayer(long seed, int id) {
-        this(seed, id, new MCTSParams());
+        this(seed, id, new MCTSParams(), null);
     }
 
     public MCTSPlayer(long seed, int id, MCTSParams params) {
-        super(seed, id, params);
+        this(seed, id, params, null);
+    }
+
+    public MCTSPlayer(long seed, int id, MCTSParams params, Negotiator negotiator) {
+        super(seed, id, params, negotiator);
         reset(seed, id);
 
         ArrayList<Types.ACTIONS> actionsList = Types.ACTIONS.all();
