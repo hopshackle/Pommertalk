@@ -4,6 +4,9 @@ import core.GameState;
 import negotiations.Agreement;
 import utils.Types;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class CustomHeuristic extends StateHeuristic {
     private BoardStats rootBoardStats;
 
@@ -37,8 +40,8 @@ public class CustomHeuristic extends StateHeuristic {
         static double maxWoods = -1;
         static double maxBlastStrength = 10;
 
-        double FACTOR_ENEMY;
-        double FACTOR_TEAM;
+        double FACTOR_ENEMY = 0.4;
+        double FACTOR_TEAM = 0.1;
         double FACTOR_WOODS = 0.1;
         double FACTOR_CANKICK = 0.15;
         double FACTOR_BLAST = 0.15;
@@ -48,20 +51,19 @@ public class CustomHeuristic extends StateHeuristic {
 
             // Init weights based on game mode
             if (gs.getGameMode() == Types.GAME_MODE.FFA) {
-                FACTOR_TEAM = 0.1;
-                FACTOR_ENEMY = 0.5;
-                // TODO: Apply Alliances
-/*               this only looks at the current board state and a count of allies. Which is fine...we just add an amount for the number of allies present, so we don;t try to kill them
-                 For the 'Advanced Heuristic, can just do the same...even more computationally exhaustive to analyse the map from their perspective too
-                 We can play with the weighting.
-                 We could also add weightings for closeness to allies?
-                 Also might be worth confirming that the Advanced Heuristic is strictly worse (due to time)
- gs.getNegotiationState()
-                        .getAgreements(gs.getPlayerId(), Agreement.TYPE.ALLIANCE).stream()
-                        .filter(a -> a.)*/
+                Set<Types.TILETYPE> allies = gs.getAgreements().stream()
+                        .filter(a -> a.getType() == Agreement.TYPE.ALLIANCE &&
+                                (a.getParticipant1Id() == gs.getPlayerId() || a.getParticipant2Id() == gs.getPlayerId()))
+                        .mapToInt(a -> a.getParticipant1Id() == gs.getPlayerId() ? a.getParticipant2Id() : a.getParticipant1Id())
+                        .mapToObj(id -> Types.TILETYPE.values()[id])
+                        .collect(Collectors.toSet());
+
+                nTeammates = 0;
+                for (Types.TILETYPE ally : allies) {
+                    if (gs.getAliveEnemyIDs().contains(ally))
+                        nTeammates++;
+                }
             } else {
-                FACTOR_TEAM = 0.1;
-                FACTOR_ENEMY = 0.4;
                 nTeammates = gs.getAliveTeammateIDs().size();  // We only need to know the alive teammates in team modes
                 nEnemies -= 1;  // In team modes there's an extra Dummy agent added that we don't need to care about
             }
