@@ -16,7 +16,7 @@ import static utils.Types.VISUALS;
 @SuppressWarnings("FieldCanBeLocal")
 public class Game {
 
-     // State of the game (objects, ticks, etc).
+    // State of the game (objects, ticks, etc).
     private GameLog gameLog;
 
     // State of the game (objects, ticks, etc).
@@ -32,7 +32,10 @@ public class Game {
     private Types.GAME_MODE gameMode;
     private Types.GAME_PHASE phase = GAME_PHASE.NORMAL;
 
-    public Types.GAME_PHASE getPhase() {return phase;}
+    public Types.GAME_PHASE getPhase() {
+        return phase;
+    }
+
     private int negotiationStartTick;
     private Negotiation negotiation;
 
@@ -58,8 +61,9 @@ public class Game {
 
     /**
      * Constructor of the game
-     * @param seed Seed for the game (used only for board generation)
-     * @param size Size of the board.
+     *
+     * @param seed     Seed for the game (used only for board generation)
+     * @param size     Size of the board.
      * @param gameMode Mode of this game.
      */
     public Game(long seed, int size, Types.GAME_MODE gameMode, String gameIdStr) {
@@ -72,8 +76,9 @@ public class Game {
 
     /**
      * Optional game constructor
-     * @param seed Seed for the game
-     * @param state Starting game state
+     *
+     * @param seed     Seed for the game
+     * @param state    Starting game state
      * @param gameMode Mode of this game
      */
     public Game(long seed, GameState state, Types.GAME_MODE gameMode) {
@@ -87,8 +92,9 @@ public class Game {
 
     /**
      * Optional game constructor
-     * @param seed Seed for the game
-     * @param model Starting forward model
+     *
+     * @param seed     Seed for the game
+     * @param model    Starting forward model
      * @param gameMode Mode of this game
      */
     public Game(long seed, ForwardModel model, Types.GAME_MODE gameMode) {
@@ -102,6 +108,7 @@ public class Game {
 
     /**
      * Optional game constructor
+     *
      * @param gs Starting game state
      */
     public Game(GameState gs) {
@@ -115,10 +122,10 @@ public class Game {
 
     /**
      * Resets the game to its initial state
+     *
      * @param seed new seed for the game;
      */
-    public void reset(long seed)
-    {
+    public void reset(long seed) {
         this.seed = seed;
         this.gs = new GameState(seed, size, gameMode, true);
         this.gs.model.setTrueModel();
@@ -128,10 +135,10 @@ public class Game {
 
     /**
      * Resets the game to its initial state
+     *
      * @param sameBoard true if the same board should be played.
      */
-    public void reset(boolean sameBoard)
-    {
+    public void reset(boolean sameBoard) {
         if (!sameBoard) {
             this.seed = System.currentTimeMillis();
         }
@@ -167,6 +174,7 @@ public class Game {
 
     /**
      * Sets the players of the game and initializes the array to hold their game states.
+     *
      * @param players Players of the game.
      */
     public void setPlayers(ArrayList<Player> players) {
@@ -174,11 +182,13 @@ public class Game {
         if (Types.NEGOTIATION) {
             negotiation = Negotiation.createForPlayers(players);
             gs.model.injectNegotiation(negotiation);
+            gs.messageManager = negotiation.getMessageManager();
         }
     }
 
     /**
      * Retuns the players of the game
+     *
      * @return the players of the game
      */
     public ArrayList<Player> getPlayers() {
@@ -188,6 +198,7 @@ public class Game {
     /**
      * Returns the game state as seen for the player with the index playerIdx. This game staet
      * includes only the observations that are visible if partial observability is enabled.
+     *
      * @param playerIdx index of the player for which the game state is generated.
      * @return the game state.
      */
@@ -197,21 +208,21 @@ public class Game {
 
     /**
      * Runs this game once, without visuals
+     *
      * @return the results of this game.
      */
-    public Types.RESULT[] run(boolean separateThreads)
-    {
+    public Types.RESULT[] run(boolean separateThreads) {
         return this.run(null, null, separateThreads);
     }
 
     /**
      * Runs a game once. Receives frame and window input. If any is null, forces a run with no visuals.
+     *
      * @param frame window to draw the game
-     * @param wi input for the window.
+     * @param wi    input for the window.
      * @return the results of the game, per player.
      */
-    public Types.RESULT[] run(GUI frame, WindowInput wi, boolean separateThreads)
-    {
+    public Types.RESULT[] run(GUI frame, WindowInput wi, boolean separateThreads) {
         if (frame == null || wi == null)
             VISUALS = false;
 
@@ -224,7 +235,7 @@ public class Game {
             createActors();
         }
 
-        while(!isEnded() || VISUALS && wi != null && !wi.windowClosed && !isEnded()) {
+        while (!isEnded() || VISUALS && wi != null && !wi.windowClosed && !isEnded()) {
             // Loop while window is still open, even if the game ended.
             // If not playing with visuals, loop while the game's not ended.
             tick(separateThreads);
@@ -279,9 +290,10 @@ public class Game {
 
     /**
      * Ticks the game forward. Asks agents for actions and applies returned actions to obtain the next game state.
+     *
      * @param separateThreads - true if game should be run in separate threads, false otherwise.
      */
-    void tick (boolean separateThreads) {
+    void tick(boolean separateThreads) {
         if (VERBOSE) {
             System.out.println("tick: " + gs.getTick());
         }
@@ -289,50 +301,45 @@ public class Game {
         // Retrieve agent actions
         Types.ACTIONS[] actions = null;
 
-        if (Types.NEGOTIATION) {
-            int tick = gs.getTick();
-            switch (phase) {
-                case NORMAL:
-                    if (tick >= COLLAPSE_START && (tick - COLLAPSE_START) % COLLAPSE_STEP == 1) {
-                        phase = GAME_PHASE.NEGOTIATION_ONE;
-                        negotiation.startPhaseOne(gs);
-                        negotiationStartTick = tick;
+        int tick = gs.getTick();
+        switch (phase) {
+            case NORMAL:
+                if (separateThreads) {
+                    try {
+                        actions = getAvatarActionsInSeparateThreads();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    break;
-                case NEGOTIATION_ONE:
-                    if (tick >= negotiationStartTick + Types.NEGOTIATION_PHASE_ONE_LENGTH) {
-                        negotiation.startPhaseTwo(gs);
-                        phase = GAME_PHASE.NEGOTIATION_TWO;
-                        negotiationStartTick = tick;
-                    }
-                    break;
-                case NEGOTIATION_TWO:
-                    if (tick >= negotiationStartTick + NEGOTIATION_PHASE_TWO_LENGTH) {
-                        negotiation.endPhaseTwo(gs);
-                        phase = GAME_PHASE.NORMAL;
-                        negotiationStartTick = 0;
-                    }
-                    break;
-            }
-        }
-
-        if (phase == GAME_PHASE.NORMAL) {
-            // skip this if in negotiation phase
-            if (separateThreads) {
-                try {
-                    actions = getAvatarActionsInSeparateThreads();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                } else {
+                    actions = getAvatarActions();
                 }
-            } else {
-                actions = getAvatarActions();
-            }
 
-            // Log actions
-            if (LOG_GAME) {
-                gameLog.addActions(actions);
-            }
+                // Log actions
+                if (LOG_GAME) {
+                    gameLog.addActions(actions);
+                }
+                if (tick >= COLLAPSE_START && (tick - COLLAPSE_START) % COLLAPSE_STEP == 1) {
+                    phase = GAME_PHASE.NEGOTIATION_ONE;
+                    negotiation.startPhaseOne(gs);
+                    negotiationStartTick = tick;
+                }
+                break;
+            case NEGOTIATION_ONE:
+                if (tick >= negotiationStartTick + Types.NEGOTIATION_PHASE_ONE_LENGTH) {
+                    negotiation.startPhaseTwo(gs);
+                    phase = GAME_PHASE.NEGOTIATION_TWO;
+                    negotiationStartTick = tick;
+                }
+                break;
+            case NEGOTIATION_TWO:
+                if (tick >= negotiationStartTick + NEGOTIATION_PHASE_TWO_LENGTH) {
+                    negotiation.endPhaseTwo(gs);
+                    phase = GAME_PHASE.NORMAL;
+                    negotiationStartTick = 0;
+                }
+                break;
         }
+
         // Advance the game state
         gs.next(actions);
         updateMessages();
@@ -361,9 +368,8 @@ public class Game {
                 actions[i] = p.act(gameStateObservations[i]);
 
                 long elapsedTime = ect.elapsedMillis();
-                if(CHECK_DECISION_TIME && elapsedTime > DECISION_TIME_LIMIT)
-                {
-                    if(VERBOSE)
+                if (CHECK_DECISION_TIME && elapsedTime > DECISION_TIME_LIMIT) {
+                    if (VERBOSE)
                         System.out.println("Player " + p.getPlayerID() + " used more time than allowed (" + elapsedTime + "ms). Executing action STOP.");
                     actions[i] = ACTIONS.ACTION_STOP;
                     playerOvertimes[i]++;
@@ -419,6 +425,7 @@ public class Game {
 
     /**
      * Kills all threads.
+     *
      * @throws InterruptedException if threads could not be killed
      */
     private void killThreads() throws InterruptedException {
@@ -443,8 +450,9 @@ public class Game {
     /**
      * Method to identify the end of the game.
      * All games end when maximum number of game ticks have been reached. If not:
-     *   - In FFA, the game ends when <= 1 avatar is left
-     *   - In TEAM and TEAM_RADIO, the game ends when only avatars of one team are left
+     * - In FFA, the game ends when <= 1 avatar is left
+     * - In TEAM and TEAM_RADIO, the game ends when only avatars of one team are left
+     *
      * @return true if the game has ended, false otherwise.
      */
     boolean isEnded() {
@@ -456,7 +464,7 @@ public class Game {
      * handle messages for update, swap teammate's messages
      */
     protected void updateMessages() {
-        if (gameMode.equals(GAME_MODE.TEAM_RADIO)){
+        if (gameMode.equals(GAME_MODE.TEAM_RADIO)) {
             for (int i = 0; i < NUM_PLAYERS; i++) {
                 int teammateIdx = getGameConfig().getTeammates(GAME_MODE.TEAM_RADIO, i + TILETYPE.AGENT0.getKey())[0].getKey() - TILETYPE.AGENT0.getKey();
                 if (gameStateObservations[teammateIdx].winner() == RESULT.INCOMPLETE)
@@ -469,6 +477,7 @@ public class Game {
 
     /**
      * This method terminates the game, assigning the winner/result state to all players.
+     *
      * @return an array of result states for all players.
      */
     @SuppressWarnings("UnusedReturnValue")
@@ -496,10 +505,9 @@ public class Game {
 //        System.out.println(Arrays.toString(results));
 
         System.out.print("[");
-        for(int i = 0; i < results.length; ++i)
-        {
+        for (int i = 0; i < results.length; ++i) {
             System.out.print(results[i] + (" (" + playerOvertimes[i] + ")"));
-            if(i == results.length-1)
+            if (i == results.length - 1)
                 System.out.println("]");
             else
                 System.out.print(", ");
@@ -512,7 +520,7 @@ public class Game {
     /**
      * Prints the board to console.
      */
-    void printBoard(){
+    void printBoard() {
         System.out.println(gs);
     }
 
@@ -520,6 +528,7 @@ public class Game {
      * Returns the board of the game, in the format of a bidimensional array where each
      * position includes a game object that occupies it. If partial observability is enabled,
      * the method hides that information that the player (pIdx) can't access.
+     *
      * @param pIdx Player index that this board is made for.
      * @return board of the game
      */
@@ -532,6 +541,7 @@ public class Game {
 
     /**
      * Returns the current tick of the game.
+     *
      * @return the current tick of the game.
      */
     public int getTick() {
@@ -540,6 +550,7 @@ public class Game {
 
     /**
      * Retuns the avatars that are still alive in the game.
+     *
      * @param pIdx Index of the player this information is for.
      * @return An array with all avatars that still alive.
      */
@@ -552,6 +563,7 @@ public class Game {
 
     /**
      * Returns number of players in the game
+     *
      * @return number of players in the game
      */
     public int nPlayers() {
@@ -560,6 +572,7 @@ public class Game {
 
     /**
      * Returns the game mode of this game.
+     *
      * @return the game mode.
      */
     public Types.GAME_MODE getGameMode() {
@@ -568,6 +581,7 @@ public class Game {
 
     /**
      * Returns all avatars of this game (dead or alive)
+     *
      * @param pIdx Index of the player this information is for.
      * @return array with all avatars of this game
      */
@@ -587,6 +601,7 @@ public class Game {
 
     /**
      * Set up logging for the game.
+     *
      * @param b - if the game should be logged or not.
      */
     public void setLogGame(boolean b) {
@@ -606,9 +621,10 @@ public class Game {
     /**
      * Returns the last game logged, with SimonSays players executing the logged action sequences, the saved seed,
      * initial state and game mode.
+     *
      * @return - last game logged.
      */
-    public static Game getLastReplayGame(){
+    public static Game getLastReplayGame() {
         GameLog lastLog;
         if (Game.LOG_GAME_JSON) {
             lastLog = GameLog.deserializeLastJSON();
@@ -619,11 +635,11 @@ public class Game {
         return logToGame(lastLog);
     }
 
-    public Game getReplayGame(){
+    public Game getReplayGame() {
         return logToGame(gameLog);
     }
 
-    private static Game logToGame(GameLog log){
+    private static Game logToGame(GameLog log) {
         Game game = null;
         if (log != null) {
             game = new Game(log.getSeed(), log.getStartingGameState(), log.getGameMode());
@@ -659,14 +675,16 @@ public class Game {
         return gameLog;
     }
 
-    public int[] getPlayerOvertimes() {return playerOvertimes;}
+    public int[] getPlayerOvertimes() {
+        return playerOvertimes;
+    }
 
     /**
      * Actor class for running multi-threaded games. Each player is an Actor.
      */
     public class Actor implements Runnable {
 
-        private volatile  Types.ACTIONS action;
+        private volatile Types.ACTIONS action;
         public Player player;
         public GameState gamestate;
 

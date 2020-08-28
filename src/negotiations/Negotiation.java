@@ -13,7 +13,9 @@ public class Negotiation {
 
     private List<Agreement> finalAgreements = Collections.emptyList();
     private MessageManager messageManager = new MessageManager(true);
-    private List<Negotiator> negotiatingAgents = new ArrayList<>();
+    public MessageManager getMessageManager() {return messageManager;}
+
+    private Map<Integer, Negotiator> negotiatingAgents = new HashMap<>();
 
     public static Negotiation createForPlayers(List<Player> players) {
         return new Negotiation(players, true);
@@ -24,9 +26,9 @@ public class Negotiation {
     }
 
     private Negotiation(List<Player> agents, boolean sillyFlag) {
-        for (Player agent : agents) {
-            if (agent instanceof Negotiator) {
-                negotiatingAgents.add((Negotiator) agent);
+        for (int i = 0; i < agents.size(); i++) {
+            if (agents.get(i) instanceof Negotiator) {
+                negotiatingAgents.put(i, (Negotiator) agents.get(i));
             }
         }
     }
@@ -40,8 +42,8 @@ public class Negotiation {
 
     public void startPhaseOne(GameState gs) {
         //Call method in each agent to initiate proposals
-        for (Negotiator negotiator : negotiatingAgents) {
-            negotiator.makeProposals(gs, messageManager);
+        for ( int playerIndex : negotiatingAgents.keySet()) {
+            negotiatingAgents.get(playerIndex).makeProposals(playerIndex, gs, messageManager);
         }
     }
 
