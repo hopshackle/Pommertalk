@@ -9,7 +9,7 @@ import java.util.*;
 public class RandomNegotiator implements Negotiator {
 
     public Random rnd;
-    private boolean debug = false;
+    private boolean debug = true;
     private static Agreement.TYPE[] types = Agreement.TYPE.values();
 
     public RandomNegotiator(long seed) {
