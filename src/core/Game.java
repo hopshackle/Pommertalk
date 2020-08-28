@@ -178,7 +178,7 @@ public class Game {
     }
 
     /**
-     * Retuns the players of the game
+     * Retuns the players of the game k
      * @return the players of the game
      */
     public ArrayList<Player> getPlayers() {
