@@ -50,12 +50,17 @@ public class Negotiation {
     public void startPhaseTwo(GameState gs) {
         messageManager.FirstPhaseEnd();
         //Call method in each agent to start responses
-        // TODO: for each proposal from the MessageManager,
+        for ( int playerIndex : negotiatingAgents.keySet()) {
+            negotiatingAgents.get(playerIndex).reviewProposals(playerIndex, gs, messageManager);
+        }
     }
 
     public void endPhaseTwo(GameState gs) {
-        messageManager.SecondPhaseEnd();
+        finalAgreements = messageManager.SecondPhaseEnd();
         //Populate final agreements, with outcome
+        System.out.println("Negotiation results:");
+        for (Agreement a : finalAgreements)
+            System.out.println("\t" + a.toString());
     }
 
     public List<Agreement> getFinalAgreements() {
@@ -95,6 +100,7 @@ public class Negotiation {
                     if (action == Types.ACTIONS.ACTION_BOMB && manhattanDistance <= Types.NO_BOMB_DISTANCE)
                         return false;
                     break;
+                case NO_BOMB_KICKING:
                 case SHARE_VISION:
                 case ALLIANCE:
                     return true;

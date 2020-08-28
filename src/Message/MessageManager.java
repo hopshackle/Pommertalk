@@ -86,6 +86,9 @@ public class MessageManager {
         return mess;
     }
 
+    public void SendProposal(int origin, int player, Agreement.TYPE proposal) {
+        SendProposal(origin, player, proposal.ordinal());
+    }
 
     //Using the sender, receiver and proposal content, create a proposal message
     public void SendProposal(int origin, int player, int proposition) {
@@ -99,7 +102,6 @@ public class MessageManager {
 
         if (record) { messages.add(newProposal); }
     }
-
 
     //Using the id of a proposal, create a response message
     public void SendResponse(int messageID, int response) {
@@ -117,7 +119,13 @@ public class MessageManager {
     }
 
 
+
     //Using the origin, receiver, proposal and response value, create a response message
+    public void SendResponse(int origin, int player, Agreement.TYPE proposal, int response) {
+        SendResponse(origin, player, proposal.ordinal(), response);
+    }
+
+        //Using the origin, receiver, proposal and response value, create a response message
     public void SendResponse(int origin, int player, int proposal, int response) {
 
         HashMap<String, Integer> mess = CreateNewMessage(origin, player);
@@ -350,6 +358,7 @@ public class MessageManager {
             for (HashMap<String, Integer> r : posResponses) {
                 if (propRespMatch(p, r)) {
                     Agreement currAgreement = new Agreement(p.get("Sender"), p.get("Receiver"), propTranslator(p.get("Proposal")));
+                    agreed.add(currAgreement);
                 }
             }
         }
