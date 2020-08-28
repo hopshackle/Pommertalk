@@ -630,13 +630,18 @@ public class GUI extends JFrame {
 
             allianceLabel.setText("current alliances: player " + (focusedPlayer + 1));
 
-            for(int i = 0; i < allianceArray.length; i++)
+            if(focusedPlayer > -1)
             {
-                for(int j = 0; j < allianceArray[0].length; j++)
+                for(int i = 0; i < allianceArray.length; i++)
                 {
-                    allianceArray[i][j].setEnabled(false);
+                    for(int j = 0; j < allianceArray[0].length; j++)
+                    {
+                        allianceArray[i][j].setSelected(chosenAlliances[focusedPlayer][i][j]);
+                        allianceArray[i][j].setEnabled(false);
+                    }
                 }
             }
+
 
             // playerNo added for alliances to have global variable of focussed player and see if focussed player changed
             // Only update alliance panel is this variable has changed
@@ -817,7 +822,7 @@ public class GUI extends JFrame {
             phaseTime1--;
 
             // return focus to game and send alliances just before timer ends
-            if(phaseTime1 == 2 && playerNo > -1)
+            if(phaseTime1 == 1 && playerNo > -1)
             {
                 this.requestFocus();
 
@@ -890,11 +895,11 @@ public class GUI extends JFrame {
             phaseTime2--;
 
             // return focus to game and send alliances just before timer ends
-            if(phaseTime2 == 2)
+            if(phaseTime2 == 1)
             {
                 this.requestFocus();
 
-                if(playerNo > -1)
+                if(humanIdx > -1)
                 {
                     // Finalise chosen alliances
                     for(int i = 0; i < allianceArray.length; i++)
