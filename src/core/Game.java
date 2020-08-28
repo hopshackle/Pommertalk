@@ -293,6 +293,20 @@ public class Game {
             int tick = gs.getTick();
             switch (phase) {
                 case NORMAL:
+                    if (separateThreads) {
+                        try {
+                            actions = getAvatarActionsInSeparateThreads();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        actions = getAvatarActions();
+                    }
+
+                    // Log actions
+                    if (LOG_GAME) {
+                        gameLog.addActions(actions);
+                    }
                     if (tick >= COLLAPSE_START && (tick - COLLAPSE_START) % COLLAPSE_STEP == 1) {
                         phase = GAME_PHASE.NEGOTIATION_ONE;
                         negotiation.startPhaseOne(gs);
@@ -316,23 +330,6 @@ public class Game {
             }
         }
 
-        if (phase == GAME_PHASE.NORMAL) {
-            // skip this if in negotiation phase
-            if (separateThreads) {
-                try {
-                    actions = getAvatarActionsInSeparateThreads();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                actions = getAvatarActions();
-            }
-
-            // Log actions
-            if (LOG_GAME) {
-                gameLog.addActions(actions);
-            }
-        }
         // Advance the game state
         gs.next(actions);
         updateMessages();
