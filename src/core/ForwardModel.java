@@ -19,7 +19,7 @@ import static utils.Utils.*;
 
 public class ForwardModel {
 
-    static Negotiation emptyNegotiation = new Negotiation(Collections.emptyList());
+    static Negotiation emptyNegotiation = Negotiation.createFromAgreements(Collections.emptyList());
     // Board of the game, with all objects distributed in a 2D array of size 'this.size x this.size'
     private Types.TILETYPE[][] board;
 
@@ -47,9 +47,7 @@ public class ForwardModel {
 
     // Game mode being played
     private Types.GAME_MODE game_mode;
-    private Types.GAME_PHASE phase = GAME_PHASE.NORMAL;
-    public Types.GAME_PHASE getPhase() {return phase;}
-    private int negotiationStartTick;
+
 
     // Indicates if this model is the true model of the game. False if it is in a simulation of the agents.
     private boolean trueModel = false;
@@ -62,11 +60,10 @@ public class ForwardModel {
     private boolean[] isAgentStuck;
 
     // Negotiation Results
-    protected Negotiation lastNegotiation = emptyNegotiation; // default to no negotiated agreements
-
-    public Negotiation getNegotiation() {return lastNegotiation;}
+    protected Negotiation negotiation = emptyNegotiation; // default to no negotiated agreements
+    public Negotiation getNegotiation() {return negotiation;}
     public void injectNegotiation(Negotiation neg) {
-        lastNegotiation = neg;
+        negotiation = neg;
     } // ability to inject a set of agreements if needed (primarily for testing)
 
     /**
@@ -292,24 +289,6 @@ public class ForwardModel {
             System.out.println();
         }
 
-        switch (phase) {
-            case NEGOTIATION_ONE:
-                if (gsTick >= negotiationStartTick + Types.NEGOTIATION_PHASE_ONE_LENGTH) {
-                    lastNegotiation.startPhaseTwo();
-                    phase = GAME_PHASE.NEGOTIATION_TWO;
-                    negotiationStartTick = gsTick;
-                }
-                return;
-            case NEGOTIATION_TWO:
-                if (gsTick >= negotiationStartTick + NEGOTIATION_PHASE_TWO_LENGTH) {
-                    lastNegotiation.endPhaseTwo();
-                    phase = GAME_PHASE.NORMAL;
-                }
-                return;
-            case NORMAL:
-                // continue as normal
-        }
-
         // 1. Put actions into effect
         translatePlayerActions(playerActions);
 
@@ -460,14 +439,6 @@ public class ForwardModel {
                 // Kill agents.
                 if (collapsedAgents.size() > 0)
                     Types.getGameConfig().processDeadAgents(agents, aliveAgents, collapsedAgents, game_mode);
-
-                if (Types.NEGOTIATION && trueModel) {
-                    // We do not currently model negotiation within RHEA/MCTS, so only do this for the true model of the game
-                    if (collapse_stage == 0) lastNegotiation = new Negotiation(this);
-                    lastNegotiation.startPhaseOne();
-                    phase = GAME_PHASE.NEGOTIATION_ONE;
-                    negotiationStartTick = gsTick;
-                }
             }
         }
 
@@ -806,14 +777,14 @@ public class ForwardModel {
 
             boolean successful = setDesiredCoordinate(agent, pos.add(action.getDirection().toVec()), board);
             // check that this is ok with results of negotiation
-            if (successful && NEGOTIATION && !lastNegotiation.isPermitted(action, agent, agents)) {
+            if (successful && NEGOTIATION && !negotiation.isPermitted(action, agent, agents)) {
                 // and if not, then do not move
                 agent.setDesiredCoordinate(pos);
             }
 
             if (action == Types.ACTIONS.ACTION_BOMB) {
                 if (agent.getAmmo() > 0 && bombBlastStrength[pos.y][pos.x] == 0
-                        && lastNegotiation.isPermitted(action, agent, agents)) {
+                        && negotiation.isPermitted(action, agent, agents)) {
                     // Check if a bomb is not already there, and we are not in breach of an Agreement
                     agent.reduceAmmo();
                     addBomb(pos.x, pos.y, agent.getBlastStrength(), BOMB_LIFE, i, true);
@@ -1157,7 +1128,7 @@ public class ForwardModel {
 
         // Agents position is removed and their properties reset if we don't know where they are when reducing state.
 
-        Set<Vector2d> agentFoci = lastNegotiation.getAgreements(playerIdx, Agreement.TYPE.SHARE_VISION).stream()
+        Set<Vector2d> agentFoci = negotiation.getAgreements(playerIdx, Agreement.TYPE.SHARE_VISION).stream()
                 .filter(j -> ((Avatar) agents[j]).getWinner() == RESULT.INCOMPLETE) // check alive
                 .map(j -> agents[j].getPosition())
                 .collect(Collectors.toSet());
@@ -1212,7 +1183,7 @@ public class ForwardModel {
         }
 
         // remove any Agreements that the player is not party to
-        copy.lastNegotiation = lastNegotiation.reduce(playerIdx);
+        copy.negotiation = negotiation.reduce(playerIdx);
     }
 
     @Override

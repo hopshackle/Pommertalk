@@ -3,6 +3,7 @@ package negotiations;
 import Message.MessageManager;
 import core.*;
 import objects.*;
+import players.Player;
 import utils.*;
 
 import java.util.*;
@@ -10,34 +11,49 @@ import java.util.stream.*;
 
 public class Negotiation {
 
-    private ForwardModel forwardModel;
     private List<Agreement> finalAgreements = Collections.emptyList();
     private MessageManager messageManager = new MessageManager(true);
+    public MessageManager getMessageManager() {return messageManager;}
 
-    public Negotiation(ForwardModel fm) {
-        this.forwardModel = fm;
+    private Map<Integer, Negotiator> negotiatingAgents = new HashMap<>();
+
+    public static Negotiation createForPlayers(List<Player> players) {
+        return new Negotiation(players, true);
+    }
+
+    public static Negotiation createFromAgreements(List<Agreement> agreements) {
+        return new Negotiation(agreements);
+    }
+
+    private Negotiation(List<Player> agents, boolean sillyFlag) {
+        for (int i = 0; i < agents.size(); i++) {
+            if (agents.get(i) instanceof Negotiator) {
+                negotiatingAgents.put(i, (Negotiator) agents.get(i));
+            }
+        }
     }
 
     /*
     An alternative constructor primarily intended for testing and copying
      */
-    public Negotiation(List<Agreement> agreements) {
+    private Negotiation(List<Agreement> agreements) {
         this.finalAgreements = agreements;
     }
 
-    /*
-    Then this method will be called by the core game engine to conduct the negotiations
-     */
-    public void startPhaseOne() {
+    public void startPhaseOne(GameState gs) {
         //Call method in each agent to initiate proposals
-
+        for ( int playerIndex : negotiatingAgents.keySet()) {
+            negotiatingAgents.get(playerIndex).makeProposals(playerIndex, gs, messageManager);
+        }
     }
-    public void startPhaseTwo() {
+
+    public void startPhaseTwo(GameState gs) {
         messageManager.FirstPhaseEnd();
         //Call method in each agent to start responses
+        // TODO: for each proposal from the MessageManager,
     }
 
-    public void endPhaseTwo() {
+    public void endPhaseTwo(GameState gs) {
         messageManager.SecondPhaseEnd();
         //Populate final agreements, with outcome
     }
@@ -96,5 +112,13 @@ public class Negotiation {
                 .filter(a -> a.getParticipant1Id() == playerIdx || a.getParticipant2Id() == playerIdx)
                 .collect(Collectors.toList());
         return new Negotiation(visibleAgreements);
+    }
+
+    public Negotiation copy(List<Player> players) {
+        Negotiation copy = new Negotiation(players, true);
+        copy.finalAgreements = List.copyOf(finalAgreements);
+        // TODO: MessageManager needs to have a copy() function added if we want to copy Game in the middle of a negotiation
+        copy.messageManager = messageManager;
+        return copy;
     }
 }
