@@ -13,6 +13,8 @@ public class Negotiation {
 
     private List<Agreement> finalAgreements = Collections.emptyList();
     private MessageManager messageManager = new MessageManager(true);
+    public MessageManager getMessageManager() {return messageManager;}
+
     private Map<Integer, Negotiator> negotiatingAgents = new HashMap<>();
 
     public static Negotiation createForPlayers(List<Player> players) {

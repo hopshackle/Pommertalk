@@ -1,5 +1,6 @@
 package core;
 
+import Message.MessageManager;
 import com.google.gson.*;
 import objects.*;
 import utils.*;
@@ -38,6 +39,8 @@ public class GameState {
     // Game mode being played
     Types.GAME_MODE gameMode;
 
+    protected MessageManager messageManager;
+    public MessageManager getMessageManager() {return messageManager;}
     /**
      * Constructor, first thing to call. Creates a GameState object with some information.
      *
