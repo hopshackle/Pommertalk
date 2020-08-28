@@ -542,7 +542,7 @@ public class GUI extends JFrame {
                     allianceArray[i][j].addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyPressed(KeyEvent e) {
-                        if(game.getGameState().getPhase() == GAME_PHASE.NEGOTIATION_ONE) {
+                        if(game.getPhase() == GAME_PHASE.NEGOTIATION_ONE) {
                             switch (e.getKeyCode()) {
                                 case KeyEvent.VK_UP:
                                     if (curRow > 0) {
@@ -574,7 +574,7 @@ public class GUI extends JFrame {
                                     break;
                             }
                         }
-                        else if(game.getGameState().getPhase() == GAME_PHASE.NEGOTIATION_TWO)
+                        else if(game.getPhase() == GAME_PHASE.NEGOTIATION_TWO)
                         {
                             switch (e.getKeyCode()) {
                                 case KeyEvent.VK_UP:
@@ -612,9 +612,9 @@ public class GUI extends JFrame {
         }
 
         // Update Game state
-        gs = game.getGameState();
+        //gs = game.getGameState();
 
-        if(gs.getPhase() == GAME_PHASE.NORMAL)
+        if(game.getPhase() == GAME_PHASE.NORMAL)
         {
             // Return focus to game instead of buttons so can move player
             this.requestFocus();
@@ -767,7 +767,7 @@ public class GUI extends JFrame {
 
 
         }
-        else if(gs.getPhase() == GAME_PHASE.NEGOTIATION_ONE)
+        else if(game.getPhase() == GAME_PHASE.NEGOTIATION_ONE)
         {
             // Move focus to buttons for human player
             if (humanIdx > -1)
@@ -816,7 +816,7 @@ public class GUI extends JFrame {
             //Reduce time
             phaseTime1--;
         }
-        else if(gs.getPhase() == GAME_PHASE.NEGOTIATION_TWO)
+        else if(game.getPhase() == GAME_PHASE.NEGOTIATION_TWO)
         {
             if(humanIdx > -1)
             {
