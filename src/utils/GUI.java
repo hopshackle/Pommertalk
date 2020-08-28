@@ -894,15 +894,18 @@ public class GUI extends JFrame {
             {
                 this.requestFocus();
 
-                // Finalise chosen alliances
-                for(int i = 0; i < allianceArray.length; i++)
+                if(playerNo > -1)
                 {
-                    for(int j = 0; j < allianceArray[0].length; j++)
+                    // Finalise chosen alliances
+                    for(int i = 0; i < allianceArray.length; i++)
                     {
-                        if(allianceArray[i][j].isSelected())
+                        for(int j = 0; j < allianceArray[0].length; j++)
                         {
-                            chosenAlliances[playerNo][i][j] = true;
-                            rules[i].setSelected(true);
+                            if(allianceArray[i][j].isSelected())
+                            {
+                                chosenAlliances[playerNo][i][j] = true;
+                                rules[i].setSelected(true);
+                            }
                         }
                     }
                 }

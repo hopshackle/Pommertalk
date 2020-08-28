@@ -1,6 +1,7 @@
 package players;
 
 import core.GameState;
+import negotiations.Negotiator;
 import utils.Types;
 
 import java.awt.event.KeyAdapter;
@@ -30,7 +31,6 @@ public class HumanPlayer extends Player {
         // default message
         return new int[Types.MESSAGE_LENGTH];
     }
-
     @Override
     public Player copy() {
         return new HumanPlayer(getKeyAdapter().copy(), playerID);
