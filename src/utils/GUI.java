@@ -1,5 +1,6 @@
 package utils;
 
+import Message.MessageManager;
 import core.Game;
 import core.GameState;
 import players.HumanPlayer;
@@ -630,13 +631,28 @@ public class GUI extends JFrame {
 
             allianceLabel.setText("current alliances: player " + (focusedPlayer + 1));
 
-            for(int i = 0; i < allianceArray.length; i++)
+            // Highlight allowances for current round
+            if(focusedPlayer > -1)
             {
-                for(int j = 0; j < allianceArray[0].length; j++)
+                for(int i = 0; i < allianceArray.length; i++)
                 {
-                    allianceArray[i][j].setEnabled(false);
+                    for(int j = 0; j < allianceArray[0].length; j++)
+                    {
+                        allianceArray[i][j].setSelected(chosenAlliances[focusedPlayer][i][j]);
+                        allianceArray[i][j].setEnabled(false);
+                    }
                 }
             }
+            for(int i = 0; i < rules.length; i++)
+            {
+                if(!allianceArray[i][0].isSelected() && !allianceArray[i][1].isSelected() && !allianceArray[i][2].isSelected())
+                {
+                    rules[i].setSelected(false);
+                }
+                else
+                    rules[i].setSelected(true);
+            }
+
 
             // playerNo added for alliances to have global variable of focussed player and see if focussed player changed
             // Only update alliance panel is this variable has changed
@@ -817,7 +833,7 @@ public class GUI extends JFrame {
             phaseTime1--;
 
             // return focus to game and send alliances just before timer ends
-            if(phaseTime1 == 2 && playerNo > -1)
+            if(phaseTime1 == 1 && playerNo > -1)
             {
                 this.requestFocus();
 
@@ -834,6 +850,10 @@ public class GUI extends JFrame {
                             setAlliances[playerNo][i][j] = false;
                     }
                 }
+                // Send proposed alliances to message system
+                MessageManager ms = new MessageManager(true);
+                ms.boolPropToMessage(setAlliances);
+                receivedAlliances = ms.receivedPropToBool();
             }
 
         }
@@ -890,22 +910,31 @@ public class GUI extends JFrame {
             phaseTime2--;
 
             // return focus to game and send alliances just before timer ends
-            if(phaseTime2 == 2)
+            if(phaseTime2 == 1)
             {
                 this.requestFocus();
 
-                // Finalise chosen alliances
-                for(int i = 0; i < allianceArray.length; i++)
+                // Agree next round alliances and send to message system
+                MessageManager ms = new MessageManager(true);
+                ms.boolRespToMessage(chosenAlliances);
+                chosenAlliances = ms.agreedPropToBool();
+
+                if(humanIdx > -1)
                 {
-                    for(int j = 0; j < allianceArray[0].length; j++)
+                    // Finalise chosen alliances
+                    for(int i = 0; i < allianceArray.length; i++)
                     {
-                        if(allianceArray[i][j].isSelected())
+                        for(int j = 0; j < allianceArray[0].length; j++)
                         {
-                            chosenAlliances[playerNo][i][j] = true;
-                            rules[i].setSelected(true);
+                            if(allianceArray[i][j].isSelected())
+                            {
+                                chosenAlliances[playerNo][i][j] = true;
+                                rules[i].setSelected(true);
+                            }
                         }
                     }
                 }
+
             }
 
         }
