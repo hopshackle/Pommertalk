@@ -924,13 +924,13 @@ public class GUI extends JFrame {
                 // Perform on first entering phase
                 if(phaseTime2 == NEGOTIATION_PHASE_TWO_LENGTH) {
 
-                    for(int k = 0; k < NUM_PLAYERS; k++)
-                    {
+                    //for(int k = 0; k < NUM_PLAYERS; k++)
+                    //{
                         for(int i = allianceArray.length -1; i >= 0 ; i--)
                         {
                             for(int j = allianceArray[0].length -1; j >= 0; j--)
                             {
-                                if(receivedAlliances[k][i][j] == true)
+                                if(receivedAlliances[playerNo][i][j] == true)
                                 {
                                     allianceArray[i][j].setSelected(true);
                                     allianceArray[i][j].setEnabled(true);
@@ -943,7 +943,7 @@ public class GUI extends JFrame {
                                 }
                             }
                         }
-                    }
+                    //}
                 }
             }
             else if(humanIdx == -1)
@@ -974,11 +974,6 @@ public class GUI extends JFrame {
             {
                 this.requestFocus();
 
-                // Agree next round alliances and send to message system
-                MessageManager ms = gs.getMessageManager();
-                ms.boolRespToMessage(chosenAlliances);
-                chosenAlliances = ms.agreedPropToBool();
-
                 if(humanIdx > -1)
                 {
                     // Finalise chosen alliances
@@ -991,9 +986,16 @@ public class GUI extends JFrame {
                                 chosenAlliances[playerNo][i][j] = true;
                                 rules[i].setSelected(true);
                             }
+                            else
+                                chosenAlliances[playerNo][i][j] = false;
                         }
                     }
                 }
+
+                // Agree next round alliances and send to message system
+                MessageManager ms = gs.getMessageManager();
+                ms.boolRespToMessage(chosenAlliances);
+                chosenAlliances = ms.agreedPropToBool();
 
             }
 
