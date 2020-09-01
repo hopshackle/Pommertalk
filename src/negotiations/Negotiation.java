@@ -42,7 +42,9 @@ public class Negotiation {
 
     public void startPhaseOne(GameState gs) {
         //Call method in each agent to initiate proposals
-        for ( int playerIndex : negotiatingAgents.keySet()) {
+        Types.TILETYPE[] aliveAgents = gs.getAliveAgentIDs();
+        for (Types.TILETYPE avatar : aliveAgents) {
+            int playerIndex = avatar.getKey() - Types.TILETYPE.AGENT0.getKey();
             negotiatingAgents.get(playerIndex).makeProposals(playerIndex, gs, messageManager);
         }
     }
@@ -50,7 +52,9 @@ public class Negotiation {
     public void startPhaseTwo(GameState gs) {
         messageManager.FirstPhaseEnd();
         //Call method in each agent to start responses
-        for ( int playerIndex : negotiatingAgents.keySet()) {
+        Types.TILETYPE[] aliveAgents = gs.getAliveAgentIDs();
+        for (Types.TILETYPE avatar : aliveAgents) {
+            int playerIndex = avatar.getKey() - Types.TILETYPE.AGENT0.getKey();
             negotiatingAgents.get(playerIndex).reviewProposals(playerIndex, gs, messageManager);
         }
     }
