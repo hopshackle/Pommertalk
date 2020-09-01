@@ -1,5 +1,6 @@
 package Message;
 
+import jdk.javadoc.doclet.Reporter;
 import negotiations.Agreement;
 import players.optimisers.ParameterizedPlayer;
 
@@ -86,16 +87,18 @@ public class MessageManager {
         return mess;
     }
 
-    public void SendProposal(int origin, int player, Agreement.TYPE proposal) {
-        SendProposal(origin, player, proposal.ordinal());
+    public void SendProposal(int sender, int receiver, Agreement.TYPE proposal) {
+        SendProposal(sender, receiver, proposal.ordinal());
     }
 
     //Using the sender, receiver and proposal content, create a proposal message
-    public void SendProposal(int origin, int player, int proposition) {
+    public void SendProposal(int sender, int receiver, int proposition) {
 
-        HashMap<String, Integer> newProposal = CreateNewMessage(origin, player);
+        //System.out.println(String.format("Player %d send a proposal %d to Player %d", sender, proposition, receiver));
 
-        newProposal.put("Response", 1);
+        HashMap<String, Integer> newProposal = CreateNewMessage(sender, receiver);
+
+        newProposal.put("Response", Response.PROPOSAL.ordinal());
         newProposal.put("Proposal", proposition);
 
         currTurnM.add(newProposal);
@@ -120,15 +123,15 @@ public class MessageManager {
 
 
 
-    //Using the origin, receiver, proposal and response value, create a response message
-    public void SendResponse(int origin, int player, Agreement.TYPE proposal, int response) {
-        SendResponse(origin, player, proposal.ordinal(), response);
+    //Using the sender, receiver, proposal and response value, create a response message
+    public void SendResponse(int sender, int receiver, Agreement.TYPE proposal, int response) {
+        SendResponse(sender, receiver, proposal.ordinal(), response);
     }
 
-        //Using the origin, receiver, proposal and response value, create a response message
-    public void SendResponse(int origin, int player, int proposal, int response) {
+        //Using the sender, receiver, proposal and response value, create a response message
+    public void SendResponse(int sender, int receiver, int proposal, int response) {
 
-        HashMap<String, Integer> mess = CreateNewMessage(origin, player);
+        HashMap<String, Integer> mess = CreateNewMessage(sender, receiver);
         mess.put("Response", response);
         mess.put("Proposal", proposal);
 
@@ -190,11 +193,11 @@ public class MessageManager {
     //Return true if a positive response matches a given proposal
     private boolean propRespMatch(HashMap<String, Integer> prop, HashMap<String, Integer> resp) {
 
-        if (prop.get("Response") != 1) { return false; }
-        if (resp.get("Response") != 2) { return false; }
+        if (prop.get("Response") != Response.PROPOSAL.ordinal()) { return false; }
+        if (resp.get("Response") != Response.ACCEPT.ordinal()) { return false; }
         if (prop.get("Sender") != resp.get("Receiver")) { return false; }
         if (prop.get("Receiver") != resp.get("Sender")) { return false; }
-        if (prop.get("Round") != resp.get("Round")) { return false; }
+        if (prop.get("Round") != resp.get("Round") || prop.get("Round") != round) { return false; }
         if (prop.get("Proposal") != prop.get("Proposal")) { return false; }
 
         return true;
@@ -212,7 +215,8 @@ public class MessageManager {
                 {{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}}};
 
         for (HashMap<String, Integer> m : mess) {
-            if (m.get("Reciever") >= m.get("Sender")) {
+            if (m.get("Receiver") == m.get("Sender")) { continue; }
+            if (m.get("Receiver") >= m.get("Sender")) {
                 messBools[m.get("Sender")][m.get("Proposal")][m.get("Receiver") -1] = true;
             }
             else {
@@ -229,7 +233,7 @@ public class MessageManager {
     //Boolean set to true if a proposal was sent
     public boolean[][][] proposalAsBool() {
 
-        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, 1, -1);
+        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, Response.PROPOSAL.ordinal(), -1);
 
         return messageToBool(proposals);
     }
@@ -239,7 +243,7 @@ public class MessageManager {
     //Boolean set to true if a response was positive
     public boolean[][][] posResponsesToBool() {
 
-        ArrayList<HashMap<String, Integer>> posResponses = FindMessages(-1, -1, round, 2, -1);
+        ArrayList<HashMap<String, Integer>> posResponses = FindMessages(-1, -1, round, Response.ACCEPT.ordinal(), -1);
 
         return messageToBool(posResponses);
     }
@@ -250,7 +254,7 @@ public class MessageManager {
     //(included for completion and debug purposes)
     public boolean[][][] negResponsesToBool() {
 
-        ArrayList<HashMap<String, Integer>> negResponses = FindMessages(-1, -1, round, 3, -1);
+        ArrayList<HashMap<String, Integer>> negResponses = FindMessages(-1, -1, round, Response.DENY.ordinal(), -1);
 
         return messageToBool(negResponses);
     }
@@ -260,7 +264,7 @@ public class MessageManager {
     // to be displayed to users during the second phase of negotiations
     public boolean[][][] receivedPropToBool() {
 
-        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, 1, -1);
+        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, Response.PROPOSAL.ordinal(), -1);
         ArrayList<HashMap<String, Integer>> received = new ArrayList<HashMap<String, Integer>>();
 
         for (HashMap<String, Integer> m : proposals) {
@@ -279,8 +283,8 @@ public class MessageManager {
     //Boolean set to true if proposal was made and a positive response was sent back
     public boolean[][][] agreedPropToBool() {
 
-        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, 1, -1);
-        ArrayList<HashMap<String, Integer>> posResponses = FindMessages(-1, -1, round, 2, -1);
+        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, Response.PROPOSAL.ordinal(), -1);
+        ArrayList<HashMap<String, Integer>> posResponses = FindMessages(-1, -1, round, Response.ACCEPT.ordinal(), -1);
 
         ArrayList<HashMap<String, Integer>> agreed = new ArrayList<HashMap<String, Integer>>();
 
@@ -301,7 +305,7 @@ public class MessageManager {
             for (int proposal = 0; proposal < props[player].length; proposal++) {
                 for (int receiver = 0; receiver < props[player][proposal].length; receiver++) {
                     if (props[player][proposal][receiver]){
-                        if (receiver >= player) { SendProposal(player, receiver -1, proposal); }
+                        if (receiver >= player) { SendProposal(player, receiver +1, proposal); }
                         else { SendProposal(player, receiver, proposal); }
                     }
                 }
@@ -318,8 +322,8 @@ public class MessageManager {
             for (int proposal = 0; proposal < resps[player].length; proposal++) {
                 for (int receiver = 0; receiver < resps[player][proposal].length; receiver++) {
                     if (resps[player][proposal][receiver]){
-                        if (receiver >= player) { SendResponse(player, receiver -1, proposal, 2); }
-                        else { SendResponse(player, receiver, proposal, 2); }
+                        if (receiver >= player) { SendResponse(player, receiver +1, proposal, Response.ACCEPT.ordinal()); }
+                        else { SendResponse(player, receiver, proposal, Response.ACCEPT.ordinal()); }
                     }
                 }
             }
@@ -335,8 +339,8 @@ public class MessageManager {
             for (int proposal = 0; proposal < resps[player].length; proposal++) {
                 for (int receiver = 0; receiver < resps[player][proposal].length; receiver++) {
                     if (resps[player][proposal][receiver]){
-                        if (receiver >= player) { SendResponse(player, receiver -1, proposal, 3); }
-                        else { SendResponse(player, receiver, proposal, 3); }
+                        if (receiver >= player) { SendResponse(player, receiver -1, proposal, Response.DENY.ordinal()); }
+                        else { SendResponse(player, receiver, proposal, Response.DENY.ordinal()); }
                     }
                 }
             }
@@ -349,8 +353,8 @@ public class MessageManager {
     //Only creates one way agreements
     // (if an agreement between 1 and 2 is created, an agreement of the same kind between 2 and 1 will not be created)
     public ArrayList<Agreement> getAgreements() {
-        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, 1, -1);
-        ArrayList<HashMap<String, Integer>> posResponses = FindMessages(-1, -1, round, 2, -1);
+        ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, Response.PROPOSAL.ordinal(), -1);
+        ArrayList<HashMap<String, Integer>> posResponses = FindMessages(-1, -1, round, Response.ACCEPT.ordinal(), -1);
 
         ArrayList<Agreement> agreed = new ArrayList<Agreement>();
 
@@ -385,7 +389,7 @@ public class MessageManager {
     //Retrieves all proposals made to a player this round
     //Returns as agreement objects
     public ArrayList<Agreement> getPlayerProposalAgreements(int player) {
-        ArrayList<HashMap<String, Integer>> proposed = FindMessages(-1, player, round, 1, -1);
+        ArrayList<HashMap<String, Integer>> proposed = FindMessages(-1, player, round, Response.PROPOSAL.ordinal(), -1);
         return messToAgreement(proposed);
     }
 
@@ -397,7 +401,7 @@ public class MessageManager {
         ArrayList<HashMap<String, Integer>> proposals =  new ArrayList<HashMap<String, Integer>>();
 
         for (HashMap<String, Integer> m : currTurnM) {
-            if (m.get("Response") == 1) { proposals.add(m); }
+            if (m.get("Response") == Response.PROPOSAL.ordinal()) { proposals.add(m); }
         }
 
         return messToAgreement(proposals);

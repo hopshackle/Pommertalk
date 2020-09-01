@@ -649,7 +649,7 @@ public class GUI extends JFrame {
         }
 
         // Update Game state
-        //gs = game.getGameState();
+        gs = game.getGameState();
 
         if(game.getPhase() == GAME_PHASE.NORMAL)
         {
@@ -904,7 +904,7 @@ public class GUI extends JFrame {
                     }
                 }
                 // Send proposed alliances to message system
-                MessageManager ms = new MessageManager(true);
+                MessageManager ms = gs.getMessageManager();
                 ms.boolPropToMessage(setAlliances);
                 receivedAlliances = ms.receivedPropToBool();
             }
@@ -975,7 +975,7 @@ public class GUI extends JFrame {
                 this.requestFocus();
 
                 // Agree next round alliances and send to message system
-                MessageManager ms = new MessageManager(true);
+                MessageManager ms = gs.getMessageManager();
                 ms.boolRespToMessage(chosenAlliances);
                 chosenAlliances = ms.agreedPropToBool();
 
