@@ -697,6 +697,7 @@ public class GUI extends JFrame {
             else if(focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == false)
                 allianceLabel.setText(playerName + " is dead but not forgotten");
 
+
             // Highlight allowances and rules in play for current round
             if(focusedPlayer > -1)
             {
@@ -923,9 +924,19 @@ public class GUI extends JFrame {
                     for (int i = 0; i < setAlliances[focusedPlayer].length; i++) {
                         for (int j = 0; j < setAlliances[focusedPlayer][i].length; j++) {
                             if (setAlliances[focusedPlayer][i][j] == true)
+                            {
                                 allianceArray[i][j].setSelected(true);
+                                rules[i].setSelected(true);
+                            }
                             else
                                 allianceArray[i][j].setSelected(false);
+                        }
+                    }
+                    for(int i = 0; i < rules.length; i++)
+                    {
+                        if(!allianceArray[i][0].isSelected() && !allianceArray[i][1].isSelected() && !allianceArray[i][2].isSelected())
+                        {
+                            rules[i].setSelected(false);
                         }
                     }
                 }
@@ -977,9 +988,9 @@ public class GUI extends JFrame {
                 // Perform on first entering phase
                 if(phaseTime2 == NEGOTIATION_PHASE_TWO_LENGTH) {
 
-                        for(int i = allianceArray.length -1; i >= 0 ; i--)
+                        for(int i = 0; i < allianceArray.length; i++)
                         {
-                            for(int j = allianceArray[0].length -1; j >= 0; j--)
+                            for(int j = 0; j <allianceArray[i].length; j++)
                             {
                                 if(receivedAlliances[playerNo][i][j] == true)
                                 {
@@ -1086,7 +1097,10 @@ public class GUI extends JFrame {
                 for (int i = 0; i < chosenAlliances[focusedPlayer].length; i++) {
                     for (int j = 0; j < chosenAlliances[focusedPlayer][i].length; j++) {
                         if (chosenAlliances[focusedPlayer][i][j] == true)
+                        {
                             allianceArray[i][j].setSelected(true);
+                            rules[i].setSelected(true);
+                        }
                         else
                             allianceArray[i][j].setSelected(false);
                     }
