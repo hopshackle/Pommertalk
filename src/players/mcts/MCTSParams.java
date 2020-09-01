@@ -27,6 +27,7 @@ public class MCTSParams implements ParameterSet {
     public double K = Math.sqrt(2);
     public int rollout_depth = 8;//10;
     public int heuristic_method = CUSTOM_HEURISTIC;
+    public double[] heuristicWeights = new double[]{0.5, 0.0, 0.1, 0.15, 0.15, 0.0, 0.0};
 
     // Budget settings
     public int stop_type = STOP_TIME;

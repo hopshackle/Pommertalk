@@ -2,6 +2,7 @@ package core;
 
 import Message.MessageManager;
 import com.google.gson.*;
+import negotiations.Agreement;
 import objects.*;
 import utils.*;
 
@@ -40,7 +41,15 @@ public class GameState {
     Types.GAME_MODE gameMode;
 
     protected MessageManager messageManager;
-    public MessageManager getMessageManager() {return messageManager;}
+
+    public MessageManager getMessageManager() {
+        return messageManager;
+    }
+
+    public List<Agreement> getAgreements() {
+        return model.negotiation.getFinalAgreements();
+    }
+
     /**
      * Constructor, first thing to call. Creates a GameState object with some information.
      *
@@ -113,6 +122,12 @@ public class GameState {
      */
     GameObject[] getAgents() {
         return model.getAgents();
+    }
+
+    public Avatar getAgent(int playerIndex) {
+        if (playerIndex < 4 && playerIndex >= 0)
+            return (Avatar) model.getAgents()[playerIndex];
+        throw new AssertionError("Invalid playerIndex " + playerIndex);
     }
 
     /**

@@ -47,9 +47,9 @@ public class GameInterface {
         this.elapsedTimer = elapsedTimer;
         fmBudget.reset();
         initStateInfo();
-        switch (params.heurisic_type) {
+        switch (params.heuristic_type) {
             case PLAYER_COUNT_HEURISTIC: stateHeuristic = new PlayerCountHeuristic(); break;
-            case CUSTOM_HEURISTIC: stateHeuristic = new CustomHeuristic(stateObs); break;
+            case CUSTOM_HEURISTIC: stateHeuristic = new CustomHeuristic(stateObs, params.heuristic_weights); break;
             case ADVANCED_HEURISTIC: stateHeuristic = new AdvancedHeuristic(stateObs, random); break;
             default:
             case WIN_SCORE_HEURISTIC: stateHeuristic = new WinScoreHeuristic(); break;

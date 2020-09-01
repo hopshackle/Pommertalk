@@ -207,7 +207,7 @@ class GameTest {
         mctsParams.heuristic_method = mctsParams.CUSTOM_HEURISTIC;
 
         RHEAParams rheaParams = new RHEAParams();
-        rheaParams.heurisic_type = Constants.CUSTOM_HEURISTIC;
+        rheaParams.heuristic_type = Constants.CUSTOM_HEURISTIC;
 
         players.add(new MCTSPlayer(seed, playerID++, mctsParams));
         players.add(new SimplePlayer(seed, playerID++));
@@ -288,7 +288,7 @@ class GameTest {
         mctsParams.heuristic_method = mctsParams.CUSTOM_HEURISTIC;
 
         RHEAParams rheaParams = new RHEAParams();
-        rheaParams.heurisic_type = Constants.CUSTOM_HEURISTIC;
+        rheaParams.heuristic_type = Constants.CUSTOM_HEURISTIC;
 
 
 
@@ -381,7 +381,7 @@ class GameTest {
         mctsParams.heuristic_method = mctsParams.CUSTOM_HEURISTIC;
 
         RHEAParams rheaParams = new RHEAParams();
-        rheaParams.heurisic_type = Constants.CUSTOM_HEURISTIC;
+        rheaParams.heuristic_type = Constants.CUSTOM_HEURISTIC;
 
         //players.add(new MCTSPlayer(seed, playerID++, mctsParams));
         //players.add(new RHEAPlayer(seed, playerID++, rheaParams));
@@ -461,7 +461,7 @@ class GameTest {
         mctsParams.heuristic_method = mctsParams.CUSTOM_HEURISTIC;
 
         RHEAParams rheaParams = new RHEAParams();
-        rheaParams.heurisic_type = Constants.CUSTOM_HEURISTIC;
+        rheaParams.heuristic_type = Constants.CUSTOM_HEURISTIC;
 
         players.add(new MCTSPlayer(seed, playerID++, mctsParams));
         players.add(new RHEAPlayer(seed, playerID++, rheaParams));

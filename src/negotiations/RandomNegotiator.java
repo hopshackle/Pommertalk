@@ -52,7 +52,7 @@ public class RandomNegotiator implements Negotiator {
             int response = rnd.nextDouble() > 0.5 ? MessageManager.Response.ACCEPT.ordinal() : MessageManager.Response.DENY.ordinal();
             manager.SendResponse(a.getParticipant2Id(), a.getParticipant1Id(), a.getType(), response);
             if (debug)
-                System.out.println(String.format("%s: %d -> %d: %s", response == 2 ? "ACCEPTED" : "REJECTED", a.getParticipant1Id(), a.getParticipant2Id(), a.getType()));
+                System.out.println(String.format("%s: %d -> %d: %s", MessageManager.Response.values()[response], a.getParticipant1Id(), a.getParticipant2Id(), a.getType()));
         }
     }
 }

@@ -106,7 +106,7 @@ public class Run {
                         rheaParams.budget_type = Constants.ITERATION_BUDGET;
                         rheaParams.iteration_budget = 200;
                         rheaParams.individual_length = 12;
-                        rheaParams.heurisic_type = Constants.CUSTOM_HEURISTIC;
+                        rheaParams.heuristic_type = Constants.CUSTOM_HEURISTIC;
 
                         p = new RHEAPlayer(seed, playerID++, rheaParams);
                         playerStr[i-4] = "RHEA";

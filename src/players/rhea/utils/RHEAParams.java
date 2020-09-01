@@ -38,7 +38,8 @@ public class RHEAParams implements ParameterSet {
     public int evaluate_act = EVALUATE_ACT_LAST;
     public int evaluate_update = EVALUATE_UPDATE_AVERAGE;
     public double evaluate_discount = 0.99;
-    public int heurisic_type = CUSTOM_HEURISTIC;
+    public int heuristic_type = CUSTOM_HEURISTIC;
+    public double[] heuristic_weights = new double[]{0.5, 0.0, 0.1, 0.15, 0.15, 0.0, 0.0};
     public boolean reevaluate_pop = true;
 
     // Shift settings
@@ -112,14 +113,15 @@ public class RHEAParams implements ParameterSet {
      * Parameters are in tree structure. This method returns children of given parameter.
      * Children parameters are parameters which only matter if parent has a certain value.
      * Maps values of parent to children that become relevant when parent takes that value.
+     *
      * @param parameter - given parent
      * @return - list of children
      */
-    public Map<Object,ArrayList<String>> getParameterChildren(String parameter) {
-        Map<Object,ArrayList<String>> values = new HashMap<>();
+    public Map<Object, ArrayList<String>> getParameterChildren(String parameter) {
+        Map<Object, ArrayList<String>> values = new HashMap<>();
         ArrayList<String> children;
 
-        switch(parameter) {
+        switch (parameter) {
 //            case "budget_type":
 //                children.clear();
 //                children.add("fm_budget");
@@ -196,13 +198,14 @@ public class RHEAParams implements ParameterSet {
      * Parent parameters are parameters which makes given child parameter matter only if parent has a certain value.
      * Maps parent to values which would make this child relevant.
      * Reverse of previous method
+     *
      * @param parameter - given child
      * @return - parent
      */
     public Pair<String, ArrayList<Object>> getParameterParent(String parameter) {
         ArrayList<Object> values = new ArrayList<>();
 
-        switch(parameter) {
+        switch (parameter) {
 //            case "iteration_budget":
 //                values.add(ITERATION_BUDGET);
 //                return new Pair<>("budget_type", values);
@@ -267,88 +270,166 @@ public class RHEAParams implements ParameterSet {
 
     @Override
     public void setParameterValue(String name, Object value) {
-        switch(name) {
-            case "genetic_operator": genetic_operator = (int) value; break;
-            case "mutation_type": mutation_type = (int) value; break;
-            case "selection_type": selection_type = (int) value; break;
-            case "crossover_type": crossover_type = (int) value; break;
-            case "init_type": init_type = (int) value; break;
-            case "elitism": elitism = (boolean) value; break;
-            case "keep_parents_next_gen": keep_parents_next_gen = (boolean) value; break;
+        switch (name) {
+            case "genetic_operator":
+                genetic_operator = (int) value;
+                break;
+            case "mutation_type":
+                mutation_type = (int) value;
+                break;
+            case "selection_type":
+                selection_type = (int) value;
+                break;
+            case "crossover_type":
+                crossover_type = (int) value;
+                break;
+            case "init_type":
+                init_type = (int) value;
+                break;
+            case "elitism":
+                elitism = (boolean) value;
+                break;
+            case "keep_parents_next_gen":
+                keep_parents_next_gen = (boolean) value;
+                break;
 
 //            case "budget_type": budget_type = (int) value; break;
 //            case "iteration_budget": iteration_budget = (int) value; break;
 //            case "fm_budget": fm_budget = (int) value; break;
-            case "mcts_budget_perc": mcts_budget_perc = (double) value; break;
+            case "mcts_budget_perc":
+                mcts_budget_perc = (double) value;
+                break;
 
-            case "frame_skip": frame_skip = (int) value; break;
-            case "frame_skip_type": frame_skip_type = (int) value; break;
+            case "frame_skip":
+                frame_skip = (int) value;
+                break;
+            case "frame_skip_type":
+                frame_skip_type = (int) value;
+                break;
 
-            case "population_size": population_size = (int) value; break;
-            case "individual_length": individual_length = (int) value; break;
-            case "mcts_depth": mcts_depth = (int) value; break;
-            case "gene_size": gene_size = (int) value; break;
-            case "offspring_count": offspring_count = (int) value; break;
-            case "no_elites": no_elites = (int) value; break;
-            case "tournament_size_perc": tournament_size_perc = (double) value; break;
-            case "mutation_gene_count": mutation_gene_count = (int) value; break;
-            case "mutation_rate": mutation_rate = (double) value; break;
+            case "population_size":
+                population_size = (int) value;
+                break;
+            case "individual_length":
+                individual_length = (int) value;
+                break;
+            case "mcts_depth":
+                mcts_depth = (int) value;
+                break;
+            case "gene_size":
+                gene_size = (int) value;
+                break;
+            case "offspring_count":
+                offspring_count = (int) value;
+                break;
+            case "no_elites":
+                no_elites = (int) value;
+                break;
+            case "tournament_size_perc":
+                tournament_size_perc = (double) value;
+                break;
+            case "mutation_gene_count":
+                mutation_gene_count = (int) value;
+                break;
+            case "mutation_rate":
+                mutation_rate = (double) value;
+                break;
 
-            case "evaluate_act": evaluate_act = (int) value; break;
+            case "evaluate_act":
+                evaluate_act = (int) value;
+                break;
 //            case "evaluate_update": evaluate_update = (int) value; break;
-            case "evaluate_discount": evaluate_discount = (double) value; break;
-            case "heuristic_type": heurisic_type = (int) value; break;
+            case "evaluate_discount":
+                evaluate_discount = (double) value;
+                break;
+            case "heuristic_type":
+                heuristic_type = (int) value;
+                break;
 
-            case "shift_buffer": shift_buffer = (boolean) value; break;
+            case "shift_buffer":
+                shift_buffer = (boolean) value;
+                break;
 //            case "shift_discount": shift_discount = (double) value; break;
 
-            case "mc_rollouts": mc_rollouts = (boolean) value; break;
-            case "mc_rollouts_length_perc": mc_rollouts_length_perc = (double) value; break;
-            case "mc_rollouts_repeat": mc_rollouts_repeat = (int) value; break;
+            case "mc_rollouts":
+                mc_rollouts = (boolean) value;
+                break;
+            case "mc_rollouts_length_perc":
+                mc_rollouts_length_perc = (double) value;
+                break;
+            case "mc_rollouts_repeat":
+                mc_rollouts_repeat = (int) value;
+                break;
         }
         updateDependentVariables();
     }
 
     @Override
     public Object getParameterValue(String name) {
-        switch(name) {
-            case "genetic_operator": return genetic_operator;
-            case "mutation_type": return mutation_type;
-            case "selection_type": return selection_type;
-            case "crossover_type": return crossover_type;
-            case "init_type": return init_type;
-            case "elitism": return elitism;
-            case "keep_parents_next_gen": return keep_parents_next_gen;
+        switch (name) {
+            case "genetic_operator":
+                return genetic_operator;
+            case "mutation_type":
+                return mutation_type;
+            case "selection_type":
+                return selection_type;
+            case "crossover_type":
+                return crossover_type;
+            case "init_type":
+                return init_type;
+            case "elitism":
+                return elitism;
+            case "keep_parents_next_gen":
+                return keep_parents_next_gen;
 
 //            case "budget_type": budget_type = (int) value; break;
 //            case "iteration_budget": iteration_budget = (int) value; break;
 //            case "fm_budget": fm_budget = (int) value; break;
-            case "mcts_budget_perc": return mcts_budget_perc;
+            case "mcts_budget_perc":
+                return mcts_budget_perc;
 
-            case "frame_skip": return frame_skip;
-            case "frame_skip_type": return frame_skip_type;
+            case "frame_skip":
+                return frame_skip;
+            case "frame_skip_type":
+                return frame_skip_type;
 
-            case "population_size": return population_size;
-            case "individual_length": return individual_length;
-            case "mcts_depth": return mcts_depth;
-            case "gene_size": return gene_size;
-            case "offspring_count": return offspring_count;
-            case "no_elites": return no_elites;
-            case "tournament_size_perc": return tournament_size_perc;
-            case "mutation_gene_count": return mutation_gene_count;
-            case "mutation_rate": return mutation_rate;
+            case "population_size":
+                return population_size;
+            case "individual_length":
+                return individual_length;
+            case "mcts_depth":
+                return mcts_depth;
+            case "gene_size":
+                return gene_size;
+            case "offspring_count":
+                return offspring_count;
+            case "no_elites":
+                return no_elites;
+            case "tournament_size_perc":
+                return tournament_size_perc;
+            case "mutation_gene_count":
+                return mutation_gene_count;
+            case "mutation_rate":
+                return mutation_rate;
 
-            case "evaluate_act": return evaluate_act;
+            case "evaluate_act":
+                return evaluate_act;
 //            case "evaluate_update": return evaluate_update;
-            case "evaluate_discount": return evaluate_discount;
-            case "heuristic_type": return heurisic_type;
+            case "evaluate_discount":
+                return evaluate_discount;
+            case "heuristic_type":
+                return heuristic_type;
 
-            case "shift_buffer": return shift_buffer;
+            case "shift_buffer":
+                return shift_buffer;
 //            case "shift_discount": return shift_discount;
 
-            case "mc_rollouts": return mc_rollouts;
-            case "mc_rollouts_length_perc": return mc_rollouts_length_perc;
-            case "mc_rollouts_repeat": return mc_rollouts_repeat;
+            case "mc_rollouts":
+                return mc_rollouts;
+            case "mc_rollouts_length_perc":
+                return mc_rollouts_length_perc;
+            case "mc_rollouts_repeat":
+                return mc_rollouts_repeat;
         }
         return null;
     }
