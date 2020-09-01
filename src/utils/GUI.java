@@ -31,6 +31,7 @@ public class GUI extends JFrame {
 
     // Player to show GUI for
     private int playerNo = -1;
+    private String playerName;
 
     // Which player following. Can also change description during each negotiation phase
     private JLabel allianceLabel;
@@ -47,6 +48,8 @@ public class GUI extends JFrame {
     public boolean[][][] setAlliances = new boolean[4][5][3];
     public boolean[][][] receivedAlliances = new boolean[4][5][3];
     public boolean[][][] chosenAlliances = new boolean[4][5][3];
+
+    private int proposalsLeft = NEGOTIATION_PROPOSAL_LIMIT;
 
     // Time left of each negotiation phase
     private int phaseTime1 = Types.NEGOTIATION_PHASE_ONE_LENGTH;
@@ -189,24 +192,30 @@ public class GUI extends JFrame {
         appTick = new JLabel("tick: 0");
         appTick.setFont(textFont);
 
+        JLabel nameLabel = new JLabel("<html><font color=rgb(0,100,100)>SPEEDY&nbsp&nbsp&nbsp&nbsp&nbsp</font><font color=rgb(200,100,100)>SHADOW&nbsp&nbsp&nbsp&nbsp</font><font color= rgb(90,150,90)>BASHFUL&nbsp&nbsp&nbsp&nbsp&nbsp</font><font color =rgb(160,160,80)>POKEY&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</font></html>");
+        textFont = new Font(appTitle.getFont().getName(), Font.PLAIN, 13);
+        nameLabel.setFont(textFont);
+
         avatarDisplayPanel = new AvatarView(game.getAvatars(-1));
 
         // Add everything to main panel
         mainPanel.add(appTitle, c);
         c.gridy++;
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 5)), c);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 0)), c);
         c.gridy++;
         mainPanel.add(appTick, c);
         c.gridy++;
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 5)), c);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 0)), c);
         c.gridy++;
         mainPanel.add(modeLabel, c);
         c.gridy++;
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 5)), c);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 0)), c);
+        c.gridy++;
+        mainPanel.add(nameLabel, c);
         c.gridy++;
         mainPanel.add(avatarDisplayPanel, c);
         c.gridy++;
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 5)), c);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 0)), c);
         c.gridy++;
         mainPanel.add(views[0], c);
 
@@ -573,6 +582,17 @@ public class GUI extends JFrame {
                                     if (curCol < allianceArray[curRow].length - 1)
                                         allianceArray[curRow][curCol + 1].requestFocus();
                                     break;
+                                case KeyEvent.VK_SPACE:
+                                    if (!allianceArray[curRow][curCol].isSelected() && proposalsLeft > 0)
+                                        proposalsLeft--;
+                                    else if (allianceArray[curRow][curCol].isSelected())
+                                    {
+                                        if(proposalsLeft < NEGOTIATION_PROPOSAL_LIMIT)
+                                        proposalsLeft++;
+                                    }
+                                    else if (proposalsLeft == 0)
+                                        allianceArray[curRow][curCol].setSelected(!allianceArray[curRow][curCol].isSelected());
+                                    break;
                                 default:
                                     break;
                             }
@@ -613,6 +633,20 @@ public class GUI extends JFrame {
             // If human is playing, main view will be human view, and not true game state.
             focusedPlayer = humanIdx;
         }
+        switch(focusedPlayer){
+            case 0:
+                playerName = "SPEEDY";
+                break;
+            case 1:
+                playerName = "SHADOW";
+                break;
+            case 2:
+                playerName = "BASHFUL";
+                break;
+            case 3:
+                playerName = "POKEY";
+                break;
+        }
 
         // Update Game state
         //gs = game.getGameState();
@@ -629,7 +663,8 @@ public class GUI extends JFrame {
             phaseTime1 = Types.NEGOTIATION_PHASE_ONE_LENGTH;
             phaseTime2 = Types.NEGOTIATION_PHASE_ONE_LENGTH;
 
-            allianceLabel.setText("current alliances: player " + (focusedPlayer + 1));
+            //allianceLabel.setText("current alliances: player " + (focusedPlayer + 1));
+            allianceLabel.setText("current alliances: " + playerName);
 
             // Highlight allowances for current round
             if(focusedPlayer > -1)
@@ -664,7 +699,8 @@ public class GUI extends JFrame {
                 else {
                     alliancePanel.setVisible(true);
 
-                    allianceLabel.setText("current alliances: player " + (focusedPlayer + 1));
+                    //allianceLabel.setText("current alliances: player " + (focusedPlayer + 1));
+                    allianceLabel.setText("current alliances: " + playerName);
                     switch (focusedPlayer) {
                         case 0:
                             for(int i = 0; i < allianceArray.length; i++)
@@ -790,8 +826,8 @@ public class GUI extends JFrame {
         }
         else if(game.getPhase() == GAME_PHASE.NEGOTIATION_ONE)
         {
-            mainPanel.setBackground(new Color(255,250,155));
-            alliancePanel.setBackground(new Color(255,250,155));
+            mainPanel.setBackground(new Color(255,250,200));
+            alliancePanel.setBackground(new Color(255,250,200));
 
             // Move focus to buttons for human player
             if (humanIdx > -1)
@@ -807,25 +843,30 @@ public class GUI extends JFrame {
                             rules[i].setEnabled(true);
                             allianceArray[i][j].setEnabled(true);
                             allianceArray[i][j].setFocusable(true);
+                            if(allianceArray[i][j].isSelected())
+                                proposalsLeft--;
                         }
                     }
 
-                    alliancePanel.requestFocus();
-                    allianceArray[0][0].requestFocusInWindow();
+                    //alliancePanel.requestFocus();
+                    //allianceArray[0][0].requestFocusInWindow();
+                    allianceArray[0][0].requestFocus();
                     rules[0].setSelected(true);
+
+
                 }
 
-
-
-                allianceLabel.setText("request alliances player " + (focusedPlayer + 1));
-                appTick.setText("MAKE REQUESTS: " + phaseTime1/10);
+                //allianceLabel.setText("request alliances player " + (focusedPlayer + 1));
+                allianceLabel.setText("request alliances " + playerName);
+                appTick.setText("MAKE UPTO " + proposalsLeft + " REQUESTS IN " + phaseTime1/10);
 
             }
 
             // For ai game just display game phase
             else if (humanIdx == -1)
             {
-                allianceLabel.setText("requesting alliances: player " + (focusedPlayer + 1));
+                //allianceLabel.setText("requesting alliances: player " + (focusedPlayer + 1));
+                allianceLabel.setText(playerName + " is requesting alliances");
                 appTick.setText("MAKING REQUESTS: " + phaseTime1/10);
             }
 
@@ -859,13 +900,14 @@ public class GUI extends JFrame {
         }
         else if(game.getPhase() == GAME_PHASE.NEGOTIATION_TWO)
         {
-            mainPanel.setBackground(new Color(145,210,160));
-            alliancePanel.setBackground(new Color(145,210,160));
+            mainPanel.setBackground(new Color(185,210,185));
+            alliancePanel.setBackground(new Color(185,210,185));
 
             if(humanIdx > -1)
             {
-                allianceLabel.setText("pick alliances: player " + (focusedPlayer + 1));
-                appTick.setText("SELECT ALLIANCES: " + phaseTime2/10);
+                //allianceLabel.setText("pick alliances: player " + (focusedPlayer + 1));
+                allianceLabel.setText("pick alliances " + playerName);
+                appTick.setText("SELECT YOUR ALLIANCES IN " + phaseTime2/10);
 
                 // Perform on first entering phase
                 if(phaseTime2 == NEGOTIATION_PHASE_TWO_LENGTH) {
@@ -894,7 +936,8 @@ public class GUI extends JFrame {
             }
             else if(humanIdx == -1)
             {
-                allianceLabel.setText("picking alliances: player " + (focusedPlayer + 1));
+                //allianceLabel.setText("picking alliances: player " + (focusedPlayer + 1));
+                allianceLabel.setText(playerName + " is picking alliances");
                 appTick.setText("SELECTING ALLIANCES: " + phaseTime2/10);
             }
 
