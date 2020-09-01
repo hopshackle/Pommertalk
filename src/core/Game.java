@@ -304,24 +304,25 @@ public class Game {
         int tick = gs.getTick();
         switch (phase) {
             case NORMAL:
-                if (separateThreads) {
-                    try {
-                        actions = getAvatarActionsInSeparateThreads();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    actions = getAvatarActions();
-                }
-
-                // Log actions
-                if (LOG_GAME) {
-                    gameLog.addActions(actions);
-                }
                 if (tick >= COLLAPSE_START && (tick - COLLAPSE_START) % COLLAPSE_STEP == 1) {
                     phase = GAME_PHASE.NEGOTIATION_ONE;
                     negotiation.startPhaseOne(gs);
                     negotiationStartTick = tick;
+                } else {
+                    if (separateThreads) {
+                        try {
+                            actions = getAvatarActionsInSeparateThreads();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        actions = getAvatarActions();
+                    }
+
+                    // Log actions
+                    if (LOG_GAME) {
+                        gameLog.addActions(actions);
+                    }
                 }
                 break;
             case NEGOTIATION_ONE:
