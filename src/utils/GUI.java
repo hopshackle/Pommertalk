@@ -866,7 +866,7 @@ public class GUI extends JFrame {
             else if (humanIdx == -1)
             {
                 //allianceLabel.setText("requesting alliances: player " + (focusedPlayer + 1));
-                allianceLabel.setText(playerName + "is requesting alliances");
+                allianceLabel.setText(playerName + " is requesting alliances");
                 appTick.setText("MAKING REQUESTS: " + phaseTime1/10);
             }
 
