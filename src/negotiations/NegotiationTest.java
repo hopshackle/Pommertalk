@@ -102,5 +102,32 @@ public class NegotiationTest {
         assertEquals(1, agent0.getAmmo());
     }
 
+    @Test
+    void canKickBombTowardsNonAlly() {
+        int[][] KICK_BOARD = new int[][]{
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 8, 3, 0, 0, 0, 12, 0},
+                new int[]{0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        };
+        // Types.TILETYPE.KICK = 8
+        // Types.TILETYPE.BOMB = 3
+
+
+        fail("Not yet implemented");
+    }
+
+    @Test
+    void cannotKickBombTowardsAlly() {
+        fail("Not yet implemented");
+    }
+
 
 }

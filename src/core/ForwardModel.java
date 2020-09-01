@@ -61,7 +61,11 @@ public class ForwardModel {
 
     // Negotiation Results
     protected Negotiation negotiation = emptyNegotiation; // default to no negotiated agreements
-    public Negotiation getNegotiation() {return negotiation;}
+
+    public Negotiation getNegotiation() {
+        return negotiation;
+    }
+
     public void injectNegotiation(Negotiation neg) {
         negotiation = neg;
     } // ability to inject a set of agreements if needed (primarily for testing)
@@ -486,9 +490,7 @@ public class ForwardModel {
 
             Vector2d pos = new Vector2d(x, y);
             ArrayList<GameObject> gos = findObjectInList(pos, aliveAgents);
-            for (GameObject go : gos) {
-                collapsedAgents.add(go);
-            }
+            collapsedAgents.addAll(gos);
         }
         board[y][x] = Types.TILETYPE.RIGID;
     }
@@ -508,10 +510,14 @@ public class ForwardModel {
                     }
                     if (p.getDesiredCoordinate().equals(b.getDesiredCoordinate())) {
                         // Agent tried to move onto bomb OR bomb tried to move onto agent, check if agent can kick
-                        if (((Avatar) p).canKick()) {
+                        Vector2d velocity = p.getDesiredCoordinate().subtract(p.getPosition());
+                        if (((Avatar) p).canKick() && negotiation.isKickPermitted(p, velocity, agents)) {
                             // Player can kick, so set bomb velocity
-                            Vector2d velocity = p.getDesiredCoordinate().subtract(p.getPosition());
                             ((Bomb) b).setVelocity(velocity);
+                            // for kicking therefore we need to check to see if this velocity will send the bomb to any player
+                            // with whom we have a no ball kicking agreement.
+                            // At its simplest this could dot the vectors and if close, disallow action
+                            // this could then be enhanced to allow bomb to be kicked into a wall
 
                             // First bomb move on the same tick as the kick happened. Do not move into players or walls.
                             // If bomb couldn't move, reset its velocity
@@ -1119,8 +1125,8 @@ public class ForwardModel {
             avatarPosition = avatar.getPosition();
             range = avatar.getVisionRange();
             if (avatar.getWinner() == RESULT.LOSS) {
-                for(int x = 0; x < size; x++)
-                    for(int y = 0; y < size; y++)
+                for (int x = 0; x < size; x++)
+                    for (int y = 0; y < size; y++)
                         copy.board[y][x] = TILETYPE.FOG;
                 return;
             }
