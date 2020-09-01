@@ -45,7 +45,7 @@ public class Test {
         //players.add(new MCTSPlayer(seed, playerID++, mctsParams));
 //        players.add(new HumanPlayer(ki1, playerID++));
 //        players.add(new SimplePlayer(seed, playerID++));
-        players.add(new RHEAPlayer(seed, playerID++, rheaParams, new RandomNegotiator(2)));
+      players.add(new RHEAPlayer(seed, playerID++, rheaParams, new RandomNegotiator(2)));
 //        players.add(new SimplePlayer(seed, playerID++));
         players.add(new MCTSPlayer(seed, playerID++, new MCTSParams(), new RandomNegotiator(3)));
         players.add(new RHEAPlayer(seed, playerID++, rheaParams, new RandomNegotiator(4)));
