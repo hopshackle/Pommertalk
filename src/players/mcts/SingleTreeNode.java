@@ -59,7 +59,7 @@ public class SingleTreeNode
     {
         this.rootState = gs;
         if (params.heuristic_method == params.CUSTOM_HEURISTIC)
-            this.rootStateHeuristic = new CustomHeuristic(gs);
+            this.rootStateHeuristic = new CustomHeuristic(gs, params.heuristicWeights);
         else if (params.heuristic_method == params.ADVANCED_HEURISTIC) // New method: combined heuristics
             this.rootStateHeuristic = new AdvancedHeuristic(gs, m_rnd);
     }
@@ -257,6 +257,9 @@ public class SingleTreeNode
         {
             n.nVisits++;
             n.totValue += result;
+            if (Double.isNaN(n.totValue)) {
+                throw new AssertionError("NaN in node value");
+            }
             if (result < n.bounds[0]) {
                 n.bounds[0] = result;
             }
