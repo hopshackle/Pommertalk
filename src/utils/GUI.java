@@ -633,7 +633,7 @@ public class GUI extends JFrame {
             // If human is playing, main view will be human view, and not true game state.
             focusedPlayer = humanIdx;
         }
-        switch(focusedPlayer){
+        switch(focusedPlayer) {
             case 0:
                 playerName = "SPEEDY";
                 break;
@@ -664,7 +664,11 @@ public class GUI extends JFrame {
             phaseTime2 = Types.NEGOTIATION_PHASE_ONE_LENGTH;
 
             //allianceLabel.setText("current alliances: player " + (focusedPlayer + 1));
-            allianceLabel.setText("current alliances: " + playerName);
+            //allianceLabel.setText("current alliances: " + playerName);
+            if(focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == true)
+                allianceLabel.setText("current alliances: " + playerName);
+            else if(focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == false)
+                allianceLabel.setText(playerName + " is dead but not forgotten");
 
             // Highlight allowances for current round
             if(focusedPlayer > -1)
@@ -699,8 +703,12 @@ public class GUI extends JFrame {
                 else {
                     alliancePanel.setVisible(true);
 
+                    /**if(avatarDisplayPanel.getAlive()[focusedPlayer] == true)
+                        allianceLabel.setText("current alliances: " + playerName);
+                    else if(avatarDisplayPanel.getAlive()[focusedPlayer] == false)
+                        allianceLabel.setText(playerName + " is dead but not forgotten");**/
                     //allianceLabel.setText("current alliances: player " + (focusedPlayer + 1));
-                    allianceLabel.setText("current alliances: " + playerName);
+                    //allianceLabel.setText("current alliances: " + playerName);
                     switch (focusedPlayer) {
                         case 0:
                             for(int i = 0; i < allianceArray.length; i++)
@@ -865,8 +873,12 @@ public class GUI extends JFrame {
             // For ai game just display game phase
             else if (humanIdx == -1)
             {
+                if(focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == true)
+                    allianceLabel.setText(playerName + " is requesting alliances");
                 //allianceLabel.setText("requesting alliances: player " + (focusedPlayer + 1));
-                allianceLabel.setText(playerName + " is requesting alliances");
+                else if(focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == false)
+                    allianceLabel.setText(playerName + " is dead but not forgotten");
+                //allianceLabel.setText(playerName + " is requesting alliances");
                 appTick.setText("MAKING REQUESTS: " + phaseTime1/10);
             }
 
@@ -936,8 +948,13 @@ public class GUI extends JFrame {
             }
             else if(humanIdx == -1)
             {
+                if(focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == true)
+                    allianceLabel.setText(playerName + " is picking alliances");
+                    //allianceLabel.setText("requesting alliances: player " + (focusedPlayer + 1));
+                else if(focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == false)
+                    allianceLabel.setText(playerName + " is dead but not forgotten");
                 //allianceLabel.setText("picking alliances: player " + (focusedPlayer + 1));
-                allianceLabel.setText(playerName + " is picking alliances");
+                //allianceLabel.setText(playerName + " is picking alliances");
                 appTick.setText("SELECTING ALLIANCES: " + phaseTime2/10);
             }
 
