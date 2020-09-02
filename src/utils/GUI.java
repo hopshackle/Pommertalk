@@ -231,6 +231,8 @@ public class GUI extends JFrame {
         mainPanel.add(views[0], c);
 
         c.gridy++;
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 0)), c);
+        c.gridy++;
 
         // Display alliance panel if selected or a human player
         if(playerNo == -1)
@@ -240,7 +242,7 @@ public class GUI extends JFrame {
 
         mainPanel.add(alliancePanel, c);
 
-        alliancePanel.setVisible(false);
+   //     alliancePanel.setVisible(false);
 
         return mainPanel;
     }
@@ -988,9 +990,9 @@ public class GUI extends JFrame {
                 // Perform on first entering phase
                 if(phaseTime2 == NEGOTIATION_PHASE_TWO_LENGTH) {
 
-                        for(int i = 0; i < allianceArray.length; i++)
+                        for(int i = allianceArray.length -1; i >= 0 ; i--)
                         {
-                            for(int j = 0; j <allianceArray[i].length; j++)
+                            for(int j = allianceArray[i].length -1; j>= 0; j--)
                             {
                                 if(receivedAlliances[playerNo][i][j] == true)
                                 {
@@ -1007,7 +1009,7 @@ public class GUI extends JFrame {
                                                     allianceArray[i][j].setIcon(agent2slo);
                                                     allianceArray[i][j].setSelectedIcon(agent2s);
                                                     break;
-                                                case 3:
+                                                case 2:
                                                     allianceArray[i][j].setIcon(agent3slo);
                                                     allianceArray[i][j].setSelectedIcon(agent3s);
                                                     break;
@@ -1023,7 +1025,7 @@ public class GUI extends JFrame {
                                                     allianceArray[i][j].setIcon(agent2slo);
                                                     allianceArray[i][j].setSelectedIcon(agent2s);
                                                     break;
-                                                case 3:
+                                                case 2:
                                                     allianceArray[i][j].setIcon(agent3slo);
                                                     allianceArray[i][j].setSelectedIcon(agent3s);
                                                     break;
@@ -1039,7 +1041,7 @@ public class GUI extends JFrame {
                                                     allianceArray[i][j].setIcon(agent1slo);
                                                     allianceArray[i][j].setSelectedIcon(agent1s);
                                                     break;
-                                                case 3:
+                                                case 2:
                                                     allianceArray[i][j].setIcon(agent3slo);
                                                     allianceArray[i][j].setSelectedIcon(agent3s);
                                                     break;
@@ -1055,7 +1057,7 @@ public class GUI extends JFrame {
                                                     allianceArray[i][j].setIcon(agent1slo);
                                                     allianceArray[i][j].setSelectedIcon(agent1s);
                                                     break;
-                                                case 3:
+                                                case 2:
                                                     allianceArray[i][j].setIcon(agent2slo);
                                                     allianceArray[i][j].setSelectedIcon(agent2s);
                                                     break;
@@ -1064,7 +1066,7 @@ public class GUI extends JFrame {
                                     }
                                     // End of switch statement to possibly remove
 
-                                    allianceArray[i][j].setSelected(true);
+                                    allianceArray[i][j].setSelected(false);
                                     allianceArray[i][j].setEnabled(true);
                                     allianceArray[i][j].requestFocusInWindow();
                                 }
@@ -1077,32 +1079,152 @@ public class GUI extends JFrame {
                         }
 
                 }
+
+                for(int i = allianceArray.length -1; i >= 0 ; i--) {
+                    for (int j = allianceArray[i].length - 1; j >= 0; j--) {
+                        if (!allianceArray[i][j].isSelected() && phaseTime2 % 4 == 0) {
+                            switch (focusedPlayer) {
+                                case 0:
+                                    switch (j) {
+                                        case 0:
+                                            allianceArray[i][j].setIcon(agent1lo);
+                                            break;
+                                        case 1:
+                                            allianceArray[i][j].setIcon(agent2lo);
+                                            break;
+                                        case 2:
+                                            allianceArray[i][j].setIcon(agent3lo);
+                                            break;
+                                    }
+                                    break;
+                                case 1:
+                                    switch (j) {
+                                        case 0:
+                                            allianceArray[i][j].setIcon(agent0lo);
+                                            break;
+                                        case 1:
+                                            allianceArray[i][j].setIcon(agent2lo);
+                                            break;
+                                        case 2:
+                                            allianceArray[i][j].setIcon(agent3lo);
+                                            break;
+                                    }
+                                    break;
+                                case 2:
+                                    switch (j) {
+                                        case 0:
+                                            allianceArray[i][j].setIcon(agent0lo);
+                                            break;
+                                        case 1:
+                                            allianceArray[i][j].setIcon(agent1lo);
+                                            break;
+                                        case 2:
+                                            allianceArray[i][j].setIcon(agent3lo);
+                                            break;
+                                    }
+                                    break;
+                                case 3:
+                                    switch (j) {
+                                        case 0:
+                                            allianceArray[i][j].setIcon(agent0lo);
+                                            break;
+                                        case 1:
+                                            allianceArray[i][j].setIcon(agent1lo);
+                                            break;
+                                        case 2:
+                                            allianceArray[i][j].setIcon(agent2lo);
+                                            break;
+                                    }
+                                    break;
+                            }
+                        } else if (!allianceArray[i][j].isSelected()) {
+                            switch (focusedPlayer) {
+                                case 0:
+                                    switch (j) {
+                                        case 0:
+                                            allianceArray[i][j].setIcon(agent1slo);
+                                            break;
+                                        case 1:
+                                            allianceArray[i][j].setIcon(agent2slo);
+                                            break;
+                                        case 2:
+                                            allianceArray[i][j].setIcon(agent3slo);
+                                            break;
+                                    }
+                                    break;
+                                case 1:
+                                    switch (j) {
+                                        case 0:
+                                            allianceArray[i][j].setIcon(agent0slo);
+                                            break;
+                                        case 1:
+                                            allianceArray[i][j].setIcon(agent2slo);
+                                            break;
+                                        case 2:
+                                            allianceArray[i][j].setIcon(agent3slo);
+                                            break;
+                                    }
+                                    break;
+                                case 2:
+                                    switch (j) {
+                                        case 0:
+                                            allianceArray[i][j].setIcon(agent0slo);
+                                            break;
+                                        case 1:
+                                            allianceArray[i][j].setIcon(agent1slo);
+                                            break;
+                                        case 2:
+                                            allianceArray[i][j].setIcon(agent3slo);
+                                            break;
+                                    }
+                                    break;
+                                case 3:
+                                    switch (j) {
+                                        case 0:
+                                            allianceArray[i][j].setIcon(agent0slo);
+                                            break;
+                                        case 1:
+                                            allianceArray[i][j].setIcon(agent1slo);
+                                            break;
+                                        case 2:
+                                            allianceArray[i][j].setIcon(agent2slo);
+                                            break;
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                }
+
             }
             // For ai game or after human player has died show selected alliances
             else if(humanIdx == -1)
             {
-                if(focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == true)
-                    allianceLabel.setText(playerName + " is picking alliances");
-                else if(focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == false)
-                    allianceLabel.setText(playerName + " is dead but not forgotten");
-
                 appTick.setText("SELECTING FROM PROPOSALS IN " + phaseTime2/10);
 
-                // Fetch chosen ai alliances and show using buttons
-                if(NEGOTIATION_PHASE_TWO_LENGTH - phaseTime2 == 15) {
-                    // Get each ai proposed alliances
-                    MessageManager ms = gs.getMessageManager();
-                    chosenAlliances = ms.agreedPropToBool();
-                }
-                for (int i = 0; i < chosenAlliances[focusedPlayer].length; i++) {
-                    for (int j = 0; j < chosenAlliances[focusedPlayer][i].length; j++) {
-                        if (chosenAlliances[focusedPlayer][i][j] == true)
-                        {
-                            allianceArray[i][j].setSelected(true);
-                            rules[i].setSelected(true);
+                if(focusedPlayer > -1)
+                {
+                    if(focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == true)
+                        allianceLabel.setText(playerName + " is picking alliances");
+                    else if(focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == false)
+                        allianceLabel.setText(playerName + " is dead but not forgotten");
+
+                    // Fetch chosen ai alliances and show using buttons
+                    if(NEGOTIATION_PHASE_TWO_LENGTH - phaseTime2 == 15) {
+                        // Get each ai proposed alliances
+                        MessageManager ms = gs.getMessageManager();
+                        chosenAlliances = ms.agreedPropToBool();
+                    }
+                    for (int i = 0; i < chosenAlliances[focusedPlayer].length; i++) {
+                        for (int j = 0; j < chosenAlliances[focusedPlayer][i].length; j++) {
+                            if (chosenAlliances[focusedPlayer][i][j] == true)
+                            {
+                                allianceArray[i][j].setSelected(true);
+                                rules[i].setSelected(true);
+                            }
+                            else
+                                allianceArray[i][j].setSelected(false);
                         }
-                        else
-                            allianceArray[i][j].setSelected(false);
                     }
                 }
             }
@@ -1122,6 +1244,15 @@ public class GUI extends JFrame {
             if(phaseTime2 == 1)
             {
                 this.requestFocus();
+
+                // Initialise array for all players so not sending ai alliances from last round
+                for(int k = 0; k < NUM_PLAYERS; k ++) {
+                    for (int i = 0; i < allianceArray.length; i++) {
+                        for (int j = 0; j < allianceArray[0].length; j++) {
+                            chosenAlliances[k][i][j] = false;
+                        }
+                    }
+                }
 
                 if(humanIdx > -1)
                 {

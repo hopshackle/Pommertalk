@@ -10,7 +10,7 @@ import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Random;
 
-public class HumanPlayer extends Player {
+public class HumanPlayer extends Player  {
     private Random random;
     private KeyController keyboard;
 

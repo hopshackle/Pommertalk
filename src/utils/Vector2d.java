@@ -321,8 +321,15 @@ public class Vector2d {
      * @param v the other vector.
      * @return the dot product between these two vectors.
      */
-    public int dot(Vector2d v) {
+    public double dot(Vector2d v) {
         return this.x * v.x + this.y * v.y;
+    }
+
+    public double normalDot(Vector2d v) {
+        // first we normalise both vectors
+        double[] v1 = new double[]{v.x / v.mag(), v.y / v.mag()};
+        double[] v2 = new double[]{this.x / this.mag(), this.y / this.mag()};
+        return v1[0] * v2[0] + v1[1] * v2[1];
     }
 
     public Vector2d unitVector() {
