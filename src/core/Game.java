@@ -31,9 +31,24 @@ public class Game {
     // Mode of the game being played. This could be FFA, TEAM or TEAM_RADIO.
     private Types.GAME_MODE gameMode;
     private Types.GAME_PHASE phase = GAME_PHASE.NORMAL;
+    private Types.GAME_PHASE previousPhase = GAME_PHASE.NORMAL;
+    public boolean runAgain = true;
 
     public Types.GAME_PHASE getPhase() {
         return phase;
+    }
+    public void pauseGame(boolean paused) {
+        if (paused) {
+            previousPhase = phase;
+            phase = GAME_PHASE.PAUSED;
+        } else {
+            phase = previousPhase;
+        }
+    }
+    private void setPhase(Types.GAME_PHASE newPhase) {
+        if (phase == GAME_PHASE.PAUSED)
+            throw new AssertionError("Should not happen - if game is PAUSED then we should not change the state");
+        phase = newPhase;
     }
 
     private int negotiationStartTick;
@@ -303,9 +318,11 @@ public class Game {
 
         int tick = gs.getTick();
         switch (phase) {
+            case PAUSED:
+                return; // do nothing
             case NORMAL:
-                if (tick >= COLLAPSE_START && (tick - COLLAPSE_START) % COLLAPSE_STEP == 1) {
-                    phase = GAME_PHASE.NEGOTIATION_ONE;
+                if (tick >= COLLAPSE_START && (tick - COLLAPSE_START) % COLLAPSE_STEP == 10) {
+                    setPhase(GAME_PHASE.NEGOTIATION_ONE);
                     negotiation.startPhaseOne(gs);
                     negotiationStartTick = tick;
                 } else {
@@ -328,14 +345,14 @@ public class Game {
             case NEGOTIATION_ONE:
                 if (tick >= negotiationStartTick + Types.NEGOTIATION_PHASE_ONE_LENGTH) {
                     negotiation.startPhaseTwo(gs);
-                    phase = GAME_PHASE.NEGOTIATION_TWO;
+                    setPhase(GAME_PHASE.NEGOTIATION_TWO);
                     negotiationStartTick = tick;
                 }
                 break;
             case NEGOTIATION_TWO:
                 if (tick >= negotiationStartTick + NEGOTIATION_PHASE_TWO_LENGTH) {
                     negotiation.endPhaseTwo(gs);
-                    phase = GAME_PHASE.NORMAL;
+                    setPhase(GAME_PHASE.NORMAL);
                     negotiationStartTick = 0;
                 }
                 break;
