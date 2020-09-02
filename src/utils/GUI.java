@@ -168,9 +168,9 @@ public class GUI extends JFrame {
                     // If human is playing, main view will be human view, and not true game state
                     pIdx = humanIdx;
             }
-            /*else if (humanIdx > -1 && !displayPOHuman)
+            else if (humanIdx > -1 && !displayPOHuman)
                 // If a human is playing and we don't need to display the other PO views, leave them null
-                break;*/
+                break;
 
             views[i] = new GameView(game.getBoard(pIdx), cellSize);
         }
@@ -255,7 +255,7 @@ public class GUI extends JFrame {
      */
     private JPanel getPoPanel() {
         JPanel poPanel = null;
-        //if (humanIdx == -1 || displayPOHuman) {
+        if (humanIdx == -1 || displayPOHuman) {
             poPanel = new JPanel();
             poPanel.setLayout(new BoxLayout(poPanel, BoxLayout.Y_AXIS));
             poPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -263,7 +263,7 @@ public class GUI extends JFrame {
                 poPanel.add(views[i]);
                 poPanel.add(Box.createRigidArea(new Dimension(0, 5)));
             }
-        //}
+        }
         return poPanel;
     }
 
@@ -654,10 +654,6 @@ public class GUI extends JFrame {
      * Paints the GUI, to be called at every game tick.
      */
     public void paint() {
-
-        // hide other player views from human player
-        if(displayPOHuman == false)
-            poPanel.setVisible(false);
 
         // Update focused player.
         int focusedPlayer;
