@@ -862,7 +862,7 @@ public class GUI extends JFrame {
             }
 
             // Time of next screen collapse
-            NextCollapse = COLLAPSE_START+1 + stage*COLLAPSE_STEP;
+            NextCollapse = COLLAPSE_START+1+10 + stage*COLLAPSE_STEP;
 
             // Update game tick.
             //appTick.setText("tick: " + game.getTick() + ". next round at " + NextCollapse);
