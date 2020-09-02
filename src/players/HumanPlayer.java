@@ -10,23 +10,13 @@ import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Random;
 
-public class HumanPlayer extends Player implements Negotiator {
+public class HumanPlayer extends Player  {
     private Random random;
     private KeyController keyboard;
 
     public HumanPlayer(KeyController ki, int id) {
         super(0, id);
         keyboard = ki;
-    }
-
-    @Override
-    public void makeProposals(int playerIndex, GameState gs, MessageManager manager) {
-
-    }
-
-    @Override
-    public void reviewProposals(int playerIndex, GameState gs, MessageManager manager) {
-
     }
 
     public KeyController getKeyAdapter() {return keyboard;}
