@@ -19,12 +19,12 @@ public class Types {
     public static int DEFAULT_VISION_RANGE = 3;    //-1 for full observability, >1 for PO.
 
     public static boolean COLLAPSE_BOARD = true;
-    public static int COLLAPSE_START = 100;
+    public static int COLLAPSE_START = 99;
     public static int COLLAPSE_STAGES = 4;
     public static int COLLAPSE_STEP = ((Types.MAX_GAME_TICKS - COLLAPSE_START) / COLLAPSE_STAGES);
     public static boolean NEGOTIATION = true;
-    public static int NEGOTIATION_PHASE_ONE_LENGTH = 49;
-    public static int NEGOTIATION_PHASE_TWO_LENGTH = 49;
+    public static int NEGOTIATION_PHASE_ONE_LENGTH = 69;
+    public static int NEGOTIATION_PHASE_TWO_LENGTH = 69;
     public static int NEGOTIATION_PROPOSAL_LIMIT = 2;
     public static int STAY_APART_DISTANCE = 3;
     public static int NO_BOMB_DISTANCE = 3;
