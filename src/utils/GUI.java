@@ -58,6 +58,10 @@ public class GUI extends JFrame {
     private int stage = 0;
     private int NextCollapse = COLLAPSE_START+1;
 
+    // game paused for negotiation phases
+    private boolean gamePause1 = false;
+    private boolean gamePause2 = false;
+
     // Debug array for testing
     //private boolean[][] testAlliance = {{false, true, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, true}};
 
@@ -596,7 +600,7 @@ public class GUI extends JFrame {
                     allianceArray[i][j].addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyPressed(KeyEvent e) {
-                        if(game.getPhase() == GAME_PHASE.NEGOTIATION_ONE) {
+                        if(game.getPhase() == GAME_PHASE.NEGOTIATION_ONE || gamePause1 == true) {
                             switch (e.getKeyCode()) {
                                 case KeyEvent.VK_UP:
                                     if (curRow > 0) {
@@ -635,11 +639,15 @@ public class GUI extends JFrame {
                                     else if (proposalsLeft == 0)
                                         allianceArray[curRow][curCol].setSelected(!allianceArray[curRow][curCol].isSelected());
                                     break;
+                                case KeyEvent.VK_P:
+                                    gamePause1 = !gamePause1;
+                                    game.pauseGame(gamePause1);
+                                    break;
                                 default:
                                     break;
                             }
                         }
-                        else if(game.getPhase() == GAME_PHASE.NEGOTIATION_TWO)
+                        else if(game.getPhase() == GAME_PHASE.NEGOTIATION_TWO || gamePause2 == true)
                         {
                             switch (e.getKeyCode()) {
                                 case KeyEvent.VK_UP:
@@ -648,6 +656,12 @@ public class GUI extends JFrame {
                                     break;
                                 case KeyEvent.VK_DOWN: case KeyEvent.VK_RIGHT:
                                     allianceArray[curRow][curCol].transferFocus();
+                                    break;
+                                case KeyEvent.VK_P:
+                                    gamePause2 = !gamePause2;
+                                    game.pauseGame(gamePause2);
+                                    break;
+                                default:
                                     break;
                             }
                         }
@@ -909,16 +923,17 @@ public class GUI extends JFrame {
                     allianceArray[0][0].requestFocus();
                     rules[0].setSelected(true);
 
+                    allianceLabel.setText("request alliances: " + playerName);
+                    appTick.setText("MAX " + NEGOTIATION_PROPOSAL_LIMIT + " REQUESTS." + " PRESS 'p' TO START.");
 
+                    // Pause game
+                    gamePause1 = true;
+                    game.pauseGame(gamePause1);
                 }
-
-                // Display number of proposals remaining that player can make
-                String requestNoText = " REQUESTS IN ";
-                if(proposalsLeft == 1)
-                    requestNoText = " REQUEST IN ";
-
-                allianceLabel.setText("request alliances: " + playerName);
-                appTick.setText("MAKE UPTO " + proposalsLeft + requestNoText + phaseTime1/10);
+                else if(phaseTime1 < NEGOTIATION_PHASE_ONE_LENGTH)
+                {
+                    appTick.setText("NEXT PHASE IN " + phaseTime1/10);
+                }
 
             }
 
@@ -992,112 +1007,115 @@ public class GUI extends JFrame {
         }
 
         // Negotiation phase 2. Green background
-        else if(game.getPhase() == GAME_PHASE.NEGOTIATION_TWO)
-        {
+        else if(game.getPhase() == GAME_PHASE.NEGOTIATION_TWO) {
             // set background colour
-            mainPanel.setBackground(new Color(185,210,185));
-            alliancePanel.setBackground(new Color(185,210,185));
+            mainPanel.setBackground(new Color(185, 210, 185));
+            alliancePanel.setBackground(new Color(185, 210, 185));
 
             // Allow human player to choose from received alliances
-            if(humanIdx > -1)
-            {
-                allianceLabel.setText("accept/reject alliances: " + playerName);
-                appTick.setText("SELECT FROM PROPOSALS IN " + phaseTime2/10);
+            if (humanIdx > -1) {
+                //allianceLabel.setText("accept/reject alliances: " + playerName);
+                //appTick.setText("SELECT FROM PROPOSALS IN " + phaseTime2/10);
 
                 // Perform on first entering phase
-                if(phaseTime2 == NEGOTIATION_PHASE_TWO_LENGTH) {
+                if (phaseTime2 == NEGOTIATION_PHASE_TWO_LENGTH) {
 
-                        for(int i = allianceArray.length -1; i >= 0 ; i--)
-                        {
-                            for(int j = allianceArray[i].length -1; j>= 0; j--)
-                            {
-                                if(receivedAlliances[playerNo][i][j] == true)
-                                {
-                                    // Display proposals to select from for each player
-                                    // Remove if confusing
-                                    switch (focusedPlayer) {
-                                        case 0:
-                                            switch (j) {
-                                                case 0:
-                                                    allianceArray[i][j].setIcon(agent1slo);
-                                                    allianceArray[i][j].setSelectedIcon(agent1s);
-                                                    break;
-                                                case 1:
-                                                    allianceArray[i][j].setIcon(agent2slo);
-                                                    allianceArray[i][j].setSelectedIcon(agent2s);
-                                                    break;
-                                                case 2:
-                                                    allianceArray[i][j].setIcon(agent3slo);
-                                                    allianceArray[i][j].setSelectedIcon(agent3s);
-                                                    break;
-                                            }
-                                            break;
-                                        case 1:
-                                            switch (j) {
-                                                case 0:
-                                                    allianceArray[i][j].setIcon(agent0slo);
-                                                    allianceArray[i][j].setSelectedIcon(agent0s);
-                                                    break;
-                                                case 1:
-                                                    allianceArray[i][j].setIcon(agent2slo);
-                                                    allianceArray[i][j].setSelectedIcon(agent2s);
-                                                    break;
-                                                case 2:
-                                                    allianceArray[i][j].setIcon(agent3slo);
-                                                    allianceArray[i][j].setSelectedIcon(agent3s);
-                                                    break;
-                                            }
-                                            break;
-                                        case 2:
-                                            switch (j) {
-                                                case 0:
-                                                    allianceArray[i][j].setIcon(agent0slo);
-                                                    allianceArray[i][j].setSelectedIcon(agent0s);
-                                                    break;
-                                                case 1:
-                                                    allianceArray[i][j].setIcon(agent1slo);
-                                                    allianceArray[i][j].setSelectedIcon(agent1s);
-                                                    break;
-                                                case 2:
-                                                    allianceArray[i][j].setIcon(agent3slo);
-                                                    allianceArray[i][j].setSelectedIcon(agent3s);
-                                                    break;
-                                            }
-                                            break;
-                                        case 3:
-                                            switch (j) {
-                                                case 0:
-                                                    allianceArray[i][j].setIcon(agent0slo);
-                                                    allianceArray[i][j].setSelectedIcon(agent0s);
-                                                    break;
-                                                case 1:
-                                                    allianceArray[i][j].setIcon(agent1slo);
-                                                    allianceArray[i][j].setSelectedIcon(agent1s);
-                                                    break;
-                                                case 2:
-                                                    allianceArray[i][j].setIcon(agent2slo);
-                                                    allianceArray[i][j].setSelectedIcon(agent2s);
-                                                    break;
-                                            }
-                                            break;
-                                    }
-                                    // End of switch statement to possibly remove
+                    for (int i = allianceArray.length - 1; i >= 0; i--) {
+                        for (int j = allianceArray[i].length - 1; j >= 0; j--) {
+                            if (receivedAlliances[playerNo][i][j] == true) {
+                                // Display proposals to select from for each player
+                                // Remove if confusing
+                                switch (focusedPlayer) {
+                                    case 0:
+                                        switch (j) {
+                                            case 0:
+                                                allianceArray[i][j].setIcon(agent1slo);
+                                                allianceArray[i][j].setSelectedIcon(agent1s);
+                                                break;
+                                            case 1:
+                                                allianceArray[i][j].setIcon(agent2slo);
+                                                allianceArray[i][j].setSelectedIcon(agent2s);
+                                                break;
+                                            case 2:
+                                                allianceArray[i][j].setIcon(agent3slo);
+                                                allianceArray[i][j].setSelectedIcon(agent3s);
+                                                break;
+                                        }
+                                        break;
+                                    case 1:
+                                        switch (j) {
+                                            case 0:
+                                                allianceArray[i][j].setIcon(agent0slo);
+                                                allianceArray[i][j].setSelectedIcon(agent0s);
+                                                break;
+                                            case 1:
+                                                allianceArray[i][j].setIcon(agent2slo);
+                                                allianceArray[i][j].setSelectedIcon(agent2s);
+                                                break;
+                                            case 2:
+                                                allianceArray[i][j].setIcon(agent3slo);
+                                                allianceArray[i][j].setSelectedIcon(agent3s);
+                                                break;
+                                        }
+                                        break;
+                                    case 2:
+                                        switch (j) {
+                                            case 0:
+                                                allianceArray[i][j].setIcon(agent0slo);
+                                                allianceArray[i][j].setSelectedIcon(agent0s);
+                                                break;
+                                            case 1:
+                                                allianceArray[i][j].setIcon(agent1slo);
+                                                allianceArray[i][j].setSelectedIcon(agent1s);
+                                                break;
+                                            case 2:
+                                                allianceArray[i][j].setIcon(agent3slo);
+                                                allianceArray[i][j].setSelectedIcon(agent3s);
+                                                break;
+                                        }
+                                        break;
+                                    case 3:
+                                        switch (j) {
+                                            case 0:
+                                                allianceArray[i][j].setIcon(agent0slo);
+                                                allianceArray[i][j].setSelectedIcon(agent0s);
+                                                break;
+                                            case 1:
+                                                allianceArray[i][j].setIcon(agent1slo);
+                                                allianceArray[i][j].setSelectedIcon(agent1s);
+                                                break;
+                                            case 2:
+                                                allianceArray[i][j].setIcon(agent2slo);
+                                                allianceArray[i][j].setSelectedIcon(agent2s);
+                                                break;
+                                        }
+                                        break;
+                                }
+                                // End of switch statement to possibly remove
 
-                                    allianceArray[i][j].setSelected(false);
-                                    allianceArray[i][j].setEnabled(true);
-                                    allianceArray[i][j].requestFocusInWindow();
-                                }
-                                else
-                                {
-                                    allianceArray[i][j].setSelected(false);
-                                    allianceArray[i][j].setEnabled(false);
-                                }
+                                allianceArray[i][j].setSelected(false);
+                                allianceArray[i][j].setEnabled(true);
+                                allianceArray[i][j].requestFocus();
+                            } else {
+                                allianceArray[i][j].setSelected(false);
+                                allianceArray[i][j].setEnabled(false);
                             }
                         }
+                    }
+                    allianceLabel.setText("accept/reject alliances: " + playerName);
+                    appTick.setText("CHOOSE PROPOSALS." + " PRESS 'p' TO START.");
 
+                    // Pause game
+                    gamePause2 = true;
+                    game.pauseGame(gamePause2);
+                } else if (phaseTime2 < NEGOTIATION_PHASE_TWO_LENGTH) {
+                    appTick.setText("REJOINING GAME IN " + phaseTime2 / 10);
                 }
 
-                for(int i = allianceArray.length -1; i >= 0 ; i--) {
+
+
+            // Flash icons to show proposals
+               /* for(int i = allianceArray.length -1; i >= 0 ; i--) {
                     for (int j = allianceArray[i].length - 1; j >= 0; j--) {
                         if (!allianceArray[i][j].isSelected() && phaseTime2 % 4 == 0) {
                             switch (focusedPlayer) {
@@ -1211,7 +1229,7 @@ public class GUI extends JFrame {
                             }
                         }
                     }
-                }
+                }*/
 
             }
             // For ai game or after human player has died show selected alliances
