@@ -41,6 +41,8 @@ public class GUI extends JFrame {
 
     // Original game panel
     private JPanel mainPanel;
+    // Original game panel
+    private JPanel poPanel;
 
     // Alliances at each negotiation stage as 3D array X: For each player, Y: For each rule, Z: With which other player
     public boolean[][][] setAlliances = new boolean[4][5][3];
@@ -53,6 +55,8 @@ public class GUI extends JFrame {
     // Time left during each negotiation phase
     private int phaseTime1 = Types.NEGOTIATION_PHASE_ONE_LENGTH;
     private int phaseTime2 = Types.NEGOTIATION_PHASE_TWO_LENGTH;
+    private int stage = 0;
+    private int NextCollapse = COLLAPSE_START+1;
 
     // Debug array for testing
     //private boolean[][] testAlliance = {{false, true, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, true}};
@@ -104,7 +108,7 @@ public class GUI extends JFrame {
         mainPanel = getMainPanel();
 
         // Add everything to side panel if we need it to be displayed
-        JPanel poPanel = getPoPanel();
+        poPanel = getPoPanel();
 
         /* Add all elements to the content pane */
 
@@ -166,9 +170,9 @@ public class GUI extends JFrame {
                     // If human is playing, main view will be human view, and not true game state
                     pIdx = humanIdx;
             }
-            else if (humanIdx > -1 && !displayPOHuman)
+            /*else if (humanIdx > -1 && !displayPOHuman)
                 // If a human is playing and we don't need to display the other PO views, leave them null
-                break;
+                break;*/
 
             views[i] = new GameView(game.getBoard(pIdx), cellSize);
         }
@@ -242,7 +246,7 @@ public class GUI extends JFrame {
 
         mainPanel.add(alliancePanel, c);
 
-   //     alliancePanel.setVisible(false);
+        alliancePanel.setVisible(false);
 
         return mainPanel;
     }
@@ -259,6 +263,15 @@ public class GUI extends JFrame {
             poPanel.add(Box.createRigidArea(new Dimension(0, 10)));
             for (int i = 1; i < views.length; i++) {
                 poPanel.add(views[i]);
+                poPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+            }
+        }
+        else if (humanIdx > -1 && !displayPOHuman) {
+            poPanel = new JPanel();
+            poPanel.setLayout(new BoxLayout(poPanel, BoxLayout.Y_AXIS));
+            poPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            for (int i = 1; i < views.length; i++) {
+                poPanel.add(Box.createRigidArea(new Dimension(CELL_SIZE_PO*BOARD_SIZE, CELL_SIZE_PO*BOARD_SIZE)));
                 poPanel.add(Box.createRigidArea(new Dimension(0, 5)));
             }
         }
@@ -848,8 +861,12 @@ public class GUI extends JFrame {
                 humanIdx = -1;
             }
 
+            // Time of next screen collapse
+            NextCollapse = COLLAPSE_START+1 + stage*COLLAPSE_STEP;
+
             // Update game tick.
-            appTick.setText("tick: " + game.getTick());
+            //appTick.setText("tick: " + game.getTick() + ". next round at " + NextCollapse);
+            appTick.setText("ticks until screen collapse: " + (NextCollapse-game.getTick()));
 
             if (VERBOSE) {
                 System.out.println("[GUI] Focused player: " + focusedPlayer);
@@ -1243,6 +1260,7 @@ public class GUI extends JFrame {
             // return focus to game and send alliances just before timer ends
             if(phaseTime2 == 1)
             {
+                stage++;
                 this.requestFocus();
 
                 // Initialise array for all players so not sending ai alliances from last round
