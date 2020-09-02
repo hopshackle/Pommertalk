@@ -1243,6 +1243,15 @@ public class GUI extends JFrame {
             {
                 this.requestFocus();
 
+                // Initialise array for all players so not sending ai alliances from last round
+                for(int k = 0; k < NUM_PLAYERS; k ++) {
+                    for (int i = 0; i < allianceArray.length; i++) {
+                        for (int j = 0; j < allianceArray[0].length; j++) {
+                            chosenAlliances[k][i][j] = false;
+                        }
+                    }
+                }
+
                 if(humanIdx > -1)
                 {
                     // Finalise chosen alliances
