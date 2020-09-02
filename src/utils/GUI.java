@@ -55,6 +55,8 @@ public class GUI extends JFrame {
     // Time left during each negotiation phase
     private int phaseTime1 = Types.NEGOTIATION_PHASE_ONE_LENGTH;
     private int phaseTime2 = Types.NEGOTIATION_PHASE_TWO_LENGTH;
+    private int stage = 0;
+    private int NextCollapse = COLLAPSE_START+1;
 
     // Debug array for testing
     //private boolean[][] testAlliance = {{false, true, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, true}};
@@ -255,7 +257,7 @@ public class GUI extends JFrame {
      */
     private JPanel getPoPanel() {
         JPanel poPanel = null;
-        //if (humanIdx == -1 || displayPOHuman) {
+        if (humanIdx == -1 || displayPOHuman) {
             poPanel = new JPanel();
             poPanel.setLayout(new BoxLayout(poPanel, BoxLayout.Y_AXIS));
             poPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -263,7 +265,16 @@ public class GUI extends JFrame {
                 poPanel.add(views[i]);
                 poPanel.add(Box.createRigidArea(new Dimension(0, 5)));
             }
-        //}
+        }
+        else if (humanIdx > -1 && !displayPOHuman) {
+            poPanel = new JPanel();
+            poPanel.setLayout(new BoxLayout(poPanel, BoxLayout.Y_AXIS));
+            poPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            for (int i = 1; i < views.length; i++) {
+                poPanel.add(Box.createRigidArea(new Dimension(CELL_SIZE_PO*BOARD_SIZE, CELL_SIZE_PO*BOARD_SIZE)));
+                poPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+            }
+        }
         return poPanel;
     }
 
@@ -655,9 +666,6 @@ public class GUI extends JFrame {
      */
     public void paint() {
 
-        if(!displayPOHuman)
-            poPanel.setVisible(false);
-
         // Update focused player.
         int focusedPlayer;
         if (humanIdx == -1) {
@@ -853,8 +861,12 @@ public class GUI extends JFrame {
                 humanIdx = -1;
             }
 
+            // Time of next screen collapse
+            NextCollapse = COLLAPSE_START+1 + stage*COLLAPSE_STEP;
+
             // Update game tick.
-            appTick.setText("tick: " + game.getTick());
+            //appTick.setText("tick: " + game.getTick() + ". next round at " + NextCollapse);
+            appTick.setText("ticks until screen collapse: " + (NextCollapse-game.getTick()));
 
             if (VERBOSE) {
                 System.out.println("[GUI] Focused player: " + focusedPlayer);
@@ -1248,6 +1260,7 @@ public class GUI extends JFrame {
             // return focus to game and send alliances just before timer ends
             if(phaseTime2 == 1)
             {
+                stage++;
                 this.requestFocus();
 
                 // Initialise array for all players so not sending ai alliances from last round
