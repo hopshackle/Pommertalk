@@ -231,6 +231,8 @@ public class GUI extends JFrame {
         mainPanel.add(views[0], c);
 
         c.gridy++;
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 0)), c);
+        c.gridy++;
 
         // Display alliance panel if selected or a human player
         if(playerNo == -1)
@@ -240,7 +242,7 @@ public class GUI extends JFrame {
 
         mainPanel.add(alliancePanel, c);
 
-        alliancePanel.setVisible(false);
+   //     alliancePanel.setVisible(false);
 
         return mainPanel;
     }
