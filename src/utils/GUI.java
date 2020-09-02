@@ -41,6 +41,8 @@ public class GUI extends JFrame {
 
     // Original game panel
     private JPanel mainPanel;
+    // Original game panel
+    private JPanel poPanel;
 
     // Alliances at each negotiation stage as 3D array X: For each player, Y: For each rule, Z: With which other player
     public boolean[][][] setAlliances = new boolean[4][5][3];
@@ -104,7 +106,7 @@ public class GUI extends JFrame {
         mainPanel = getMainPanel();
 
         // Add everything to side panel if we need it to be displayed
-        JPanel poPanel = getPoPanel();
+        poPanel = getPoPanel();
 
         /* Add all elements to the content pane */
 
@@ -166,9 +168,9 @@ public class GUI extends JFrame {
                     // If human is playing, main view will be human view, and not true game state
                     pIdx = humanIdx;
             }
-            else if (humanIdx > -1 && !displayPOHuman)
+            /*else if (humanIdx > -1 && !displayPOHuman)
                 // If a human is playing and we don't need to display the other PO views, leave them null
-                break;
+                break;*/
 
             views[i] = new GameView(game.getBoard(pIdx), cellSize);
         }
@@ -251,7 +253,7 @@ public class GUI extends JFrame {
      */
     private JPanel getPoPanel() {
         JPanel poPanel = null;
-        if (humanIdx == -1 || displayPOHuman) {
+        //if (humanIdx == -1 || displayPOHuman) {
             poPanel = new JPanel();
             poPanel.setLayout(new BoxLayout(poPanel, BoxLayout.Y_AXIS));
             poPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -259,7 +261,7 @@ public class GUI extends JFrame {
                 poPanel.add(views[i]);
                 poPanel.add(Box.createRigidArea(new Dimension(0, 5)));
             }
-        }
+        //}
         return poPanel;
     }
 
@@ -650,6 +652,10 @@ public class GUI extends JFrame {
      * Paints the GUI, to be called at every game tick.
      */
     public void paint() {
+
+        // hide other player views from human player
+        if(displayPOHuman == false)
+            poPanel.setVisible(false);
 
         // Update focused player.
         int focusedPlayer;
