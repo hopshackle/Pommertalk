@@ -41,6 +41,8 @@ public class GUI extends JFrame {
 
     // Original game panel
     private JPanel mainPanel;
+    // Original game panel
+    private JPanel poPanel;
 
     // Alliances at each negotiation stage as 3D array X: For each player, Y: For each rule, Z: With which other player
     public boolean[][][] setAlliances = new boolean[4][5][3];
@@ -104,7 +106,7 @@ public class GUI extends JFrame {
         mainPanel = getMainPanel();
 
         // Add everything to side panel if we need it to be displayed
-        JPanel poPanel = getPoPanel();
+        poPanel = getPoPanel();
 
         /* Add all elements to the content pane */
 
