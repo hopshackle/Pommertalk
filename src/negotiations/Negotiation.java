@@ -148,7 +148,7 @@ public class Negotiation {
                 int otherIndex = a.getParticipant1() == agent.getType() ? a.getParticipant2Id() : a.getParticipant1Id();
                 if (allAgents[otherIndex].getLife() > 0) {
                     Vector2d directionToAvoid = allAgents[otherIndex].getPosition().subtract(agent.getPosition());
-                    System.out.println(String.format("Dot product is %.2f", directionToAvoid.normalDot(normalVelocity)));
+         //           System.out.println(String.format("Dot product is %.2f", directionToAvoid.normalDot(normalVelocity)));
                     if (directionToAvoid.normalDot(normalVelocity) > 0.9)
                         return false;
                 }

@@ -164,11 +164,11 @@ public class Run {
      * @param ki2 - secondary key controller
      * @param separateThreads - if separate threads should be used for the agents or not.
      */
-    public static void runGame(Game g, KeyController ki1, KeyController ki2, boolean separateThreads) {
+    public static void runGame(Game g, KeyController ki1, KeyController ki2, boolean separateThreads, boolean displaySidePanels) {
         WindowInput wi = null;
         GUI frame = null;
         if (VISUALS) {
-            frame = new GUI(g, "Java-Pommerman", ki1, false, true);
+            frame = new GUI(g, "Java-Pommerman", ki1, false, displaySidePanels);
             wi = new WindowInput();
             wi.windowClosed = false;
             frame.addWindowListener(wi);
