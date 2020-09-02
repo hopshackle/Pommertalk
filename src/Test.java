@@ -40,14 +40,14 @@ public class Test {
 
         RHEAParams rheaParams = new RHEAParams();
         rheaParams.heuristic_type = Constants.CUSTOM_HEURISTIC;
-        // Currently heuristic weights are ENEMY DEATH / ALLY SURVIVAL / WWOD / CANKICK / FORCE_BLAST / ALLY_DISTANCE / AMMO
+        // Currently heuristic weights are ENEMY DEATH / ALLY SURVIVAL / WOOD / CANKICK / FORCE_BLAST / ALLY_DISTANCE / AMMO
         rheaParams.heuristic_weights = new double[]{0.4, 0.1, 0.1, 0.15, 0.15, 0.01, 0.5};
 
         //players.add(new MCTSPlayer(seed, playerID++, mctsParams, new RandomNegotiator(1)));
         //players.add(new MCTSPlayer(seed, playerID++, mctsParams));
         players.add(new HumanPlayer(ki1, playerID++));
 //        players.add(new SimplePlayer(seed, playerID++));
-      players.add(new RHEAPlayer(seed, playerID++, rheaParams, new RandomNegotiator(2)));
+  //    players.add(new RHEAPlayer(seed, playerID++, rheaParams, new RandomNegotiator(2)));
 //        players.add(new SimplePlayer(seed, playerID++));
         players.add(new MCTSPlayer(seed, playerID++, new MCTSParams(), new RandomNegotiator(3)));
         players.add(new RHEAPlayer(seed, playerID++, rheaParams, new RandomNegotiator(4)));

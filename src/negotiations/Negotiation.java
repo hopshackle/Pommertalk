@@ -32,6 +32,8 @@ public class Negotiation {
         for (int i = 0; i < agents.size(); i++) {
             if (agents.get(i) instanceof Negotiator) {
                 negotiatingAgents.put(i, (Negotiator) agents.get(i));
+            } else {
+                negotiatingAgents.put(i, null);
             }
         }
     }
@@ -48,7 +50,8 @@ public class Negotiation {
         Types.TILETYPE[] aliveAgents = gs.getAliveAgentIDs();
         for (Types.TILETYPE avatar : aliveAgents) {
             int playerIndex = avatar.getKey() - Types.TILETYPE.AGENT0.getKey();
-            negotiatingAgents.get(playerIndex).makeProposals(playerIndex, gs, messageManager);
+            if (negotiatingAgents.get(playerIndex) != null)
+                negotiatingAgents.get(playerIndex).makeProposals(playerIndex, gs, messageManager);
         }
     }
 
@@ -58,7 +61,8 @@ public class Negotiation {
         Types.TILETYPE[] aliveAgents = gs.getAliveAgentIDs();
         for (Types.TILETYPE avatar : aliveAgents) {
             int playerIndex = avatar.getKey() - Types.TILETYPE.AGENT0.getKey();
-            negotiatingAgents.get(playerIndex).reviewProposals(playerIndex, gs, messageManager);
+            if (negotiatingAgents.get(playerIndex) != null)
+                negotiatingAgents.get(playerIndex).reviewProposals(playerIndex, gs, messageManager);
         }
     }
 
@@ -138,15 +142,14 @@ public class Negotiation {
 
     public boolean isKickPermitted(GameObject agent, Vector2d velocity, GameObject[] allAgents) {
         Vector2d normalVelocity = velocity.copy();
-        normalVelocity.normalise();
         for (Agreement a : finalAgreements) {
             if (a.getType() == Agreement.TYPE.NO_BOMB_KICKING &&
                     (a.getParticipant1() == agent.getType() || a.getParticipant2() == agent.getType())) {
                 int otherIndex = a.getParticipant1() == agent.getType() ? a.getParticipant2Id() : a.getParticipant1Id();
                 if (allAgents[otherIndex].getLife() > 0) {
                     Vector2d directionToAvoid = allAgents[otherIndex].getPosition().subtract(agent.getPosition());
-                    directionToAvoid.normalise();
-                    if (directionToAvoid.dot(normalVelocity) > 0.7)
+                    System.out.println(String.format("Dot product is %.2f", directionToAvoid.normalDot(normalVelocity)));
+                    if (directionToAvoid.normalDot(normalVelocity) > 0.9)
                         return false;
                 }
             }
