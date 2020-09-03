@@ -43,8 +43,8 @@ public class Test {
         // Currently heuristic weights are ENEMY DEATH / ALLY SURVIVAL / WOOD / CANKICK / FORCE_BLAST / ALLY_DISTANCE / AMMO
         rheaParams.heuristic_weights = new double[]{0.4, 0.1, 0.1, 0.15, 0.15, 0.01, 0.5};
 
-         //players.add(new MCTSPlayer(seed, playerID++, mctsParams));
-        players.add(new HumanPlayer(ki1, playerID++));
+         players.add(new MCTSPlayer(seed, playerID++, mctsParams));
+        //players.add(new HumanPlayer(ki1, playerID++));
     //    players.add(new MCTSPlayer(seed, playerID++, mctsParams, new RandomNegotiator(1)));
 
 //        players.add(new SimplePlayer(seed, playerID++));

@@ -473,7 +473,7 @@ public class Game {
      *
      * @return true if the game has ended, false otherwise.
      */
-    public boolean isEnded() {
+    boolean isEnded() {
         //Delegate to our game config
         return getGameConfig().isEnded(gs.getTick(), gameMode, gs.getAliveAgents());
     }
