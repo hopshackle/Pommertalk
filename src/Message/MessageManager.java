@@ -1,10 +1,6 @@
 package Message;
 
-import jdk.javadoc.doclet.Reporter;
 import negotiations.Agreement;
-import players.optimisers.ParameterizedPlayer;
-
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class MessageManager {

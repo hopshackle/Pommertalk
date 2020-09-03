@@ -75,7 +75,7 @@ public class Negotiation {
     }
 
     public List<Agreement> getFinalAgreements() {
-        return List.copyOf(finalAgreements);
+        return finalAgreements;
     }
 
     public Set<Integer> getAgreements(int playerIndex, Agreement.TYPE type) {
@@ -134,7 +134,6 @@ public class Negotiation {
 
     public Negotiation copy(List<Player> players) {
         Negotiation copy = new Negotiation(players, true);
-        copy.finalAgreements = List.copyOf(finalAgreements);
         // TODO: MessageManager needs to have a copy() function added if we want to copy Game in the middle of a negotiation
         copy.messageManager = messageManager;
         return copy;
