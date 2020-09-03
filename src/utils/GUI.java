@@ -1128,10 +1128,12 @@ public class GUI extends JFrame {
                                 allianceArray[i][j].setSelected(false);
                                 allianceArray[i][j].setEnabled(true);
                                 allianceArray[i][j].requestFocus();
+                                rules[i].setSelected(false);
                             } else {
                                 allianceArray[i][j].setDisabledIcon(agentBlank);
                                 allianceArray[i][j].setSelected(false);
                                 allianceArray[i][j].setEnabled(false);
+                                rules[i].setSelected(false);
                             }
                         }
                     }
