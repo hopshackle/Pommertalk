@@ -84,6 +84,7 @@ public class GUI extends JFrame {
     private Icon agent2s;
     private Icon agent3slo;
     private Icon agent3s;
+    private Icon agentBlank;
 
     /**
      * Constructor
@@ -360,6 +361,8 @@ public class GUI extends JFrame {
         agent2s = new ImageIcon(ImageIO.GetInstance().getImage("img/agent2s.png"));
         agent3slo = new ImageIcon(ImageIO.GetInstance().getImage("img/agent3los.png"));
         agent3s = new ImageIcon(ImageIO.GetInstance().getImage("img/agent3s.png"));
+
+        agentBlank = new ImageIcon(ImageIO.GetInstance().getImage("img/agentBlank.png"));
 
         // Assign button icons according to which is focused player since it can make alliances
         // with the 3 other players
@@ -665,6 +668,14 @@ public class GUI extends JFrame {
                                     break;
                             }
                         }
+                        else if(game.isEnded() == true)
+                        {
+                            switch (e.getKeyCode()) {
+                                case KeyEvent.VK_Y:
+                                    game.runAgain = true;
+                                    break;
+                            }
+                        }
                     }
                 });
 
@@ -876,11 +887,13 @@ public class GUI extends JFrame {
             }
 
             // Time of next screen collapse
-            NextCollapse = COLLAPSE_START+1+10 + stage*COLLAPSE_STEP;
+            NextCollapse = COLLAPSE_START+1 + stage*COLLAPSE_STEP;
 
             // Update game tick.
             //appTick.setText("tick: " + game.getTick() + ". next round at " + NextCollapse);
             appTick.setText("ticks until screen collapse: " + (NextCollapse-game.getTick()));
+            if(NextCollapse-game.getTick() < 0)
+                appTick.setText("STARTING NEGOTIATION PHASE");
 
             if (VERBOSE) {
                 System.out.println("[GUI] Focused player: " + focusedPlayer);
@@ -923,8 +936,8 @@ public class GUI extends JFrame {
                     allianceArray[0][0].requestFocus();
                     rules[0].setSelected(true);
 
-                    allianceLabel.setText("request alliances: " + playerName);
-                    appTick.setText("MAX " + NEGOTIATION_PROPOSAL_LIMIT + " REQUESTS." + " PRESS 'p' TO START.");
+                    allianceLabel.setText("request MAX " + NEGOTIATION_PROPOSAL_LIMIT + " alliances: " + playerName);
+                    appTick.setText(" PRESS 'p' TO CONTINUE.");
 
                     // Pause game
                     gamePause1 = true;
@@ -1097,13 +1110,14 @@ public class GUI extends JFrame {
                                 allianceArray[i][j].setEnabled(true);
                                 allianceArray[i][j].requestFocus();
                             } else {
+                                allianceArray[i][j].setDisabledIcon(agentBlank);
                                 allianceArray[i][j].setSelected(false);
                                 allianceArray[i][j].setEnabled(false);
                             }
                         }
                     }
                     allianceLabel.setText("accept/reject alliances: " + playerName);
-                    appTick.setText("CHOOSE PROPOSALS." + " PRESS 'p' TO START.");
+                    appTick.setText("PRESS 'p' TO CONTINUE.");
 
                     // Pause game
                     gamePause2 = true;
@@ -1315,6 +1329,12 @@ public class GUI extends JFrame {
 
             }
 
+        }
+        // Give option to restart game at end
+        if(game.isEnded() == true)
+        {
+            appTick.setText("GAME OVER");
+            allianceLabel.setText("PRESS 'y' TO PLAY AGAIN");
         }
     }
 }
