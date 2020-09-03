@@ -15,6 +15,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.ItemEvent;
+import java.util.Arrays;
 
 import static utils.Types.*;
 
@@ -65,7 +66,7 @@ public class GUI extends JFrame {
     private boolean gamePause2 = false;
 
     // Debug array for testing
-    private boolean[][] testAlliance = {{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}};
+    //private boolean[][] testAlliance = new boolean[][]{{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}};
 
     // Agent icons for buttons
     private Icon agent0lo;
@@ -1054,11 +1055,12 @@ public class GUI extends JFrame {
 
                     //DEBUG
                     //receivedAlliances[playerNo] = testAlliance;
+                    int trueCount = 0;
 
                     for (int i = allianceArray.length - 1; i >= 0; i--) {
                         for (int j = allianceArray[i].length - 1; j >= 0; j--) {
                             if (receivedAlliances[playerNo][i][j] == true) {
-
+                                trueCount++;
                                 // Display proposals to select from for each player
                                 switch (focusedPlayer) {
                                     case 0:
@@ -1141,8 +1143,10 @@ public class GUI extends JFrame {
                         }
                     }
 
-                    if(receivedAlliances[playerNo] == testAlliance)
+
+                    if(trueCount == 0)
                     {
+                        System.out.println(true);
                         allianceLabel.setText("no alliances received: " + playerName);
                     }
                     else
