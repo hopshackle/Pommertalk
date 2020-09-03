@@ -58,11 +58,11 @@ public class Test {
         pokey.heuristic_weights = speedyPersonality;
 
         //players.add(new MCTSPlayer(seed, playerID++, mctsParams));
-   //     players.add(new HumanPlayer(ki1, playerID++));
+        players.add(new HumanPlayer(ki1, playerID++));
         //    players.add(new MCTSPlayer(seed, playerID++, mctsParams, new RandomNegotiator(1)));
 
 //        players.add(new SimplePlayer(seed, playerID++));
-        players.add(new RHEAPlayer(seed, playerID++, speedy, new RandomNegotiator(1)));
+        //players.add(new RHEAPlayer(seed, playerID++, speedy, new RandomNegotiator(1)));
         players.add(new RHEAPlayer(seed, playerID++, shadow, new RandomNegotiator(2)));
         players.add(new RHEAPlayer(seed, playerID++, bashful, new RandomNegotiator(3)));
         players.add(new RHEAPlayer(seed, playerID++, speedy, new RandomNegotiator(4)));
