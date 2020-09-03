@@ -65,7 +65,7 @@ public class GUI extends JFrame {
     private boolean gamePause2 = false;
 
     // Debug array for testing
-    //private boolean[][] testAlliance = {{false, true, false}, {true, false, false}, {false, false, false}, {false, false, false}, {false, false, true}};
+    private boolean[][] testAlliance = {{false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}, {false, false, false}};
 
     // Agent icons for buttons
     private Icon agent0lo;
@@ -1052,6 +1052,9 @@ public class GUI extends JFrame {
                 // Perform on first entering phase
                 if (phaseTime2 == NEGOTIATION_PHASE_TWO_LENGTH) {
 
+                    //DEBUG
+                    //receivedAlliances[playerNo] = testAlliance;
+
                     for (int i = allianceArray.length - 1; i >= 0; i--) {
                         for (int j = allianceArray[i].length - 1; j >= 0; j--) {
                             if (receivedAlliances[playerNo][i][j] == true) {
@@ -1137,12 +1140,22 @@ public class GUI extends JFrame {
                             }
                         }
                     }
-                    allianceLabel.setText("accept/reject alliances: " + playerName);
-                    appTick.setText("PRESS 'p' TO CONTINUE.");
 
-                    // Pause game
-                    gamePause2 = true;
-                    game.pauseGame(gamePause2);
+                    if(receivedAlliances[playerNo] == testAlliance)
+                    {
+                        allianceLabel.setText("no alliances received: " + playerName);
+                    }
+                    else
+                    {
+                        allianceLabel.setText("accept/reject alliances: " + playerName);
+                        appTick.setText("PRESS 'p' TO CONTINUE.");
+
+                        // Pause game
+                        gamePause2 = true;
+                        game.pauseGame(gamePause2);
+                    }
+
+
                 } else if (phaseTime2 < NEGOTIATION_PHASE_TWO_LENGTH) {
                     appTick.setText("REJOINING GAME IN " + phaseTime2 / 10);
                 }
