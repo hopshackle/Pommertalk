@@ -1302,14 +1302,16 @@ public class GUI extends JFrame {
                             }
                         }
                     }
-                }
 
-                // deselect rules with no ticks
-                for (int i = 0; i < rules.length; i++) {
-                    if (!allianceArray[i][0].isSelected() && !allianceArray[i][1].isSelected() && !allianceArray[i][2].isSelected()) {
-                        rules[i].setSelected(false);
                     }
-                }
+
+                    // deselect rules with no ticks
+                    for (int i = 0; i < rules.length; i++) {
+                        if (!allianceArray[i][0].isSelected() && !allianceArray[i][1].isSelected() && !allianceArray[i][2].isSelected()) {
+                            rules[i].setSelected(false);
+                        }
+                    }
+
             }
 
             // Reduce time of negotiation phase 2
