@@ -57,13 +57,15 @@ public class Test {
         assert players.size() == Types.NUM_PLAYERS : "There should be " + Types.NUM_PLAYERS +
                 " added to the game, but there are " + players.size();
 
-
         //Assign players and run the game.
         game.setPlayers(players);
 
         //Run a single game with the players
         boolean showSidePanels = players.stream().noneMatch(p -> p instanceof HumanPlayer);
-        Run.runGame(game, ki1, ki2, useSeparateThreads, showSidePanels);
+       // do {
+     //       game.reset(System.currentTimeMillis());
+            Run.runGame(game, ki1, ki2, useSeparateThreads, showSidePanels);
+   //     } while (game.runAgain);
 
         /* Uncomment to run the replay of the previous game: */
 //        if (game.isLogged()){
