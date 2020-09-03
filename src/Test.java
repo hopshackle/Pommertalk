@@ -49,13 +49,13 @@ public class Test {
         speedy.heuristic_weights = speedyPersonality;
         RHEAParams shadow = new RHEAParams();
         shadow.heuristic_type = Constants.CUSTOM_HEURISTIC;
-        shadow.heuristic_weights = speedyPersonality;
+        shadow.heuristic_weights = shadowPersonality;
         RHEAParams bashful = new RHEAParams();
         bashful.heuristic_type = Constants.CUSTOM_HEURISTIC;
-        bashful.heuristic_weights = speedyPersonality;
+        bashful.heuristic_weights = bashfulPersonality;
         RHEAParams pokey = new RHEAParams();
         pokey.heuristic_type = Constants.CUSTOM_HEURISTIC;
-        pokey.heuristic_weights = speedyPersonality;
+        pokey.heuristic_weights = pokeyPersonality;
 
         //players.add(new MCTSPlayer(seed, playerID++, mctsParams));
    //     players.add(new HumanPlayer(ki1, playerID++));
@@ -65,7 +65,7 @@ public class Test {
         players.add(new RHEAPlayer(seed, playerID++, speedy, new RandomNegotiator(1)));
         players.add(new RHEAPlayer(seed, playerID++, shadow, new RandomNegotiator(2)));
         players.add(new RHEAPlayer(seed, playerID++, bashful, new RandomNegotiator(3)));
-        players.add(new RHEAPlayer(seed, playerID++, speedy, new RandomNegotiator(4)));
+        players.add(new RHEAPlayer(seed, playerID++, pokey, new RandomNegotiator(4)));
 
 //        players.add(new SimplePlayer(seed, playerID++));
    //     players.add(new MCTSPlayer(seed, playerID++, new MCTSParams(), new RandomNegotiator(3)));
