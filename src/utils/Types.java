@@ -15,7 +15,7 @@ public class Types {
     public static int FLAME_LIFE = 5;               //Ticks until a flame disappears.
     public static int DEFAULT_BOMB_BLAST = 2;       //Default bombs create flames with this range.
     public static int DEFAULT_BOMB_AMMO = 1;        //Default number of simultaneous bombs an agent can put.
-    public static boolean DEFAULT_BOMB_KICK = true ;//Can agents kick bomb by default?
+    public static boolean DEFAULT_BOMB_KICK = false ;//Can agents kick bomb by default?
     public static int DEFAULT_VISION_RANGE = 3;    //-1 for full observability, >1 for PO.
 
     public static boolean COLLAPSE_BOARD = true;

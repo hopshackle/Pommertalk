@@ -33,37 +33,55 @@ public class Test {
         ArrayList<Player> players = new ArrayList<>();
         int playerID = Types.TILETYPE.AGENT0.getKey();
 
-        MCTSParams mctsParams = new MCTSParams();
-        mctsParams.stop_type = mctsParams.STOP_ITERATIONS;
-        mctsParams.heuristic_method = mctsParams.CUSTOM_HEURISTIC;
-        mctsParams.heuristicWeights = new double[]{0.4, 0.1, 0.1, 0.15, 0.15, 0.01, 0.0};
-
-        RHEAParams rheaParams = new RHEAParams();
-        rheaParams.heuristic_type = Constants.CUSTOM_HEURISTIC;
         // Currently heuristic weights are ENEMY DEATH / ALLY SURVIVAL / WOOD / CANKICK / FORCE_BLAST / ALLY_DISTANCE / AMMO
-        rheaParams.heuristic_weights = new double[]{0.4, 0.1, 0.1, 0.15, 0.15, 0.01, 0.5};
+        double[] speedyPersonality = new double[]{0.4, 0.1, 0.2, 0.3, 0.15, 0.00, 0.0};
+        double[] shadowPersonality = new double[]{0.4, 0.2, 0.1, 0.15, 0.15, -0.01, 0.05};
+        double[] bashfulPersonality = new double[]{0.3, 0.3, 0.0, 0.0, 0.15, 0.02, 0.1};
+        double[] pokeyPersonality = new double[]{0.6, 0.0, 0.1, 0.15, 0.15, 0.01, 0.0};
 
-         players.add(new MCTSPlayer(seed, playerID++, mctsParams));
-        //players.add(new HumanPlayer(ki1, playerID++));
-    //    players.add(new MCTSPlayer(seed, playerID++, mctsParams, new RandomNegotiator(1)));
+//        MCTSParams mctsParams = new MCTSParams();
+//        mctsParams.stop_type = mctsParams.STOP_ITERATIONS;
+//        mctsParams.heuristic_method = mctsParams.CUSTOM_HEURISTIC;
+//        mctsParams.heuristicWeights = new double[]{0.4, 0.1, 0.1, 0.15, 0.15, 0.01, 0.0};
+
+        RHEAParams speedy = new RHEAParams();
+        speedy.heuristic_type = Constants.CUSTOM_HEURISTIC;
+        speedy.heuristic_weights = speedyPersonality;
+        RHEAParams shadow = new RHEAParams();
+        shadow.heuristic_type = Constants.CUSTOM_HEURISTIC;
+        shadow.heuristic_weights = speedyPersonality;
+        RHEAParams bashful = new RHEAParams();
+        bashful.heuristic_type = Constants.CUSTOM_HEURISTIC;
+        bashful.heuristic_weights = speedyPersonality;
+        RHEAParams pokey = new RHEAParams();
+        pokey.heuristic_type = Constants.CUSTOM_HEURISTIC;
+        pokey.heuristic_weights = speedyPersonality;
+
+        //players.add(new MCTSPlayer(seed, playerID++, mctsParams));
+   //     players.add(new HumanPlayer(ki1, playerID++));
+        //    players.add(new MCTSPlayer(seed, playerID++, mctsParams, new RandomNegotiator(1)));
 
 //        players.add(new SimplePlayer(seed, playerID++));
-      players.add(new RHEAPlayer(seed, playerID++, rheaParams, new RandomNegotiator(2)));
+        players.add(new RHEAPlayer(seed, playerID++, speedy, new RandomNegotiator(1)));
+        players.add(new RHEAPlayer(seed, playerID++, shadow, new RandomNegotiator(2)));
+        players.add(new RHEAPlayer(seed, playerID++, bashful, new RandomNegotiator(3)));
+        players.add(new RHEAPlayer(seed, playerID++, speedy, new RandomNegotiator(4)));
+
 //        players.add(new SimplePlayer(seed, playerID++));
-        players.add(new MCTSPlayer(seed, playerID++, new MCTSParams(), new RandomNegotiator(3)));
-        players.add(new RHEAPlayer(seed, playerID++, rheaParams, new RandomNegotiator(4)));
+   //     players.add(new MCTSPlayer(seed, playerID++, new MCTSParams(), new RandomNegotiator(3)));
+   //     players.add(new RHEAPlayer(seed, playerID++, rheaParams, new RandomNegotiator(4)));
 
         // Make sure we have exactly NUM_PLAYERS players
         assert players.size() == Types.NUM_PLAYERS : "There should be " + Types.NUM_PLAYERS +
                 " added to the game, but there are " + players.size();
 
-
-        //Assign players and run the game.
-        game.setPlayers(players);
-
         //Run a single game with the players
         boolean showSidePanels = players.stream().noneMatch(p -> p instanceof HumanPlayer);
-        Run.runGame(game, ki1, ki2, useSeparateThreads, showSidePanels);
+        do {
+            game.reset(System.currentTimeMillis());
+            game.setPlayers(players);
+            Run.runGame(game, ki1, ki2, useSeparateThreads, showSidePanels);
+        } while (game.runAgain);
 
         /* Uncomment to run the replay of the previous game: */
 //        if (game.isLogged()){
