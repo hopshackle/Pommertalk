@@ -13,6 +13,7 @@ public class Negotiation {
 
     private List<Agreement> finalAgreements = Collections.emptyList();
     private MessageManager messageManager = new MessageManager(true);
+    private boolean debug = false;
 
     public MessageManager getMessageManager() {
         return messageManager;
@@ -135,6 +136,7 @@ public class Negotiation {
     public Negotiation copy(List<Player> players) {
         Negotiation copy = new Negotiation(players, true);
         // TODO: MessageManager needs to have a copy() function added if we want to copy Game in the middle of a negotiation
+        // TODO: This is not currently needed as RHEA/MCTS do not extend into the negotiation phase
         copy.messageManager = messageManager;
         return copy;
     }
@@ -147,7 +149,7 @@ public class Negotiation {
                 int otherIndex = a.getParticipant1() == agent.getType() ? a.getParticipant2Id() : a.getParticipant1Id();
                 if (allAgents[otherIndex].getLife() > 0) {
                     Vector2d directionToAvoid = allAgents[otherIndex].getPosition().subtract(agent.getPosition());
-         //           System.out.println(String.format("Dot product is %.2f", directionToAvoid.normalDot(normalVelocity)));
+                    if (debug) System.out.println(String.format("Dot product is %.2f", directionToAvoid.normalDot(normalVelocity)));
                     if (directionToAvoid.normalDot(normalVelocity) > 0.9)
                         return false;
                 }

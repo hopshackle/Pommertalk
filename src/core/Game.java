@@ -38,6 +38,8 @@ public class Game {
         return phase;
     }
     public void pauseGame(boolean paused) {
+        if (paused == (phase == GAME_PHASE.PAUSED))
+            return;
         if (paused) {
             previousPhase = phase;
             phase = GAME_PHASE.PAUSED;

@@ -8,13 +8,7 @@ import players.KeyController;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.ItemEvent;
+import java.awt.event.*;
 import java.util.Arrays;
 
 import static utils.Types.*;
@@ -59,7 +53,7 @@ public class GUI extends JFrame {
     private int phaseTime1 = Types.NEGOTIATION_PHASE_ONE_LENGTH;
     private int phaseTime2 = Types.NEGOTIATION_PHASE_TWO_LENGTH;
     private int stage = 0;
-    private int NextCollapse = COLLAPSE_START+1;
+    private int NextCollapse = COLLAPSE_START + 1;
 
     // game paused for negotiation phases
     private boolean gamePause1 = false;
@@ -91,6 +85,7 @@ public class GUI extends JFrame {
 
     /**
      * Constructor
+     *
      * @param title Title of the window.
      */
     public GUI(Game game, String title, KeyController ki, boolean closeAppOnClosingWindow, boolean displayPOHuman) {
@@ -143,7 +138,7 @@ public class GUI extends JFrame {
         pack();
         this.setVisible(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        if(closeAppOnClosingWindow){
+        if (closeAppOnClosingWindow) {
             setDefaultCloseOperation(EXIT_ON_CLOSE);
         }
 
@@ -189,10 +184,11 @@ public class GUI extends JFrame {
     /**
      * Creates the main panel containing main view of true game state (or human if human playing).
      * Includes information about the game:
-     *  - game tick or negotiation rules
-     *  - game mode
-     *  - game avatars status and names
-     *  - new alliances panel
+     * - game tick or negotiation rules
+     * - game mode
+     * - game avatars status and names
+     * - new alliances panel
+     *
      * @return main panel.
      */
     @SuppressWarnings("Duplicates")
@@ -209,7 +205,7 @@ public class GUI extends JFrame {
 
         // restart game automatically when a game ends checkbox
         JCheckBox autoRestartBox = new JCheckBox("auto-restart on game end");
-        autoRestartBox.setSize(1,1);
+        autoRestartBox.setSize(1, 1);
         textFont = new Font(appTitle.getFont().getName(), Font.PLAIN, 13);
         autoRestartBox.setSelected(true);
         autoRestartBox.setFocusable(false);
@@ -218,7 +214,7 @@ public class GUI extends JFrame {
 
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if(e.getStateChange() == ItemEvent.SELECTED)
+                if (e.getStateChange() == ItemEvent.SELECTED)
                     game.runAgain = true;
                 else
                     game.runAgain = false;
@@ -266,7 +262,7 @@ public class GUI extends JFrame {
         c.gridy++;
 
         // Display alliance panel if selected or a human player
-        if(playerNo == -1)
+        if (playerNo == -1)
             alliancePanel = getAlliancePanel(0, chosenAlliances[0]);
         else
             alliancePanel = getAlliancePanel(playerNo, chosenAlliances[playerNo]);
@@ -280,6 +276,7 @@ public class GUI extends JFrame {
 
     /**
      * Creates the side panel.
+     *
      * @return null if side panel should not be displayed, side panel otherwise.
      */
     private JPanel getPoPanel() {
@@ -292,13 +289,12 @@ public class GUI extends JFrame {
                 poPanel.add(views[i]);
                 poPanel.add(Box.createRigidArea(new Dimension(0, 5)));
             }
-        }
-        else if (humanIdx > -1 && !displayPOHuman) {
+        } else if (humanIdx > -1 && !displayPOHuman) {
             poPanel = new JPanel();
             poPanel.setLayout(new BoxLayout(poPanel, BoxLayout.Y_AXIS));
             poPanel.add(Box.createRigidArea(new Dimension(0, 10)));
             for (int i = 1; i < views.length; i++) {
-                poPanel.add(Box.createRigidArea(new Dimension(CELL_SIZE_PO*BOARD_SIZE, CELL_SIZE_PO*BOARD_SIZE)));
+                poPanel.add(Box.createRigidArea(new Dimension(CELL_SIZE_PO * BOARD_SIZE, CELL_SIZE_PO * BOARD_SIZE)));
                 poPanel.add(Box.createRigidArea(new Dimension(0, 5)));
             }
         }
@@ -318,7 +314,7 @@ public class GUI extends JFrame {
         GridBagConstraints c = new GridBagConstraints();
 
         // Label changes with instructions for each stage of negotiation
-        allianceLabel = new JLabel("current alliances: player " + (player+1));
+        allianceLabel = new JLabel("current alliances: player " + (player + 1));
         Font textFont = new Font(allianceLabel.getFont().getName(), Font.PLAIN, 16);
         allianceLabel.setFont(textFont);
         c.gridx = 0;
@@ -354,7 +350,7 @@ public class GUI extends JFrame {
 
         JToggleButton rule5 = new JToggleButton("Stay apart");
         rule5.setFocusable(false);
-        c.ipadx =50;
+        c.ipadx = 50;
         c.gridy = 5;
         alliancePanel.add(rule5, c);
 
@@ -388,244 +384,242 @@ public class GUI extends JFrame {
 
         // Assign button icons according to which is focused player since it can make alliances
         // with the 3 other players
-        for(int i = 0; i < allianceArray.length; i++)
-        {
-                switch(player)
-                {
-                    case 0:
-                        allianceArray[i][0] = new JToggleButton("", agent1lo);
-                        allianceArray[i][0].setSelectedIcon(agent1);
-                        allianceArray[i][0].setDisabledSelectedIcon(agent1);
-                        allianceArray[i][0].setDisabledIcon(agent1lo);
-                        allianceArray[i][0].addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                AbstractButton abstractButton = (AbstractButton) e.getSource();
+        for (int i = 0; i < allianceArray.length; i++) {
+            switch (player) {
+                case 0:
+                    allianceArray[i][0] = new JToggleButton("", agent1lo);
+                    allianceArray[i][0].setSelectedIcon(agent1);
+                    allianceArray[i][0].setDisabledSelectedIcon(agent1);
+                    allianceArray[i][0].setDisabledIcon(agent1lo);
+                    allianceArray[i][0].addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            AbstractButton abstractButton = (AbstractButton) e.getSource();
 
-                                boolean selected = abstractButton.getModel().isSelected();
-                            }
-                        });
-                        allianceArray[i][1] = new JToggleButton("", agent2lo);
-                        allianceArray[i][1].setSelectedIcon(agent2);
-                        allianceArray[i][1].setDisabledSelectedIcon(agent2);
-                        allianceArray[i][1].setDisabledIcon(agent2lo);
-                        allianceArray[i][1].addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                AbstractButton abstractButton = (AbstractButton) e.getSource();
+                            boolean selected = abstractButton.getModel().isSelected();
+                        }
+                    });
+                    allianceArray[i][1] = new JToggleButton("", agent2lo);
+                    allianceArray[i][1].setSelectedIcon(agent2);
+                    allianceArray[i][1].setDisabledSelectedIcon(agent2);
+                    allianceArray[i][1].setDisabledIcon(agent2lo);
+                    allianceArray[i][1].addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            AbstractButton abstractButton = (AbstractButton) e.getSource();
 
-                                boolean selected = abstractButton.getModel().isSelected();
-                            }
-                        });
-                        allianceArray[i][2] = new JToggleButton("", agent3lo);
-                        allianceArray[i][2].setSelectedIcon(agent3);
-                        allianceArray[i][2].setDisabledSelectedIcon(agent3);
-                        allianceArray[i][2].setDisabledIcon(agent3lo);
-                        allianceArray[i][2].addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                AbstractButton abstractButton = (AbstractButton) e.getSource();
+                            boolean selected = abstractButton.getModel().isSelected();
+                        }
+                    });
+                    allianceArray[i][2] = new JToggleButton("", agent3lo);
+                    allianceArray[i][2].setSelectedIcon(agent3);
+                    allianceArray[i][2].setDisabledSelectedIcon(agent3);
+                    allianceArray[i][2].setDisabledIcon(agent3lo);
+                    allianceArray[i][2].addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            AbstractButton abstractButton = (AbstractButton) e.getSource();
 
-                                boolean selected = abstractButton.getModel().isSelected();
-                            }
-                        });
-                        break;
-                    case 1:
-                        allianceArray[i][0] = new JToggleButton("", agent0lo);
-                        allianceArray[i][0].setSelectedIcon(agent0);
-                        allianceArray[i][0].setDisabledSelectedIcon(agent0);
-                        allianceArray[i][0].setDisabledIcon(agent0lo);
-                        allianceArray[i][0].addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                AbstractButton abstractButton = (AbstractButton) e.getSource();
+                            boolean selected = abstractButton.getModel().isSelected();
+                        }
+                    });
+                    break;
+                case 1:
+                    allianceArray[i][0] = new JToggleButton("", agent0lo);
+                    allianceArray[i][0].setSelectedIcon(agent0);
+                    allianceArray[i][0].setDisabledSelectedIcon(agent0);
+                    allianceArray[i][0].setDisabledIcon(agent0lo);
+                    allianceArray[i][0].addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            AbstractButton abstractButton = (AbstractButton) e.getSource();
 
-                                boolean selected = abstractButton.getModel().isSelected();
-                            }
-                        });
-                        allianceArray[i][1] = new JToggleButton("", agent2lo);
-                        allianceArray[i][1].setSelectedIcon(agent2);
-                        allianceArray[i][1].setDisabledSelectedIcon(agent2);
-                        allianceArray[i][1].setDisabledIcon(agent2lo);
-                        allianceArray[i][1].addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                AbstractButton abstractButton = (AbstractButton) e.getSource();
+                            boolean selected = abstractButton.getModel().isSelected();
+                        }
+                    });
+                    allianceArray[i][1] = new JToggleButton("", agent2lo);
+                    allianceArray[i][1].setSelectedIcon(agent2);
+                    allianceArray[i][1].setDisabledSelectedIcon(agent2);
+                    allianceArray[i][1].setDisabledIcon(agent2lo);
+                    allianceArray[i][1].addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            AbstractButton abstractButton = (AbstractButton) e.getSource();
 
-                                boolean selected = abstractButton.getModel().isSelected();
-                            }
-                        });
-                        allianceArray[i][2] = new JToggleButton("", agent3lo);
-                        allianceArray[i][2].setSelectedIcon(agent3);
-                        allianceArray[i][2].setDisabledSelectedIcon(agent3);
-                        allianceArray[i][2].setDisabledIcon(agent3lo);
-                        allianceArray[i][2].addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                AbstractButton abstractButton = (AbstractButton) e.getSource();
+                            boolean selected = abstractButton.getModel().isSelected();
+                        }
+                    });
+                    allianceArray[i][2] = new JToggleButton("", agent3lo);
+                    allianceArray[i][2].setSelectedIcon(agent3);
+                    allianceArray[i][2].setDisabledSelectedIcon(agent3);
+                    allianceArray[i][2].setDisabledIcon(agent3lo);
+                    allianceArray[i][2].addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            AbstractButton abstractButton = (AbstractButton) e.getSource();
 
-                                boolean selected = abstractButton.getModel().isSelected();
-                            }
-                        });
-                        break;
-                    case 2:
-                        allianceArray[i][0] = new JToggleButton("", agent0lo);
-                        allianceArray[i][0].setSelectedIcon(agent0);
-                        allianceArray[i][0].setDisabledSelectedIcon(agent0);
-                        allianceArray[i][0].setDisabledIcon(agent0lo);
-                        allianceArray[i][0].addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                AbstractButton abstractButton = (AbstractButton) e.getSource();
+                            boolean selected = abstractButton.getModel().isSelected();
+                        }
+                    });
+                    break;
+                case 2:
+                    allianceArray[i][0] = new JToggleButton("", agent0lo);
+                    allianceArray[i][0].setSelectedIcon(agent0);
+                    allianceArray[i][0].setDisabledSelectedIcon(agent0);
+                    allianceArray[i][0].setDisabledIcon(agent0lo);
+                    allianceArray[i][0].addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            AbstractButton abstractButton = (AbstractButton) e.getSource();
 
-                                boolean selected = abstractButton.getModel().isSelected();
-                            }
-                        });
-                        allianceArray[i][1] = new JToggleButton("", agent1lo);
-                        allianceArray[i][1].setSelectedIcon(agent1);
-                        allianceArray[i][1].setDisabledSelectedIcon(agent1);
-                        allianceArray[i][1].setDisabledIcon(agent1lo);
-                        allianceArray[i][1].addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                AbstractButton abstractButton = (AbstractButton) e.getSource();
+                            boolean selected = abstractButton.getModel().isSelected();
+                        }
+                    });
+                    allianceArray[i][1] = new JToggleButton("", agent1lo);
+                    allianceArray[i][1].setSelectedIcon(agent1);
+                    allianceArray[i][1].setDisabledSelectedIcon(agent1);
+                    allianceArray[i][1].setDisabledIcon(agent1lo);
+                    allianceArray[i][1].addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            AbstractButton abstractButton = (AbstractButton) e.getSource();
 
-                                boolean selected = abstractButton.getModel().isSelected();
-                            }
-                        });
-                        allianceArray[i][2] = new JToggleButton("", agent3lo);
-                        allianceArray[i][2].setSelectedIcon(agent3);
-                        allianceArray[i][2].setDisabledSelectedIcon(agent3);
-                        allianceArray[i][2].setDisabledIcon(agent3lo);
-                        allianceArray[i][2].addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                AbstractButton abstractButton = (AbstractButton) e.getSource();
+                            boolean selected = abstractButton.getModel().isSelected();
+                        }
+                    });
+                    allianceArray[i][2] = new JToggleButton("", agent3lo);
+                    allianceArray[i][2].setSelectedIcon(agent3);
+                    allianceArray[i][2].setDisabledSelectedIcon(agent3);
+                    allianceArray[i][2].setDisabledIcon(agent3lo);
+                    allianceArray[i][2].addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            AbstractButton abstractButton = (AbstractButton) e.getSource();
 
-                                boolean selected = abstractButton.getModel().isSelected();
-                            }
-                        });
-                        break;
-                    case 3:
-                        allianceArray[i][0] = new JToggleButton("", agent0lo);
-                        allianceArray[i][0].setSelectedIcon(agent0);
-                        allianceArray[i][0].setDisabledSelectedIcon(agent0);
-                        allianceArray[i][0].setDisabledIcon(agent0lo);
-                        allianceArray[i][0].addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                AbstractButton abstractButton = (AbstractButton) e.getSource();
+                            boolean selected = abstractButton.getModel().isSelected();
+                        }
+                    });
+                    break;
+                case 3:
+                    allianceArray[i][0] = new JToggleButton("", agent0lo);
+                    allianceArray[i][0].setSelectedIcon(agent0);
+                    allianceArray[i][0].setDisabledSelectedIcon(agent0);
+                    allianceArray[i][0].setDisabledIcon(agent0lo);
+                    allianceArray[i][0].addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            AbstractButton abstractButton = (AbstractButton) e.getSource();
 
-                                boolean selected = abstractButton.getModel().isSelected();
-                            }
-                        });
-                        allianceArray[i][1] = new JToggleButton("", agent1lo);
-                        allianceArray[i][1].setSelectedIcon(agent1);
-                        allianceArray[i][1].setDisabledSelectedIcon(agent1);
-                        allianceArray[i][1].setDisabledIcon(agent1lo);
-                        allianceArray[i][1].addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                AbstractButton abstractButton = (AbstractButton) e.getSource();
+                            boolean selected = abstractButton.getModel().isSelected();
+                        }
+                    });
+                    allianceArray[i][1] = new JToggleButton("", agent1lo);
+                    allianceArray[i][1].setSelectedIcon(agent1);
+                    allianceArray[i][1].setDisabledSelectedIcon(agent1);
+                    allianceArray[i][1].setDisabledIcon(agent1lo);
+                    allianceArray[i][1].addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            AbstractButton abstractButton = (AbstractButton) e.getSource();
 
-                                boolean selected = abstractButton.getModel().isSelected();
-                            }
-                        });
-                        allianceArray[i][2] = new JToggleButton("", agent2lo);
-                        allianceArray[i][2].setSelectedIcon(agent2);
-                        allianceArray[i][2].setDisabledSelectedIcon(agent2);
-                        allianceArray[i][2].setDisabledIcon(agent2lo);
-                        allianceArray[i][2].addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                AbstractButton abstractButton = (AbstractButton) e.getSource();
+                            boolean selected = abstractButton.getModel().isSelected();
+                        }
+                    });
+                    allianceArray[i][2] = new JToggleButton("", agent2lo);
+                    allianceArray[i][2].setSelectedIcon(agent2);
+                    allianceArray[i][2].setDisabledSelectedIcon(agent2);
+                    allianceArray[i][2].setDisabledIcon(agent2lo);
+                    allianceArray[i][2].addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            AbstractButton abstractButton = (AbstractButton) e.getSource();
 
-                                boolean selected = abstractButton.getModel().isSelected();
-                            }
-                        });
-                        break;
-                }
+                            boolean selected = abstractButton.getModel().isSelected();
+                        }
+                    });
+                    break;
+            }
         }
-            // Add buttons to panel in a 5x3 grid
-            c.ipadx = 0;
-            c.gridx = 1;
-            c.gridy = 1;
-            c.gridwidth = 1;
-            c.gridheight = 1;
-            c.fill = GridBagConstraints.BOTH;
-            alliancePanel.add(allianceArray[0][0], c);
-            allianceArray[0][0].setSelected(alliances[0][0]);
+        // Add buttons to panel in a 5x3 grid
+        c.ipadx = 0;
+        c.gridx = 1;
+        c.gridy = 1;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.BOTH;
+        alliancePanel.add(allianceArray[0][0], c);
+        allianceArray[0][0].setSelected(alliances[0][0]);
 
-            c.gridx = 2;
-            alliancePanel.add(allianceArray[0][1], c);
-            allianceArray[0][1].setSelected(alliances[0][1]);
+        c.gridx = 2;
+        alliancePanel.add(allianceArray[0][1], c);
+        allianceArray[0][1].setSelected(alliances[0][1]);
 
-            c.gridx = 3;
-            alliancePanel.add(allianceArray[0][2], c);
-            allianceArray[0][2].setSelected(alliances[0][2]);
+        c.gridx = 3;
+        alliancePanel.add(allianceArray[0][2], c);
+        allianceArray[0][2].setSelected(alliances[0][2]);
 
-            c.gridx = 1;
-            c.gridy = 2;
-            alliancePanel.add(allianceArray[1][0], c);
-            allianceArray[1][0].setSelected(alliances[1][0]);
+        c.gridx = 1;
+        c.gridy = 2;
+        alliancePanel.add(allianceArray[1][0], c);
+        allianceArray[1][0].setSelected(alliances[1][0]);
 
-            c.gridx = 2;
-            alliancePanel.add(allianceArray[1][1], c);
-            allianceArray[1][1].setSelected(alliances[1][1]);
+        c.gridx = 2;
+        alliancePanel.add(allianceArray[1][1], c);
+        allianceArray[1][1].setSelected(alliances[1][1]);
 
-            c.gridx = 3;
-            alliancePanel.add(allianceArray[1][2], c);
-            allianceArray[1][2].setSelected(alliances[1][2]);
+        c.gridx = 3;
+        alliancePanel.add(allianceArray[1][2], c);
+        allianceArray[1][2].setSelected(alliances[1][2]);
 
-            c.gridx = 1;
-            c.gridy = 3;
-            alliancePanel.add(allianceArray[2][0], c);
-            allianceArray[2][0].setSelected(alliances[2][0]);
+        c.gridx = 1;
+        c.gridy = 3;
+        alliancePanel.add(allianceArray[2][0], c);
+        allianceArray[2][0].setSelected(alliances[2][0]);
 
-            c.gridx = 2;
-            alliancePanel.add(allianceArray[2][1], c);
-            allianceArray[2][1].setSelected(alliances[2][1]);
+        c.gridx = 2;
+        alliancePanel.add(allianceArray[2][1], c);
+        allianceArray[2][1].setSelected(alliances[2][1]);
 
-            c.gridx = 3;
-            alliancePanel.add(allianceArray[2][2], c);
-            allianceArray[2][2].setSelected(alliances[2][2]);
+        c.gridx = 3;
+        alliancePanel.add(allianceArray[2][2], c);
+        allianceArray[2][2].setSelected(alliances[2][2]);
 
-            c.gridx = 1;
-            c.gridy = 4;
-            alliancePanel.add(allianceArray[3][0], c);
-            allianceArray[3][0].setSelected(alliances[3][0]);
+        c.gridx = 1;
+        c.gridy = 4;
+        alliancePanel.add(allianceArray[3][0], c);
+        allianceArray[3][0].setSelected(alliances[3][0]);
 
-            c.gridx = 2;
-            alliancePanel.add(allianceArray[3][1], c);
-            allianceArray[3][1].setSelected(alliances[3][1]);
+        c.gridx = 2;
+        alliancePanel.add(allianceArray[3][1], c);
+        allianceArray[3][1].setSelected(alliances[3][1]);
 
-            c.gridx = 3;
-            alliancePanel.add(allianceArray[3][2], c);
-            allianceArray[3][2].setSelected(alliances[3][2]);
+        c.gridx = 3;
+        alliancePanel.add(allianceArray[3][2], c);
+        allianceArray[3][2].setSelected(alliances[3][2]);
 
-            c.gridx = 1;
-            c.gridy = 5;
-            alliancePanel.add(allianceArray[4][0], c);
-            allianceArray[4][0].setSelected(alliances[4][0]);
+        c.gridx = 1;
+        c.gridy = 5;
+        alliancePanel.add(allianceArray[4][0], c);
+        allianceArray[4][0].setSelected(alliances[4][0]);
 
-            c.gridx = 2;
-            alliancePanel.add(allianceArray[4][1], c);
-            allianceArray[4][1].setSelected(alliances[4][1]);
+        c.gridx = 2;
+        alliancePanel.add(allianceArray[4][1], c);
+        allianceArray[4][1].setSelected(alliances[4][1]);
 
-            c.gridx = 3;
-            alliancePanel.add(allianceArray[4][2], c);
-            allianceArray[4][2].setSelected(alliances[4][2]);
+        c.gridx = 3;
+        alliancePanel.add(allianceArray[4][2], c);
+        allianceArray[4][2].setSelected(alliances[4][2]);
 
-            // Assign keyboard rules for moving between buttons
-            // Rules are different for each negotiation phase when different buttons are enabled
-            for (int i = 0; i < allianceArray.length; i++) {
-                for (int j = 0; j < allianceArray[i].length; j++) {
-                    final int curRow = i;
-                    final int curCol = j;
-                    allianceArray[i][j].addKeyListener(new KeyAdapter() {
+        // Assign keyboard rules for moving between buttons
+        // Rules are different for each negotiation phase when different buttons are enabled
+        for (int i = 0; i < allianceArray.length; i++) {
+            for (int j = 0; j < allianceArray[i].length; j++) {
+                final int curRow = i;
+                final int curCol = j;
+                allianceArray[i][j].addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyPressed(KeyEvent e) {
-                        if(game.getPhase() == GAME_PHASE.NEGOTIATION_ONE || gamePause1 == true) {
+                        if (game.getPhase() == GAME_PHASE.NEGOTIATION_ONE || gamePause1 == true) {
                             switch (e.getKeyCode()) {
                                 case KeyEvent.VK_UP:
                                     if (curRow > 0) {
@@ -656,12 +650,10 @@ public class GUI extends JFrame {
                                 case KeyEvent.VK_SPACE:
                                     if (!allianceArray[curRow][curCol].isSelected() && proposalsLeft > 0)
                                         proposalsLeft--;
-                                    else if (allianceArray[curRow][curCol].isSelected())
-                                    {
-                                        if(proposalsLeft < NEGOTIATION_PROPOSAL_LIMIT)
-                                        proposalsLeft++;
-                                    }
-                                    else if (proposalsLeft == 0)
+                                    else if (allianceArray[curRow][curCol].isSelected()) {
+                                        if (proposalsLeft < NEGOTIATION_PROPOSAL_LIMIT)
+                                            proposalsLeft++;
+                                    } else if (proposalsLeft == 0)
                                         allianceArray[curRow][curCol].setSelected(!allianceArray[curRow][curCol].isSelected());
                                     break;
                                 case KeyEvent.VK_P:
@@ -671,15 +663,14 @@ public class GUI extends JFrame {
                                 default:
                                     break;
                             }
-                        }
-                        else if(game.getPhase() == GAME_PHASE.NEGOTIATION_TWO || gamePause2 == true)
-                        {
+                        } else if (game.getPhase() == GAME_PHASE.NEGOTIATION_TWO || gamePause2 == true) {
                             switch (e.getKeyCode()) {
                                 case KeyEvent.VK_UP:
                                 case KeyEvent.VK_LEFT:
                                     allianceArray[curRow][curCol].transferFocusBackward();
                                     break;
-                                case KeyEvent.VK_DOWN: case KeyEvent.VK_RIGHT:
+                                case KeyEvent.VK_DOWN:
+                                case KeyEvent.VK_RIGHT:
                                     allianceArray[curRow][curCol].transferFocus();
                                     break;
                                 case KeyEvent.VK_P:
@@ -696,7 +687,7 @@ public class GUI extends JFrame {
             }
         }
 
-            return alliancePanel;
+        return alliancePanel;
 
     }
 
@@ -714,7 +705,7 @@ public class GUI extends JFrame {
             // If human is playing, main view will be human view, and not true game state.
             focusedPlayer = humanIdx;
         }
-        switch(focusedPlayer) {
+        switch (focusedPlayer) {
             case 0:
                 playerName = "SPEEDY";
                 break;
@@ -733,11 +724,10 @@ public class GUI extends JFrame {
         gs = game.getGameState();
 
         // Normal state is standard game play as shown by grey background colour
-        if(game.getPhase() == GAME_PHASE.NORMAL)
-        {
+        if (game.getPhase() == GAME_PHASE.NORMAL) {
             // set background colour
-            mainPanel.setBackground(new Color(238,238,238));
-            alliancePanel.setBackground(new Color(238,238,238));
+            mainPanel.setBackground(new Color(238, 238, 238));
+            alliancePanel.setBackground(new Color(238, 238, 238));
 
             // Return focus to game instead of buttons so can move player
             this.requestFocus();
@@ -746,31 +736,25 @@ public class GUI extends JFrame {
             phaseTime1 = Types.NEGOTIATION_PHASE_ONE_LENGTH;
             phaseTime2 = Types.NEGOTIATION_PHASE_ONE_LENGTH;
 
-            if(focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == true)
+            if (focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == true)
                 allianceLabel.setText("current alliances: " + playerName);
-            else if(focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == false)
+            else if (focusedPlayer > -1 && avatarDisplayPanel.getAlive()[focusedPlayer] == false)
                 allianceLabel.setText(playerName + " is dead but not forgotten");
 
 
             // Highlight allowances and rules in play for current round
-            if(focusedPlayer > -1)
-            {
-                for(int i = 0; i < allianceArray.length; i++)
-                {
-                    for(int j = 0; j < allianceArray[0].length; j++)
-                    {
+            if (focusedPlayer > -1) {
+                for (int i = 0; i < allianceArray.length; i++) {
+                    for (int j = 0; j < allianceArray[0].length; j++) {
                         allianceArray[i][j].setSelected(chosenAlliances[focusedPlayer][i][j]);
                         allianceArray[i][j].setEnabled(false);
                     }
                 }
             }
-            for(int i = 0; i < rules.length; i++)
-            {
-                if(!allianceArray[i][0].isSelected() && !allianceArray[i][1].isSelected() && !allianceArray[i][2].isSelected())
-                {
+            for (int i = 0; i < rules.length; i++) {
+                if (!allianceArray[i][0].isSelected() && !allianceArray[i][1].isSelected() && !allianceArray[i][2].isSelected()) {
                     rules[i].setSelected(false);
-                }
-                else
+                } else
                     rules[i].setSelected(true);
             }
 
@@ -778,7 +762,7 @@ public class GUI extends JFrame {
             // playerNo added for alliances to have a global variable of the focussed player
             // Also allows only updating alliance panel if focused player has changed
             // If ai only game display each player's chosen alliances
-            if(playerNo != focusedPlayer || humanIdx > -1) {
+            if (playerNo != focusedPlayer || humanIdx > -1) {
                 playerNo = focusedPlayer;
                 if (focusedPlayer == -1)
                     alliancePanel.setVisible(false);
@@ -788,8 +772,7 @@ public class GUI extends JFrame {
                     // Display relevant opponents for each focused player
                     switch (focusedPlayer) {
                         case 0:
-                            for(int i = 0; i < allianceArray.length; i++)
-                            {
+                            for (int i = 0; i < allianceArray.length; i++) {
                                 allianceArray[i][0].setIcon(agent1lo);
                                 allianceArray[i][0].setSelectedIcon(agent1);
                                 allianceArray[i][0].setDisabledSelectedIcon(agent1);
@@ -810,8 +793,7 @@ public class GUI extends JFrame {
                             }
                             break;
                         case 1:
-                            for(int i = 0; i < allianceArray.length; i++)
-                            {
+                            for (int i = 0; i < allianceArray.length; i++) {
                                 allianceArray[i][0].setIcon(agent0lo);
                                 allianceArray[i][0].setSelectedIcon(agent0);
                                 allianceArray[i][0].setDisabledSelectedIcon(agent0);
@@ -832,8 +814,7 @@ public class GUI extends JFrame {
                             }
                             break;
                         case 2:
-                            for(int i = 0; i < allianceArray.length; i++)
-                            {
+                            for (int i = 0; i < allianceArray.length; i++) {
                                 allianceArray[i][0].setIcon(agent0lo);
                                 allianceArray[i][0].setSelectedIcon(agent0);
                                 allianceArray[i][0].setDisabledSelectedIcon(agent0);
@@ -854,8 +835,7 @@ public class GUI extends JFrame {
                             }
                             break;
                         case 3:
-                            for(int i = 0; i < allianceArray.length; i++)
-                            {
+                            for (int i = 0; i < allianceArray.length; i++) {
                                 allianceArray[i][0].setIcon(agent0lo);
                                 allianceArray[i][0].setSelectedIcon(agent0);
                                 allianceArray[i][0].setDisabledSelectedIcon(agent0);
@@ -901,12 +881,12 @@ public class GUI extends JFrame {
             }
 
             // Time of next screen collapse
-            NextCollapse = COLLAPSE_START+1 + stage*COLLAPSE_STEP;
+            NextCollapse = COLLAPSE_START + 1 + stage * COLLAPSE_STEP;
 
             // Update game tick.
             //appTick.setText("tick: " + game.getTick() + ". next round at " + NextCollapse);
-            appTick.setText("ticks until screen collapse: " + (NextCollapse-game.getTick()));
-            if(NextCollapse-game.getTick() < 0)
+            appTick.setText("ticks until screen collapse: " + (NextCollapse - game.getTick()));
+            if (NextCollapse - game.getTick() < 0)
                 appTick.setText("STARTING NEGOTIATION PHASE");
 
             if (VERBOSE) {
@@ -917,24 +897,19 @@ public class GUI extends JFrame {
         }
 
         // First negotiation stage of selecting alliances to propose. Yellow background.
-        else if(game.getPhase() == GAME_PHASE.NEGOTIATION_ONE)
-        {
+        else if (game.getPhase() == GAME_PHASE.NEGOTIATION_ONE) {
             // set background colour
-            mainPanel.setBackground(new Color(255,250,200));
-            alliancePanel.setBackground(new Color(255,250,200));
+            mainPanel.setBackground(new Color(255, 250, 200));
+            alliancePanel.setBackground(new Color(255, 250, 200));
 
             // Move focus to buttons for human player
-            if (humanIdx > -1)
-            {
+            if (humanIdx > -1) {
                 // Perform on first entering phase
-                if(phaseTime1 == NEGOTIATION_PHASE_ONE_LENGTH)
-                {
+                if (phaseTime1 == NEGOTIATION_PHASE_ONE_LENGTH) {
                     proposalsLeft = NEGOTIATION_PROPOSAL_LIMIT;
                     // Enable buttons for player to press
-                    for(int i = 0; i < allianceArray.length; i++)
-                    {
-                        for(int j = 0; j < allianceArray[i].length; j++)
-                        {
+                    for (int i = 0; i < allianceArray.length; i++) {
+                        for (int j = 0; j < allianceArray[i].length; j++) {
                             rules[i].setEnabled(true);
                             rules[i].setSelected(false);
                             allianceArray[i][j].setEnabled(true);
@@ -954,12 +929,10 @@ public class GUI extends JFrame {
                     appTick.setText(" PRESS 'p' TO CONTINUE.");
 
                     // Pause game
-                    gamePause1 = true;
+                    gamePause1 = true && this.isActive();
                     game.pauseGame(gamePause1);
-                }
-                else if(phaseTime1 < NEGOTIATION_PHASE_ONE_LENGTH)
-                {
-                    appTick.setText("NEXT PHASE IN " + phaseTime1/10);
+                } else if (phaseTime1 < NEGOTIATION_PHASE_ONE_LENGTH) {
+                    appTick.setText("NEXT PHASE IN " + phaseTime1 / 10);
                 }
 
             }
@@ -1014,20 +987,15 @@ public class GUI extends JFrame {
             phaseTime1--;
 
             // return focus to main game and send alliances just before timer ends
-            if(phaseTime1 == 1 && humanIdx > -1)
-            {
+            if (phaseTime1 == 1 && humanIdx > -1) {
                 this.requestFocus();
 
                 // Finalise requested alliances
-                for(int i = 0; i < allianceArray.length; i++)
-                {
-                    for(int j = 0; j < allianceArray[0].length; j++)
-                    {
-                        if(allianceArray[i][j].isSelected())
-                        {
+                for (int i = 0; i < allianceArray.length; i++) {
+                    for (int j = 0; j < allianceArray[0].length; j++) {
+                        if (allianceArray[i][j].isSelected()) {
                             setAlliances[playerNo][i][j] = true;
-                        }
-                        else
+                        } else
                             setAlliances[playerNo][i][j] = false;
                     }
                 }
@@ -1040,7 +1008,7 @@ public class GUI extends JFrame {
         }
 
         // Negotiation phase 2. Green background
-        else if(game.getPhase() == GAME_PHASE.NEGOTIATION_TWO) {
+        else if (game.getPhase() == GAME_PHASE.NEGOTIATION_TWO) {
             // set background colour
             mainPanel.setBackground(new Color(185, 210, 185));
             alliancePanel.setBackground(new Color(185, 210, 185));
@@ -1144,13 +1112,10 @@ public class GUI extends JFrame {
                     }
 
 
-                    if(trueCount == 0)
-                    {
+                    if (trueCount == 0) {
                         System.out.println(true);
                         allianceLabel.setText("no alliances received: " + playerName);
-                    }
-                    else
-                    {
+                    } else {
                         allianceLabel.setText("accept/reject alliances: " + playerName);
                         appTick.setText("PRESS 'p' TO CONTINUE.");
 
@@ -1163,7 +1128,6 @@ public class GUI extends JFrame {
                 } else if (phaseTime2 < NEGOTIATION_PHASE_TWO_LENGTH) {
                     appTick.setText("REJOINING GAME IN " + phaseTime2 / 10);
                 }
-
 
 
                 // Flash icons to show proposals
@@ -1286,7 +1250,7 @@ public class GUI extends JFrame {
 
             }
             // For ai game or after human player has died show selected alliances
-            else if(humanIdx == -1) {
+            else if (humanIdx == -1) {
                 // Clear buttons on first entering phase
                 if (phaseTime2 == NEGOTIATION_PHASE_TWO_LENGTH) {
                     for (int i = 0; i < allianceArray.length; i++) {
@@ -1322,14 +1286,14 @@ public class GUI extends JFrame {
                         }
                     }
 
-                    }
+                }
 
-                    // deselect rules with no ticks
-                    for (int i = 0; i < rules.length; i++) {
-                        if (!allianceArray[i][0].isSelected() && !allianceArray[i][1].isSelected() && !allianceArray[i][2].isSelected()) {
-                            rules[i].setSelected(false);
-                        }
+                // deselect rules with no ticks
+                for (int i = 0; i < rules.length; i++) {
+                    if (!allianceArray[i][0].isSelected() && !allianceArray[i][1].isSelected() && !allianceArray[i][2].isSelected()) {
+                        rules[i].setSelected(false);
                     }
+                }
 
             }
 
@@ -1337,13 +1301,12 @@ public class GUI extends JFrame {
             phaseTime2--;
 
             // return focus to game and send alliances just before timer ends
-            if(phaseTime2 == 1)
-            {
+            if (phaseTime2 == 1) {
                 stage++;
                 this.requestFocus();
 
                 // Initialise array for all players so not sending ai alliances from last round
-                for(int k = 0; k < NUM_PLAYERS; k ++) {
+                for (int k = 0; k < NUM_PLAYERS; k++) {
                     for (int i = 0; i < allianceArray.length; i++) {
                         for (int j = 0; j < allianceArray[0].length; j++) {
                             chosenAlliances[k][i][j] = false;
@@ -1351,19 +1314,14 @@ public class GUI extends JFrame {
                     }
                 }
 
-                if(humanIdx > -1)
-                {
+                if (humanIdx > -1) {
                     // Finalise chosen alliances
-                    for(int i = 0; i < allianceArray.length; i++)
-                    {
-                        for(int j = 0; j < allianceArray[0].length; j++)
-                        {
-                            if(allianceArray[i][j].isSelected())
-                            {
+                    for (int i = 0; i < allianceArray.length; i++) {
+                        for (int j = 0; j < allianceArray[0].length; j++) {
+                            if (allianceArray[i][j].isSelected()) {
                                 chosenAlliances[playerNo][i][j] = true;
                                 rules[i].setSelected(true);
-                            }
-                            else
+                            } else
                                 chosenAlliances[playerNo][i][j] = false;
                         }
                     }
@@ -1376,6 +1334,25 @@ public class GUI extends JFrame {
 
             }
 
+        }
+    }
+
+    /**
+     * Processes window events occurring on this component.
+     * Hides the window or disposes of it, as specified by the setting
+     * of the <code>defaultCloseOperation</code> property.
+     *
+     * @param e the window event
+     * @see #setDefaultCloseOperation
+     * @see Window#processWindowEvent
+     */
+    @Override
+    protected void processWindowEvent(WindowEvent e) {
+        super.processWindowEvent(e);
+        if (e.getNewState() == WindowEvent.WINDOW_CLOSED) {
+            gamePause1 = false;
+            gamePause2 = false;
+            game.pauseGame(false);
         }
     }
 }
