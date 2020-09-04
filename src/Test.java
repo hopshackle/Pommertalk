@@ -59,14 +59,15 @@ public class Test {
         pokey.heuristic_weights = pokeyPersonality;
 
         //players.add(new MCTSPlayer(seed, playerID++, mctsParams));
-        players.add(new HumanPlayer(ki1, playerID++));
+//        players.add(new HumanPlayer(ki1, playerID++));
         //    players.add(new MCTSPlayer(seed, playerID++, mctsParams, new RandomNegotiator(1)));
 
 //        players.add(new SimplePlayer(seed, playerID++));
-//        players.add(new RHEAPlayer(seed, playerID++, speedy, new RandomHeuristicsNegotiator(1, 0.2, 0.2, 0.75)));
-        players.add(new RHEAPlayer(seed, playerID++, shadow, new RandomHeuristicsNegotiator(2, 0.1, 1.0, 0.5)));
-        players.add(new RHEAPlayer(seed, playerID++, bashful, new RandomHeuristicsNegotiator(3, 0.1, 0.6, 0.1)));
-        players.add(new RHEAPlayer(seed, playerID++, pokey, new RandomHeuristicsNegotiator(4, 0.2, 0.2, 0.5)));
+        java.util.Random random = new java.util.Random();
+        players.add(new RHEAPlayer(seed, playerID++, speedy, new RandomHeuristicsNegotiator(random.nextInt(), 0.2, 0.2, 0.75)));
+        players.add(new RHEAPlayer(seed, playerID++, shadow, new RandomHeuristicsNegotiator(random.nextInt(), 0.1, 1.0, 0.5)));
+        players.add(new RHEAPlayer(seed, playerID++, bashful, new RandomHeuristicsNegotiator(random.nextInt(), 0.1, 0.6, 0.1)));
+        players.add(new RHEAPlayer(seed, playerID++, pokey, new RandomHeuristicsNegotiator(random.nextInt(), 0.2, 0.2, 0.5)));
 
 //        players.add(new SimplePlayer(seed, playerID++));
    //     players.add(new MCTSPlayer(seed, playerID++, new MCTSParams(), new RandomNegotiator(3)));

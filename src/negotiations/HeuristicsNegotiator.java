@@ -212,9 +212,9 @@ public class HeuristicsNegotiator implements Negotiator {
             currPlayerInfo[PlayerParams.AMMO.ordinal()] /= maxValues[PlayerParams.AMMO.ordinal()];
             currPlayerInfo[PlayerParams.BLAST.ordinal()] /= maxValues[PlayerParams.BLAST.ordinal()];
 
-            heuristics[player * 3] = bombHeuristic(currPlayerInfo);
-            heuristics[player * 3 +1] = kickHeuristic(currPlayerInfo);
-            heuristics[player * 3 +2] = allianceHeuristic(currPlayerInfo);
+            heuristics[player * 3] = bombHeuristic(currPlayerInfo) *2;
+            heuristics[player * 3 +1] = kickHeuristic(currPlayerInfo) *2;
+            heuristics[player * 3 +2] = allianceHeuristic(currPlayerInfo) *2;
         }
 
         return heuristics;
