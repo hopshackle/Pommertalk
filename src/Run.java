@@ -177,6 +177,8 @@ public class Run {
         }
 
         g.run(frame, wi, separateThreads);
+        if (wi.windowClosed)
+            g.runAgain = false;
     }
 
     public static void runGames(Game g, long seeds[], int repetitions, boolean useSeparateThreads){
