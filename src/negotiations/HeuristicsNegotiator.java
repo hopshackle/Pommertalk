@@ -111,7 +111,7 @@ public class HeuristicsNegotiator implements Negotiator {
                     break;
             }
 
-            double test = 0.5;
+            double test = 0.25;
             if (heuristic > test) {
                 manager.SendResponse(playerIndex, a.getParticipant1Id(), a.getType(), MessageManager.Response.ACCEPT.ordinal());
                 //System.out.println(String.format("%s: %d -> %d: %s", MessageManager.Response.ACCEPT, a.getParticipant1Id(), a.getParticipant2Id(), a.getType()));
@@ -162,7 +162,7 @@ public class HeuristicsNegotiator implements Negotiator {
         return (
                 (playerInfo[PlayerParams.BLAST.ordinal()] * blastWeight) +
                         (playerInfo[PlayerParams.AMMO.ordinal()] * ammoWeight)
-        ) / 2;
+        );
     }
 
 
@@ -176,7 +176,7 @@ public class HeuristicsNegotiator implements Negotiator {
                 (playerInfo[PlayerParams.KICK.ordinal()] * kickWeight) +
                         (playerInfo[PlayerParams.BLAST.ordinal()] * blastWeight) +
                         (playerInfo[PlayerParams.AMMO.ordinal()] * ammoWeight)
-        ) / 3;
+        );
     }
 
 

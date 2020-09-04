@@ -63,10 +63,10 @@ public class Test {
         //    players.add(new MCTSPlayer(seed, playerID++, mctsParams, new RandomNegotiator(1)));
 
 //        players.add(new SimplePlayer(seed, playerID++));
-//        players.add(new RHEAPlayer(seed, playerID++, speedy, new RandomHeuristicsNegotiator(1, 0.6, 0.2, 0.75)));
-        players.add(new RHEAPlayer(seed, playerID++, shadow, new RandomHeuristicsNegotiator(2, 0.5, 1.0, 0.5)));
+//        players.add(new RHEAPlayer(seed, playerID++, speedy, new RandomHeuristicsNegotiator(1, 0.2, 0.2, 0.75)));
+        players.add(new RHEAPlayer(seed, playerID++, shadow, new RandomHeuristicsNegotiator(2, 0.1, 1.0, 0.5)));
         players.add(new RHEAPlayer(seed, playerID++, bashful, new RandomHeuristicsNegotiator(3, 0.1, 0.6, 0.1)));
-        players.add(new RHEAPlayer(seed, playerID++, pokey, new RandomHeuristicsNegotiator(4, 0.8, 0.2, 0.5)));
+        players.add(new RHEAPlayer(seed, playerID++, pokey, new RandomHeuristicsNegotiator(4, 0.2, 0.2, 0.5)));
 
 //        players.add(new SimplePlayer(seed, playerID++));
    //     players.add(new MCTSPlayer(seed, playerID++, new MCTSParams(), new RandomNegotiator(3)));

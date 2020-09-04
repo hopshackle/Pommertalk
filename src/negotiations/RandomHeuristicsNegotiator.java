@@ -88,12 +88,15 @@ public class RandomHeuristicsNegotiator implements Negotiator {
         int[] max = getMaxValues(playerIndex, gs);
         double[] allHeuristics = getAllHeuristics(playerIndex, gs, max);
 
+        //System.out.println(String.format("[%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f] for %d", allHeuristics[0], allHeuristics[1], allHeuristics[2],
+        //        allHeuristics[3], allHeuristics[4], allHeuristics[5], allHeuristics[6], allHeuristics[7], allHeuristics[8], proposed.size()));
+
         for (Agreement a : proposed) {
 
             if (a.getParticipant1Id() == playerIndex)
                 throw new AssertionError("Player seems to have sent themselves a Proposal?" + a.toString());
 
-            double heuristic = 0;
+            double heuristic = 0f;
             int player = a.getParticipant1Id();
             if (player >= playerIndex) { player--; }
 
@@ -124,7 +127,7 @@ public class RandomHeuristicsNegotiator implements Negotiator {
                 //System.out.println(String.format("%s: %d -> %d: %s", MessageManager.Response.DENY, a.getParticipant1Id(), a.getParticipant2Id(), a.getType()));
             }
 
-            System.out.println(String.format("%d -> %d: %s, %.2f > %.2f ?", a.getParticipant1Id(), a.getParticipant2Id(), a.getType(), heuristic, test));
+            //System.out.println(String.format("%d -> %d: %s, %.2f > %.2f ?", a.getParticipant1Id(), a.getParticipant2Id(), a.getType(), heuristic, test));
         }
 
     }
@@ -153,9 +156,11 @@ public class RandomHeuristicsNegotiator implements Negotiator {
         Avatar p = gs.getAgent(player);
 
         playerInfo[PlayerParams.AMMO.ordinal()] = p.getAmmo() +1;
-        playerInfo[PlayerParams.BLAST.ordinal()] = p.getBlastStrength();
+        playerInfo[PlayerParams.BLAST.ordinal()] = p.getBlastStrength() +1;
         if (p.canKick()) { playerInfo[PlayerParams.KICK.ordinal()] = 1; }
         else { playerInfo[PlayerParams.KICK.ordinal()] = 0; }
+
+        //System.out.println(String.format("[%d, %d, %d]", playerInfo[0], playerInfo[1], playerInfo[2]));
 
         return playerInfo;
     }
@@ -165,7 +170,7 @@ public class RandomHeuristicsNegotiator implements Negotiator {
         return (
                 (playerInfo[PlayerParams.BLAST.ordinal()] * blastWeight) +
                 (playerInfo[PlayerParams.AMMO.ordinal()] * ammoWeight)
-                ) / 2;
+                );
     }
 
 
@@ -179,7 +184,7 @@ public class RandomHeuristicsNegotiator implements Negotiator {
                 (playerInfo[PlayerParams.KICK.ordinal()] * kickWeight) +
                 (playerInfo[PlayerParams.BLAST.ordinal()] * blastWeight) +
                 (playerInfo[PlayerParams.AMMO.ordinal()] * ammoWeight)
-                ) / 3;
+                );
     }
 
 
