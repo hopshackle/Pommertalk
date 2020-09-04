@@ -297,6 +297,8 @@ public class MessageManager {
     //Translates a boolean array into proposal messages
     public void boolPropToMessage(boolean[][][] props) {
 
+        //System.out.println("Received proposals from GUI");
+
         for (int player = 0; player < props.length; player++) {
             for (int proposal = 0; proposal < props[player].length; proposal++) {
                 for (int receiver = 0; receiver < props[player][proposal].length; receiver++) {
@@ -313,6 +315,8 @@ public class MessageManager {
     //Translates a boolean array into response messages
     //Values set to true are translated into positive responses
     public void boolRespToMessage(boolean[][][] resps) {
+
+        //System.out.println("Received Responses from GUI");
 
         for (int player = 0; player < resps.length; player++) {
             for (int proposal = 0; proposal < resps[player].length; proposal++) {
@@ -352,16 +356,31 @@ public class MessageManager {
         ArrayList<HashMap<String, Integer>> proposals = FindMessages(-1, -1, round, Response.PROPOSAL.ordinal(), -1);
         ArrayList<HashMap<String, Integer>> posResponses = FindMessages(-1, -1, round, Response.ACCEPT.ordinal(), -1);
 
+        /*
+        System.out.println();
+        System.out.println(String.format("Number of proposals: %d", proposals.size()));
+        System.out.println(String.format("Number of responses: %d", posResponses.size()));
+        System.out.println();
+
+        for (HashMap<String, Integer> r : posResponses)
+            System.out.println(String.format("Player %d -> player %d : Proposal %d : Response %d : Round %d : ID %d",
+                    r.get("Sender"), r.get("Receiver"), r.get("Proposal"), r.get("Response"), r.get("Round"), r.get("ID")));
+         */
+
         ArrayList<Agreement> agreed = new ArrayList<Agreement>();
 
         for (HashMap<String, Integer> p : proposals) {
+            //System.out.println(String.format("Player %d -> Player %d: %d", p.get("Sender"), p.get("Receiver"), p.get("Proposal")));
             for (HashMap<String, Integer> r : posResponses) {
                 if (propRespMatch(p, r)) {
                     Agreement currAgreement = new Agreement(p.get("Sender"), p.get("Receiver"), propTranslator(p.get("Proposal")));
                     agreed.add(currAgreement);
+                    break;
                 }
             }
         }
+
+        System.out.println();
 
         return agreed;
     }
@@ -386,6 +405,7 @@ public class MessageManager {
     //Returns as agreement objects
     public ArrayList<Agreement> getPlayerProposalAgreements(int player) {
         ArrayList<HashMap<String, Integer>> proposed = FindMessages(-1, player, round, Response.PROPOSAL.ordinal(), -1);
+        //System.out.println(String.format("There are %d proposals for player %d", proposed.size(), player));
         return messToAgreement(proposed);
     }
 
@@ -410,7 +430,7 @@ public class MessageManager {
     //Resets the list of round messages
     public ArrayList<Agreement> SecondPhaseEnd() {
 
-        ArrayList<Agreement> agrees =  getAgreements();
+        ArrayList<Agreement> agrees = getAgreements();
 
         round++;
         currTurnM = new ArrayList<HashMap<String, Integer>>();

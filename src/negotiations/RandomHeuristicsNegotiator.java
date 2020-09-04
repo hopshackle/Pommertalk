@@ -1,6 +1,7 @@
 package negotiations;
 
 import Message.MessageManager;
+import core.Game;
 import core.GameState;
 import objects.Avatar;
 import utils.Types;
@@ -41,18 +42,8 @@ public class RandomHeuristicsNegotiator implements Negotiator {
     @Override
     public void makeProposals(int playerIndex, GameState gs, MessageManager manager) {
 
-        double[] heuristics = new double[9];
-
-        for (int player = 0; player < 3; player++) {
-            int[] currPlayerInfo = new int[3];
-
-            if (player >= playerIndex) { currPlayerInfo = getPlayerInformation(player+1, gs); }
-            else { currPlayerInfo = getPlayerInformation(player, gs); }
-
-            heuristics[player * 3] = bombHeuristic(currPlayerInfo);
-            heuristics[player * 3 +1] = kickHeuristic(currPlayerInfo);
-            heuristics[player * 3 +2] = allianceHeuristic(currPlayerInfo);
-        }
+        int[] max = getMaxValues(playerIndex, gs);
+        double[] heuristics = getAllHeuristics(playerIndex, gs, max);
 
         int[] orderedIndexes = getSortArrayIndex(heuristics);
 
@@ -94,8 +85,8 @@ public class RandomHeuristicsNegotiator implements Negotiator {
     public void reviewProposals(int playerIndex, GameState gs, MessageManager manager) {
 
         List<Agreement> proposed = manager.getPlayerProposalAgreements(playerIndex);
-        //System.out.println();
-        //System.out.println(String.format("Player %d received %d proposals", playerIndex, proposed.size()));
+        int[] max = getMaxValues(playerIndex, gs);
+        double[] allHeuristics = getAllHeuristics(playerIndex, gs, max);
 
         for (Agreement a : proposed) {
 
@@ -103,26 +94,28 @@ public class RandomHeuristicsNegotiator implements Negotiator {
                 throw new AssertionError("Player seems to have sent themselves a Proposal?" + a.toString());
 
             double heuristic = 0;
-            int[] playerInfo = getPlayerInformation(a.getParticipant1Id(), gs);
+            int player = a.getParticipant1Id();
+            if (player >= playerIndex) { player--; }
 
             switch (a.getType().ordinal()) {
 
                 case 0:
                 case 1:
-                    heuristic = allianceHeuristic(playerInfo);
+                    heuristic = allHeuristics[player * 3 + 2];
                     break;
 
                 case 2:
                 case 4:
-                    heuristic = bombHeuristic(playerInfo);
+                    heuristic = allHeuristics[player * 3];
                     break;
 
                 case 3:
-                    heuristic = kickHeuristic(playerInfo);
+                    heuristic = allHeuristics[player * 3 + 1];
                     break;
             }
 
-            if (heuristic > rnd.nextDouble()) {
+            double test = rnd.nextDouble();
+            if (heuristic > test) {
                 manager.SendResponse(playerIndex, a.getParticipant1Id(), a.getType(), MessageManager.Response.ACCEPT.ordinal());
                 //System.out.println(String.format("%s: %d -> %d: %s", MessageManager.Response.ACCEPT, a.getParticipant1Id(), a.getParticipant2Id(), a.getType()));
             }
@@ -130,6 +123,8 @@ public class RandomHeuristicsNegotiator implements Negotiator {
                 manager.SendResponse(playerIndex, a.getParticipant1Id(), a.getType(), MessageManager.Response.DENY.ordinal());
                 //System.out.println(String.format("%s: %d -> %d: %s", MessageManager.Response.DENY, a.getParticipant1Id(), a.getParticipant2Id(), a.getType()));
             }
+
+            System.out.println(String.format("%d -> %d: %s, %.2f > %.2f ?", a.getParticipant1Id(), a.getParticipant2Id(), a.getType(), heuristic, test));
         }
 
     }
@@ -157,7 +152,7 @@ public class RandomHeuristicsNegotiator implements Negotiator {
         int[] playerInfo =  new int[PlayerParams.values().length];
         Avatar p = gs.getAgent(player);
 
-        playerInfo[PlayerParams.AMMO.ordinal()] = p.getAmmo();
+        playerInfo[PlayerParams.AMMO.ordinal()] = p.getAmmo() +1;
         playerInfo[PlayerParams.BLAST.ordinal()] = p.getBlastStrength();
         if (p.canKick()) { playerInfo[PlayerParams.KICK.ordinal()] = 1; }
         else { playerInfo[PlayerParams.KICK.ordinal()] = 0; }
@@ -168,8 +163,8 @@ public class RandomHeuristicsNegotiator implements Negotiator {
 
     private double bombHeuristic(int[] playerInfo) {
         return (
-                (playerInfo[PlayerParams.BLAST.ordinal()] * blastWeight / 3) +
-                (playerInfo[PlayerParams.AMMO.ordinal()] * ammoWeight / 3)
+                (playerInfo[PlayerParams.BLAST.ordinal()] * blastWeight) +
+                (playerInfo[PlayerParams.AMMO.ordinal()] * ammoWeight)
                 ) / 2;
     }
 
@@ -182,8 +177,49 @@ public class RandomHeuristicsNegotiator implements Negotiator {
     private  double allianceHeuristic(int[] playerInfo) {
         return (
                 (playerInfo[PlayerParams.KICK.ordinal()] * kickWeight) +
-                (playerInfo[PlayerParams.BLAST.ordinal()] * blastWeight / 3) +
-                (playerInfo[PlayerParams.AMMO.ordinal()] * ammoWeight / 3)
+                (playerInfo[PlayerParams.BLAST.ordinal()] * blastWeight) +
+                (playerInfo[PlayerParams.AMMO.ordinal()] * ammoWeight)
                 ) / 3;
+    }
+
+
+    private int[] getMaxValues(int playerIndex, GameState gs) {
+        int[] max = new int[]{1,1,1};
+
+        for (int player = 0; player<3; player++) {
+            int[] currPlayerInfo = new int[3];
+
+            if (player >= playerIndex) {currPlayerInfo = getPlayerInformation(player+1, gs); }
+            else { currPlayerInfo = getPlayerInformation(player, gs); }
+
+            if (currPlayerInfo[PlayerParams.AMMO.ordinal()] > max[PlayerParams.AMMO.ordinal()])
+                max[PlayerParams.AMMO.ordinal()] = currPlayerInfo[PlayerParams.AMMO.ordinal()];
+
+            if (currPlayerInfo[PlayerParams.BLAST.ordinal()] > max[PlayerParams.BLAST.ordinal()])
+                max[PlayerParams.BLAST.ordinal()] = currPlayerInfo[PlayerParams.BLAST.ordinal()];
+        }
+
+        return max;
+    }
+
+
+    private double[] getAllHeuristics(int playerIndex, GameState gs, int[] maxValues) {
+        double[] heuristics = new double[9];
+
+        for (int player = 0; player < 3; player++) {
+            int[] currPlayerInfo = new int[3];
+
+            if (player >= playerIndex) {currPlayerInfo = getPlayerInformation(player+1, gs); }
+            else { currPlayerInfo = getPlayerInformation(player, gs); }
+
+            currPlayerInfo[PlayerParams.AMMO.ordinal()] /= maxValues[PlayerParams.AMMO.ordinal()];
+            currPlayerInfo[PlayerParams.BLAST.ordinal()] /= maxValues[PlayerParams.BLAST.ordinal()];
+
+            heuristics[player * 3] = bombHeuristic(currPlayerInfo);
+            heuristics[player * 3 +1] = kickHeuristic(currPlayerInfo);
+            heuristics[player * 3 +2] = allianceHeuristic(currPlayerInfo);
+        }
+
+        return heuristics;
     }
 }

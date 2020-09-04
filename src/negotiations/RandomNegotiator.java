@@ -9,7 +9,7 @@ import java.util.*;
 public class RandomNegotiator implements Negotiator {
 
     public Random rnd;
-    private boolean debug = true;
+    private boolean debug = false;
     private static Agreement.TYPE[] types = Agreement.TYPE.values();
 
     public RandomNegotiator(long seed) {
@@ -46,6 +46,8 @@ public class RandomNegotiator implements Negotiator {
     @Override
     public void reviewProposals(int playerIndex, GameState gs, MessageManager manager) {
         List<Agreement> proposals = manager.getPlayerProposalAgreements(playerIndex);
+        //System.out.println();
+        //System.out.println(String.format("Player %d received %d proposals", playerIndex, proposals.size()));
         for (Agreement a : proposals) {
             if (a.getParticipant1Id() == playerIndex)
                 throw new AssertionError("Player seems to have sent themselves a Proposal?" + a.toString());
